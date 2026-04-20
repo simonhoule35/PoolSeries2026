@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pool Séries">
+<meta name="theme-color" content="#0f1923">
+<title>Pool Séries 2026</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: #0f1923; color: #e8eaed; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+/* HEADER */
+.header { background: #1a2535; margin: 12px 12px 0; border-radius: 12px; padding: 14px; border-bottom: 2px solid #22c55e; }
+.header-row { display: flex; align-items: center; justify-content: space-between; }
+.header-left { display: flex; align-items: center; gap: 10px; }
+.header-title { font-size: 19px; font-weight: 600; color: #e8eaed; letter-spacing: -0.3px; }
+.header-title span { color: #22c55e; }
+.header-date { font-size: 11px; color: #8a9bb0; background: #0f1923; padding: 4px 10px; border-radius: 20px; border: 0.5px solid #2a3a4a; }
+.header-sub { font-size: 12px; color: #8a9bb0; margin-top: 6px; padding-left: 34px; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; display: inline-block; margin-right: 5px; }
+
+/* SECTION LABEL */
+.section-label { font-size: 11px; color: #8a9bb0; padding: 12px 16px 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* HOME MATCHUP CARDS */
+.matchup-card { background: #1a2535; margin: 0 12px 8px; border-radius: 12px; border: 0.5px solid #2a3a4a; padding: 12px 14px; cursor: pointer; transition: background 0.15s; }
+.matchup-card:active { background: #202f40; }
+.matchup-num { font-size: 10px; color: #8a9bb0; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.matchup-row { display: flex; align-items: center; justify-content: space-between; }
+.team-side { flex: 1; }
+.team-name { font-size: 15px; font-weight: 500; }
+.team-pts { font-size: 13px; margin-top: 2px; }
+.team-pts.leading { color: #22c55e; font-weight: 500; }
+.team-pts.trailing { color: #ef4444; }
+.vs-block { text-align: center; padding: 0 10px; }
+.vs-text { font-size: 11px; color: #8a9bb0; }
+.score-gap { font-size: 13px; font-weight: 500; margin-top: 2px; }
+.score-gap.pos { color: #22c55e; }
+.score-gap.neg { color: #ef4444; }
+.score-gap.tied { color: #f59e0b; }
+.right-side { text-align: right; }
+.status-bar { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.status-pill { font-size: 10px; padding: 2px 7px; border-radius: 20px; }
+.pill-live { background: #14532d; color: #86efac; }
+.pill-pre { background: #451a03; color: #fcd34d; }
+.pill-final { background: #1e293b; color: #94a3b8; }
+
+/* DETAIL VIEW */
+.detail-view { display: none; }
+.back-btn { font-size: 12px; color: #22c55e; padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.detail-card { background: #1a2535; margin: 0 12px 20px; border-radius: 12px; overflow: hidden; border: 0.5px solid #2a3a4a; }
+.matchup-title-bar { background: #2a3a4a; text-align: center; font-size: 11px; color: #e8eaed; font-weight: 500; padding: 6px; letter-spacing: 0.5px; }
+.owners-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; }
+.own-l { background: #1e3a5f; padding: 10px 12px; }
+.own-l-name { font-size: 15px; font-weight: 600; color: #e8eaed; }
+.own-l-pts { font-size: 11px; color: #93c5fd; margin-top: 2px; }
+.own-r { background: #1a4a2e; padding: 10px 12px; text-align: right; }
+.own-r-name { font-size: 15px; font-weight: 600; color: #e8eaed; }
+.own-r-pts { font-size: 11px; color: #86efac; margin-top: 2px; }
+.vs-mid { background: #0d1f2e; padding: 10px 8px; font-size: 11px; color: #8a9bb0; display: flex; align-items: center; justify-content: center; }
+.section-bar { background: #0d1f2e; text-align: center; font-size: 9px; color: #8a9bb0; padding: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.player-row { display: grid; grid-template-columns: 10px 1fr 26px 10px 26px 1fr 10px; gap: 3px; align-items: center; padding: 4px 8px; border-bottom: 0.5px solid #0f1923; }
+.ind { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.ind-live { background: #22c55e; }
+.ind-pre { background: #f59e0b; }
+.ind-final { background: #374151; }
+.ind-off { background: #374151; }
+.ind-out { background: #ef4444; }
+.pname { font-size: 11px; color: #e8eaed; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pname-r { font-size: 11px; color: #e8eaed; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ppts-l { font-size: 11px; color: #8a9bb0; text-align: right; }
+.ppts-r { font-size: 11px; color: #8a9bb0; }
+.ppts-l.scored { color: #22c55e; font-weight: 500; }
+.ppts-r.scored { color: #22c55e; font-weight: 500; }
+.divider-col { width: 1px; background: #2a3a4a; height: 14px; margin: 0 auto; }
+.points-bar { display: grid; grid-template-columns: 1fr 1fr; border-top: 0.5px solid #0f1923; }
+.pts-l { background: #1e3a5f; padding: 6px 12px; font-size: 11px; color: #8a9bb0; border-right: 2px solid #0f1923; }
+.pts-l span { font-size: 16px; font-weight: 500; color: #e8eaed; display: block; }
+.pts-r { background: #1a4a2e; padding: 6px 12px; font-size: 11px; color: #8a9bb0; text-align: right; }
+.pts-r span { font-size: 16px; font-weight: 500; color: #22c55e; display: block; }
+.pred-wrap { background: #0d1f2e; border-left: 2px solid #22c55e; }
+.pred-title { font-size: 9px; color: #22c55e; padding: 5px 10px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+.pred-row { display: grid; grid-template-columns: 1fr 1fr; padding: 4px 10px; border-top: 0.5px solid #1a2535; }
+.pred-l { font-size: 11px; color: #cbd5e1; }
+.pred-r { font-size: 11px; color: #cbd5e1; text-align: right; }
+.pred-pts-bar { display: grid; grid-template-columns: 1fr 1fr; border-top: 0.5px solid #2a3a4a; }
+.pred-pts-l { background: #1e3a5f; padding: 5px 12px; font-size: 11px; color: #8a9bb0; border-right: 2px solid #0f1923; }
+.pred-pts-l span { font-size: 15px; font-weight: 500; color: #e8eaed; display: block; }
+.pred-pts-r { background: #1a4a2e; padding: 5px 12px; font-size: 11px; color: #8a9bb0; text-align: right; }
+.pred-pts-r span { font-size: 15px; font-weight: 500; color: #22c55e; display: block; }
+.total-bar { display: grid; grid-template-columns: 1fr 1fr; border-top: 0.5px solid #2a3a4a; }
+.total-l { background: #1e2a3a; padding: 7px 12px; font-size: 11px; color: #8a9bb0; border-right: 2px solid #0f1923; }
+.total-l span { font-size: 18px; font-weight: 600; color: #e8eaed; display: block; }
+.total-r { background: #14532d; padding: 7px 12px; font-size: 11px; color: #86efac; text-align: right; }
+.total-r span { font-size: 18px; font-weight: 600; color: #22c55e; display: block; }
+
+/* LOADING */
+.loading { text-align: center; padding: 40px 20px; color: #8a9bb0; font-size: 14px; }
+.loading-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #22c55e; margin: 0 3px; animation: bounce 1.2s infinite; }
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,80%,100%{transform:scale(0)}40%{transform:scale(1)} }
+
+.refresh-btn { text-align: center; padding: 8px; color: #8a9bb0; font-size: 11px; cursor: pointer; margin-bottom: 8px; }
+.refresh-btn:active { color: #22c55e; }
+</style>
+</head>
+<body>
+
+<!-- HOME VIEW -->
+<div id="home-view">
+  <div class="header">
+    <div class="header-row">
+      <div class="header-left">
+        <svg width="30" height="30" viewBox="0 0 38 38">
+          <rect x="3" y="9" width="32" height="20" rx="9" fill="#0d2035" stroke="#22c55e" stroke-width="1.5"/>
+          <line x1="19" y1="9" x2="19" y2="29" stroke="#22c55e" stroke-width="0.8" opacity="0.5"/>
+          <circle cx="19" cy="19" r="5" fill="none" stroke="#22c55e" stroke-width="0.8" opacity="0.5"/>
+          <circle cx="19" cy="19" r="1.5" fill="#22c55e"/>
+        </svg>
+        <div class="header-title">Pool <span>Séries</span> 2026</div>
+      </div>
+      <div class="header-date" id="header-date">Ronde 1</div>
+    </div>
+    <div class="header-sub" id="header-sub"><span class="live-dot"></span>Chargement...</div>
+  </div>
+
+  <div class="section-label">Matchups — Ronde 1</div>
+  <div id="matchups-container">
+    <div class="loading">
+      <div><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
+      <div style="margin-top:12px">Chargement des données...</div>
+    </div>
+  </div>
+  <div class="refresh-btn" onclick="loadData()">↻ Actualiser</div>
+</div>
+
+<!-- DETAIL VIEW -->
+<div id="detail-view" class="detail-view">
+  <div class="back-btn" onclick="showHome()">← Matchups</div>
+  <div id="detail-container"></div>
+</div>
+
+<script>
+const SHEET_ID = '1MaI1PwHvwcKqP316Y-7raHWmmAzVVvMY-dobjAp19jE';
+const SHEET_NAME = 'App_Live';
+const PRED_SHEET = 'PREDICTIONS';
+
+const MATCHUPS = [
+  {num:1, left:'Francis',   right:'Laurent'},
+  {num:2, left:'Jo',        right:'Jose'},
+  {num:3, left:'J-P',       right:'Éric'},
+  {num:4, left:'Yan',       right:'Lionel'},
+  {num:5, left:'Yvon',      right:'Joaquin'},
+  {num:6, left:'Guillaume', right:'Simon'},
+  {num:7, left:'David',     right:'Mario'},
+  {num:8, left:'Marc-André',right:'Dom'}
+];
+
+let appData = {};
+let predData = {};
+
+function indClass(ind) {
+  if (!ind) return 'ind-off';
+  const s = ind.toString();
+  if (s.includes('🟢')) return 'ind-live';
+  if (s.includes('🟡')) return 'ind-pre';
+  if (s.includes('✅')) return 'ind-final';
+  if (s.includes('⛔')) return 'ind-out';
+  return 'ind-off';
+}
+
+async function fetchSheet(sheetName) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+  const res = await fetch(url);
+  const text = await res.text();
+  const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+  const cols = json.table.cols.map(c => c.label);
+  return json.table.rows.map(row => {
+    const obj = {};
+    cols.forEach((col, i) => { obj[col] = row.c[i] ? row.c[i].v : ''; });
+    return obj;
+  });
+}
+
+async function loadData() {
+  try {
+    const rows = await fetchSheet(SHEET_NAME);
+    appData = {};
+    rows.forEach(row => {
+      const m = row['Matchup'];
+      const user = row['User'];
+      if (!m || !user) return;
+      if (!appData[m]) appData[m] = {};
+      if (!appData[m][user]) appData[m][user] = [];
+      appData[m][user].push(row);
+    });
+
+    try {
+      const prows = await fetchSheet(PRED_SHEET);
+      predData = {};
+      prows.forEach(row => {
+        const owner = row['Owner'];
+        if (!owner) return;
+        if (!predData[owner]) predData[owner] = [];
+        predData[owner].push({ team: row['Team'], games: row['Games'] });
+      });
+    } catch(e) {}
+
+    renderHome();
+  } catch(e) {
+    document.getElementById('matchups-container').innerHTML = '<div class="loading">Erreur de chargement. Vérifiez la connexion.</div>';
+  }
+}
+
+function renderHome() {
+  const now = new Date();
+  document.getElementById('header-date').textContent = now.toLocaleDateString('fr-CA', {day:'numeric', month:'short'}) + ' · Ronde 1';
+
+  let liveCount = 0;
+  let preCount = 0;
+  Object.values(appData).forEach(mu => {
+    Object.values(mu).forEach(players => {
+      players.forEach(p => {
+        const ind = (p['Indicator']||'').toString();
+        if (ind.includes('🟢')) liveCount++;
+        if (ind.includes('🟡')) preCount++;
+      });
+    });
+  });
+
+  let subText = '';
+  if (liveCount > 0) subText = `<span class="live-dot"></span>${liveCount} joueur${liveCount>1?'s':''} en direct`;
+  else if (preCount > 0) subText = `<span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;display:inline-block;margin-right:5px;"></span>${preCount} joueur${preCount>1?'s':''} à venir`;
+  else subText = 'Aucun match en cours';
+  document.getElementById('header-sub').innerHTML = subText;
+
+  let html = '';
+  MATCHUPS.forEach(mu => {
+    const mData = appData[mu.num] || {};
+    const leftPlayers = mData[mu.left] || [];
+    const rightPlayers = mData[mu.right] || [];
+    const leftTotal = leftPlayers.length ? leftPlayers[0]['UserTotal'] || 0 : 0;
+    const rightTotal = rightPlayers.length ? rightPlayers[0]['UserTotal'] || 0 : 0;
+    const gap = Math.abs(leftTotal - rightTotal);
+    const tied = leftTotal === rightTotal;
+
+    let liveP=0, preP=0, finalP=0;
+    [...leftPlayers, ...rightPlayers].forEach(p => {
+      const ind = (p['Indicator']||'').toString();
+      if (ind.includes('🟢')) liveP++;
+      else if (ind.includes('🟡')) preP++;
+      else if (ind.includes('✅')) finalP++;
+    });
+
+    const leftLeading = leftTotal > rightTotal;
+    const rightLeading = rightTotal > leftTotal;
+    const gapClass = tied ? 'tied' : leftLeading ? 'pos' : 'neg';
+    const gapText = tied ? 'Égalité' : (leftLeading ? '+' : '-') + gap;
+
+    let pills = '';
+    if (liveP) pills += `<span class="status-pill pill-live">${liveP} LIVE</span>`;
+    if (preP) pills += `<span class="status-pill pill-pre">${preP} PRE</span>`;
+    if (finalP) pills += `<span class="status-pill pill-final">${finalP} FINAL</span>`;
+
+    html += `
+    <div class="matchup-card" onclick="showDetail(${mu.num})">
+      <div class="matchup-num">Matchup ${mu.num}</div>
+      <div class="matchup-row">
+        <div class="team-side">
+          <div class="team-name">${leftLeading ? '🔥 ' : ''}${mu.left}</div>
+          <div class="team-pts ${leftLeading?'leading':'trailing'}">${leftTotal} pts</div>
+        </div>
+        <div class="vs-block">
+          <div class="vs-text">VS</div>
+          <div class="score-gap ${gapClass}">${gapText}</div>
+        </div>
+        <div class="team-side right-side">
+          <div class="team-name">${mu.right}${rightLeading ? ' 🔥' : ''}</div>
+          <div class="team-pts ${rightLeading?'leading':'trailing'}">${rightTotal} pts</div>
+        </div>
+      </div>
+      ${pills ? `<div class="status-bar">${pills}</div>` : ''}
+    </div>`;
+  });
+
+  document.getElementById('matchups-container').innerHTML = html;
+}
+
+function showDetail(matchupNum) {
+  const mu = MATCHUPS.find(m => m.num === matchupNum);
+  const mData = appData[matchupNum] || {};
+  const leftPlayers = mData[mu.left] || [];
+  const rightPlayers = mData[mu.right] || [];
+
+  const leftTotal = leftPlayers.length ? leftPlayers[0]['UserTotal'] || 0 : 0;
+  const rightTotal = rightPlayers.length ? rightPlayers[0]['UserTotal'] || 0 : 0;
+
+  const leftF = leftPlayers.filter(p => p['Position'] === 'F');
+  const leftD = leftPlayers.filter(p => p['Position'] === 'D');
+  const leftG = leftPlayers.filter(p => p['Position'] === 'G');
+  const rightF = rightPlayers.filter(p => p['Position'] === 'F');
+  const rightD = rightPlayers.filter(p => p['Position'] === 'D');
+  const rightG = rightPlayers.filter(p => p['Position'] === 'G');
+
+  const maxF = Math.max(leftF.length, rightF.length);
+  const maxD = Math.max(leftD.length, rightD.length);
+  const maxG = Math.max(leftG.length, rightG.length);
+
+  function playerRow(lp, rp) {
+    const ln = lp ? lp['Player'] : '';
+    const rn = rp ? rp['Player'] : '';
+    const lpts = lp ? (lp['TotalPoints'] || 0) : '';
+    const rpts = rp ? (rp['TotalPoints'] || 0) : '';
+    const lind = lp ? indClass(lp['Indicator']) : 'ind-off';
+    const rind = rp ? indClass(rp['Indicator']) : 'ind-off';
+    const lscored = lpts > 0 ? ' scored' : '';
+    const rscored = rpts > 0 ? ' scored' : '';
+    return `<div class="player-row">
+      <span class="ind ${lind}"></span>
+      <span class="pname">${ln}</span>
+      <span class="ppts-l${lscored}">${lpts}</span>
+      <span class="divider-col"></span>
+      <span class="ppts-r${rscored}">${rpts}</span>
+      <span class="pname-r">${rn}</span>
+      <span class="ind ${rind}"></span>
+    </div>`;
+  }
+
+  let playersPtsL = 0, playersPtsR = 0;
+  [...leftPlayers].forEach(p => playersPtsL += Number(p['TotalPoints']||0));
+  [...rightPlayers].forEach(p => playersPtsR += Number(p['TotalPoints']||0));
+
+  let fRows = '', dRows = '', gRows = '';
+  for (let i=0; i<maxF; i++) fRows += playerRow(leftF[i], rightF[i]);
+  for (let i=0; i<maxD; i++) dRows += playerRow(leftD[i], rightD[i]);
+  for (let i=0; i<maxG; i++) gRows += playerRow(leftG[i], rightG[i]);
+
+  const lPreds = predData[mu.left] || [];
+  const rPreds = predData[mu.right] || [];
+  const maxPreds = Math.max(lPreds.length, rPreds.length, 8);
+  let predRows = '';
+  for (let i=0; i<maxPreds; i++) {
+    const lp = lPreds[i] ? `${lPreds[i].team} | ${lPreds[i].games}` : '';
+    const rp = rPreds[i] ? `${rPreds[i].team} | ${rPreds[i].games}` : '';
+    predRows += `<div class="pred-row"><span class="pred-l">${lp}</span><span class="pred-r">${rp}</span></div>`;
+  }
+
+  const leftWins = leftTotal > rightTotal;
+
+  document.getElementById('detail-container').innerHTML = `
+  <div class="detail-card">
+    <div class="matchup-title-bar">MATCHUP ${matchupNum}</div>
+    <div class="owners-row">
+      <div class="own-l"><div class="own-l-name">${mu.left}</div><div class="own-l-pts">${leftTotal} pts</div></div>
+      <div class="vs-mid">VS</div>
+      <div class="own-r"><div class="own-r-name">${mu.right}</div><div class="own-r-pts">${rightTotal} pts</div></div>
+    </div>
+    <div class="section-bar">⚡ Attaquants</div>
+    ${fRows}
+    <div class="section-bar">🛡 Défenseurs</div>
+    ${dRows}
+    <div class="section-bar">🥅 Gardiens</div>
+    ${gRows}
+    <div class="points-bar">
+      <div class="pts-l">Points joueurs<span>${playersPtsL}</span></div>
+      <div class="pts-r">Points joueurs<span>${playersPtsR}</span></div>
+    </div>
+    <div class="pred-wrap">
+      <div class="pred-title">Prédictions</div>
+      ${predRows}
+    </div>
+    <div class="pred-pts-bar">
+      <div class="pred-pts-l">Points prédictions<span>0</span></div>
+      <div class="pred-pts-r">Points prédictions<span>0</span></div>
+    </div>
+    <div class="total-bar">
+      <div class="total-l">Total<span>${leftTotal}</span></div>
+      <div class="total-r ${leftWins?'':''}">Total<span>${rightTotal}</span></div>
+    </div>
+  </div>`;
+
+  document.getElementById('home-view').style.display = 'none';
+  document.getElementById('detail-view').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function showHome() {
+  document.getElementById('detail-view').style.display = 'none';
+  document.getElementById('home-view').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+loadData();
+setInterval(loadData, 300000);
+</script>
+</body>
+</html>
