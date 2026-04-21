@@ -26,6 +26,11 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .header-date{font-size:11px;color:#b0bec5;background:#0f1923;padding:4px 10px;border-radius:20px;border:.5px solid #2a3a4a;display:inline-block}
 .header-games{margin-top:5px;text-align:right}
 .games-pill{display:inline-block;font-size:11px;color:#22c55e;background:#0d2e1a;padding:3px 10px;border-radius:20px;border:.5px solid #22c55e}
+.install-pill{font-size:11px;color:#22c55e;background:#0d2e1a;padding:4px 10px;border-radius:20px;border:.5px solid #22c55e;cursor:pointer;white-space:nowrap;display:none;user-select:none}
+.install-pill.show{display:inline-block}
+@media (max-width: 900px){
+  .install-pill.show{display:inline-block}
+}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:flex-end;justify-content:center;padding-bottom:20px}
 .modal-overlay.show{display:flex}
 .modal{background:#1a2535;border-radius:16px;padding:24px 20px;margin:0 12px;width:100%;max-width:420px;border:.5px solid #2a3a4a}
@@ -175,8 +180,13 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
         <div class="header-title">Pool <span>Séries</span> 2026</div>
       </div>
       <div class="header-right">
-        <div class="header-date" id="header-date">Ronde 1</div>
-        <div class="header-games" id="header-games"></div>
+        <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+          <div class="install-pill" id="install-pill" onclick="openInstallEntry()">📲 Installer</div>
+          <div>
+            <div class="header-date" id="header-date">Ronde 1</div>
+            <div class="header-games" id="header-games"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -204,6 +214,35 @@ const C = {
   Indicator:10,UserTotal:11,OpponentTotal:12,LeadIndicator:13,Opponent:14
 };
 let predTable=[],liveRows=[],lastRefreshTime='';
+let deferredPrompt = null;
+
+function isMobileDevice(){
+  return /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 900;
+}
+function isIOS(){
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+function updateInstallVisibility(){
+  const pill = document.getElementById('install-pill');
+  if(!pill)return;
+  const hideByChoice = localStorage.getItem('installSeen') === '1';
+  const shouldShow = isMobileDevice() && !isStandalone() && !hideByChoice;
+  pill.classList.toggle('show', shouldShow);
+}
+window.addEventListener('resize', updateInstallVisibility);
+window.addEventListener('appinstalled', () => {
+  localStorage.setItem('installSeen','1');
+  updateInstallVisibility();
+  deferredPrompt = null;
+});
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  updateInstallVisibility();
+});
 
 function showIOS(){
   document.getElementById('ios-steps').style.display='block';
@@ -220,23 +259,44 @@ function showAndroid(){
 function dismissModal(permanent){
   document.getElementById('install-modal').classList.remove('show');
   if(permanent)localStorage.setItem('installSeen','1');
-}
-const isAndroid=/android/i.test(navigator.userAgent);
-if(isAndroid)showAndroid();
-if(!localStorage.getItem('installSeen')){
-  setTimeout(()=>document.getElementById('install-modal').classList.add('show'),1500);
+  updateInstallVisibility();
 }
 
 function openMenu(){document.getElementById('menu-panel').classList.add('open');document.getElementById('menu-overlay').classList.add('open');}
 function closeMenu(){document.getElementById('menu-panel').classList.remove('open');document.getElementById('menu-overlay').classList.remove('open');}
+function openInstallModal(){
+  closeMenu();
+  if(isIOS())showIOS();else showAndroid();
+  document.getElementById('install-modal').classList.add('show');
+}
+async function openInstallEntry(){
+  closeMenu();
+  if(deferredPrompt && !isIOS()){
+    deferredPrompt.prompt();
+    try{
+      const result = await deferredPrompt.userChoice;
+      if(result && result.outcome === 'accepted'){
+        localStorage.setItem('installSeen','1');
+      }
+    }catch(e){}
+    deferredPrompt = null;
+    updateInstallVisibility();
+    return;
+  }
+  openInstallModal();
+}
+
+const isAndroid=/android/i.test(navigator.userAgent);
+if(isAndroid)showAndroid();
+if(!localStorage.getItem('installSeen') && !isStandalone()){
+  setTimeout(()=>document.getElementById('install-modal').classList.add('show'),1500);
+}
 
 function triggerRefresh(){
   const icon=document.getElementById('refresh-icon');
   icon.style.animation='spin 1s linear infinite';
   icon.style.display='inline-block';
-  loadData().then(()=>{
-    icon.style.animation='';
-  });
+  loadData().then(()=>{ icon.style.animation=''; });
 }
 
 function getUserColIndex(u){if(!predTable.length)return -1;return predTable[0].indexOf(u);}
@@ -297,7 +357,6 @@ async function loadData(){
     ]);
     liveRows=allRows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
     predTable=predRaw;
-    // Read games count from LiveStats debug row 3 col 2 (GAMES TODAY value)
     let gameCount=0;
     try{gameCount=Number(lsRaw[2]&&lsRaw[2][1]?lsRaw[2][1]:0);}catch(e){}
     lastRefreshTime=new Date().toLocaleTimeString('fr-CA',{hour:'2-digit',minute:'2-digit'});
@@ -320,6 +379,7 @@ function renderHome(gameCount){
   const gc=gameCount||0;
   document.getElementById('header-games').innerHTML=gc>0?`<span class="games-pill">🏒 ${gc} match${gc>1?'s':''} ce soir</span>`:'';
   document.getElementById('last-refresh-bar').textContent=lastRefreshTime?`Mis à jour à ${lastRefreshTime}`:'';
+  updateInstallVisibility();
 
   let html='';
   MATCHUPS.forEach(mu=>{
@@ -415,16 +475,26 @@ function showDetail(num){
 
   document.getElementById('home-view').style.display='none';
   document.getElementById('detail-view').style.display='block';
+  document.getElementById('bracket-view').style.display='none';
   window.scrollTo(0,0);
 }
 
 function showHome(){
   document.getElementById('detail-view').style.display='none';
+  document.getElementById('bracket-view').style.display='none';
   document.getElementById('home-view').style.display='block';
   window.scrollTo(0,0);
 }
 
-function showBracket(){document.getElementById("home-view").style.display="none";document.getElementById("detail-view").style.display="none";document.getElementById("bracket-view").style.display="block";window.scrollTo(0,0);}
+function showBracket(){
+  document.getElementById("home-view").style.display="none";
+  document.getElementById("detail-view").style.display="none";
+  document.getElementById("bracket-view").style.display="block";
+  closeMenu();
+  window.scrollTo(0,0);
+}
+
+updateInstallVisibility();
 loadData();
 setInterval(loadData,300000);
 </script>
