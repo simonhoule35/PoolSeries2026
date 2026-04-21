@@ -164,10 +164,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   <div class="menu-close" onclick="closeMenu()">✕ Fermer</div>
   <div class="menu-title">Navigation</div>
   <div class="menu-item active" onclick="closeMenu()">Ronde 1</div>
-<div class="menu-title">App</div>
-<div class="menu-item" onclick="openInstallModal()">📲 Installer l'app</div>
-  <div class="menu-title">App</div>
-  <div class="menu-item" onclick="openInstallModal()">📲 Installer l'app</div>
+  <div class="menu-item" onclick="showBracket()">Bracket</div>
 </div>
 
 <div id="home-view">
@@ -224,24 +221,14 @@ function dismissModal(permanent){
   document.getElementById('install-modal').classList.remove('show');
   if(permanent)localStorage.setItem('installSeen','1');
 }
-function openMenu(){
-  document.getElementById('menu-panel').classList.add('open');
-  document.getElementById('menu-overlay').classList.add('open');
-}
-function closeMenu(){
-  document.getElementById('menu-panel').classList.remove('open');
-  document.getElementById('menu-overlay').classList.remove('open');
-}
-function openInstallModal(){
-  closeMenu();
-  document.getElementById('install-modal').classList.add('show');
-}
-
 const isAndroid=/android/i.test(navigator.userAgent);
 if(isAndroid)showAndroid();
 if(!localStorage.getItem('installSeen')){
   setTimeout(()=>document.getElementById('install-modal').classList.add('show'),1500);
 }
+
+function openMenu(){document.getElementById('menu-panel').classList.add('open');document.getElementById('menu-overlay').classList.add('open');}
+function closeMenu(){document.getElementById('menu-panel').classList.remove('open');document.getElementById('menu-overlay').classList.remove('open');}
 
 function triggerRefresh(){
   const icon=document.getElementById('refresh-icon');
@@ -310,6 +297,7 @@ async function loadData(){
     ]);
     liveRows=allRows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
     predTable=predRaw;
+    // Read games count from LiveStats debug row 3 col 2 (GAMES TODAY value)
     let gameCount=0;
     try{gameCount=Number(lsRaw[2]&&lsRaw[2][1]?lsRaw[2][1]:0);}catch(e){}
     lastRefreshTime=new Date().toLocaleTimeString('fr-CA',{hour:'2-digit',minute:'2-digit'});
@@ -436,14 +424,7 @@ function showHome(){
   window.scrollTo(0,0);
 }
 
-function showBracket(){
-  document.getElementById("home-view").style.display="none";
-  document.getElementById("detail-view").style.display="none";
-  document.getElementById("bracket-view").style.display="block";
-  closeMenu();
-  window.scrollTo(0,0);
-}
-
+function showBracket(){document.getElementById("home-view").style.display="none";document.getElementById("detail-view").style.display="none";document.getElementById("bracket-view").style.display="block";window.scrollTo(0,0);}
 loadData();
 setInterval(loadData,300000);
 </script>
