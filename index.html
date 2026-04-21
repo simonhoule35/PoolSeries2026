@@ -28,9 +28,6 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .games-pill{display:inline-block;font-size:11px;color:#22c55e;background:#0d2e1a;padding:3px 10px;border-radius:20px;border:.5px solid #22c55e}
 .install-pill{font-size:11px;color:#22c55e;background:#0d2e1a;padding:4px 10px;border-radius:20px;border:.5px solid #22c55e;cursor:pointer;white-space:nowrap;display:none;user-select:none}
 .install-pill.show{display:inline-block}
-@media (max-width: 900px){
-  .install-pill.show{display:inline-block}
-}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:flex-end;justify-content:center;padding-bottom:20px}
 .modal-overlay.show{display:flex}
 .modal{background:#1a2535;border-radius:16px;padding:24px 20px;margin:0 12px;width:100%;max-width:420px;border:.5px solid #2a3a4a}
@@ -168,7 +165,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 <div class="menu-panel" id="menu-panel">
   <div class="menu-close" onclick="closeMenu()">✕ Fermer</div>
   <div class="menu-title">Navigation</div>
-  <div class="menu-item active" onclick="closeMenu()">Ronde 1</div>
+  <div class="menu-item active" onclick="showHome()">Ronde 1</div>
   <div class="menu-item" onclick="showBracket()">Bracket</div>
 </div>
 
@@ -200,7 +197,11 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   <div class="last-refresh-bar" id="last-refresh-bar"></div>
 </div>
 
-<div id="bracket-view" style="display:none;padding:12px"><div class="back-btn" onclick="showHome()">← Matchups</div><img src="pool-série-bracket.png" style="width:100%;border-radius:12px;margin-top:8px" alt="Bracket"></div>
+<div id="bracket-view" style="display:none;padding:12px">
+  <div class="back-btn" onclick="showHome()">← Matchups</div>
+  <img src="pool-série-bracket.png" style="width:100%;border-radius:12px;margin-top:8px" alt="Bracket">
+</div>
+
 <div id="detail-view" class="detail-view">
   <div class="back-btn" onclick="showHome()">← Matchups</div>
   <div id="detail-container"></div>
@@ -216,27 +217,28 @@ const C = {
 let predTable=[],liveRows=[],lastRefreshTime='';
 let deferredPrompt = null;
 
-function isMobileDevice(){
-  return /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 900;
+function setView(view){
+  document.getElementById('home-view').style.display='none';
+  document.getElementById('detail-view').style.display='none';
+  document.getElementById('bracket-view').style.display='none';
+  document.getElementById(view).style.display = view === 'bracket-view' ? 'block' : (view === 'detail-view' ? 'block' : 'block');
+  closeMenu();
+  window.scrollTo(0,0);
 }
-function isIOS(){
-  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-function isStandalone(){
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-}
+
+function isIOS(){ return /iPhone|iPad|iPod/i.test(navigator.userAgent); }
+function isStandalone(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
 function updateInstallVisibility(){
   const pill = document.getElementById('install-pill');
   if(!pill)return;
   const hideByChoice = localStorage.getItem('installSeen') === '1';
-  const shouldShow = isMobileDevice() && !isStandalone() && !hideByChoice;
+  const shouldShow = !isStandalone() && !hideByChoice;
   pill.classList.toggle('show', shouldShow);
 }
-window.addEventListener('resize', updateInstallVisibility);
 window.addEventListener('appinstalled', () => {
   localStorage.setItem('installSeen','1');
-  updateInstallVisibility();
   deferredPrompt = null;
+  updateInstallVisibility();
 });
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
@@ -473,26 +475,11 @@ function showDetail(num){
     <div class="detail-refresh">↻ ${lastRefreshTime}</div>
   </div>`;
 
-  document.getElementById('home-view').style.display='none';
-  document.getElementById('detail-view').style.display='block';
-  document.getElementById('bracket-view').style.display='none';
-  window.scrollTo(0,0);
+  setView('detail-view');
 }
 
-function showHome(){
-  document.getElementById('detail-view').style.display='none';
-  document.getElementById('bracket-view').style.display='none';
-  document.getElementById('home-view').style.display='block';
-  window.scrollTo(0,0);
-}
-
-function showBracket(){
-  document.getElementById("home-view").style.display="none";
-  document.getElementById("detail-view").style.display="none";
-  document.getElementById("bracket-view").style.display="block";
-  closeMenu();
-  window.scrollTo(0,0);
-}
+function showHome(){ setView('home-view'); }
+function showBracket(){ setView('bracket-view'); }
 
 updateInstallVisibility();
 loadData();
