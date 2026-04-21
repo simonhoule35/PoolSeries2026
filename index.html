@@ -176,15 +176,12 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
         <div class="hamburger" onclick="openMenu()"><span></span><span></span><span></span></div>
         <div class="header-title">Pool <span>Séries</span> 2026</div>
       </div>
-  <div class="header-right">
-  <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end">
-    <div style="font-size:18px;color:#22c55e;cursor:pointer" onclick="openInstallModal()">⬇</div>
-    <div>
-      <div class="header-date" id="header-date">Ronde 1</div>
-      <div class="header-games" id="header-games"></div>
+      <div class="header-right">
+        <div class="header-date" id="header-date">Ronde 1</div>
+        <div class="header-games" id="header-games"></div>
+      </div>
     </div>
   </div>
-</div>
   <div class="section-label">Matchups — Ronde 1</div>
   <div id="matchups-container">
     <div class="loading"><div><span class="ld"></span><span class="ld"></span><span class="ld"></span></div><div style="margin-top:12px">Chargement...</div></div>
@@ -202,90 +199,70 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 </div>
 
 <script>
-
-
- <script>
 const SHEET_ID = '1MaI1PwHvwcKqP316Y-7raHWmmAzVVvMY-dobjAp19jE';
 const C = {
   User:0,Matchup:1,Round:2,Position:3,Player:4,
   LiveG:5,LiveA:6,SeasonG:7,SeasonA:8,TotalPoints:9,
   Indicator:10,UserTotal:11,OpponentTotal:12,LeadIndicator:13,Opponent:14
 };
-
-let predTable = [];
-let liveRows = [];
-let lastRefreshTime = '';
+let predTable=[],liveRows=[],lastRefreshTime='';
 
 function showIOS(){
-  document.getElementById('ios-steps').style.display = 'block';
-  document.getElementById('android-steps').style.display = 'none';
+  document.getElementById('ios-steps').style.display='block';
+  document.getElementById('android-steps').style.display='none';
   document.getElementById('tab-ios').classList.add('active');
   document.getElementById('tab-android').classList.remove('active');
 }
-
 function showAndroid(){
-  document.getElementById('android-steps').style.display = 'block';
-  document.getElementById('ios-steps').style.display = 'none';
+  document.getElementById('android-steps').style.display='block';
+  document.getElementById('ios-steps').style.display='none';
   document.getElementById('tab-android').classList.add('active');
   document.getElementById('tab-ios').classList.remove('active');
 }
-
 function dismissModal(permanent){
   document.getElementById('install-modal').classList.remove('show');
-  if (permanent) localStorage.setItem('installSeen', '1');
+  if(permanent)localStorage.setItem('installSeen','1');
 }
-
 function openMenu(){
   document.getElementById('menu-panel').classList.add('open');
   document.getElementById('menu-overlay').classList.add('open');
 }
-
 function closeMenu(){
   document.getElementById('menu-panel').classList.remove('open');
   document.getElementById('menu-overlay').classList.remove('open');
 }
-
 function openInstallModal(){
   closeMenu();
   document.getElementById('install-modal').classList.add('show');
 }
 
-const isAndroid = /android/i.test(navigator.userAgent);
-if (isAndroid) showAndroid();
-
-if (!localStorage.getItem('installSeen')){
-  setTimeout(() => {
-    document.getElementById('install-modal').classList.add('show');
-  }, 1500);
+const isAndroid=/android/i.test(navigator.userAgent);
+if(isAndroid)showAndroid();
+if(!localStorage.getItem('installSeen')){
+  setTimeout(()=>document.getElementById('install-modal').classList.add('show'),1500);
 }
 
 function triggerRefresh(){
-  const icon = document.getElementById('refresh-icon');
-  icon.style.animation = 'spin 1s linear infinite';
-  icon.style.display = 'inline-block';
-
-  loadData().then(() => {
-    icon.style.animation = '';
+  const icon=document.getElementById('refresh-icon');
+  icon.style.animation='spin 1s linear infinite';
+  icon.style.display='inline-block';
+  loadData().then(()=>{
+    icon.style.animation='';
   });
 }
 
-function getUserColIndex(u){
-  if (!predTable.length) return -1;
-  return predTable[0].indexOf(u);
-}
-
+function getUserColIndex(u){if(!predTable.length)return -1;return predTable[0].indexOf(u);}
 function getUserPicks(u){
-  const col = getUserColIndex(u);
-  if (col < 0) return { est: [], ouest: [], predPts: 0 };
-
-  return {
-    est: [1,2,3,4].map(r => String(predTable[r] && predTable[r][col] ? predTable[r][col] : '')),
-    ouest: [5,6,7,8].map(r => String(predTable[r] && predTable[r][col] ? predTable[r][col] : '')),
-    predPts: Number(predTable[9] && predTable[9][col] ? predTable[9][col] : 0)
+  const col=getUserColIndex(u);
+  if(col<0)return{est:[],ouest:[],predPts:0};
+  return{
+    est:[1,2,3,4].map(r=>String(predTable[r]&&predTable[r][col]?predTable[r][col]:'')),
+    ouest:[5,6,7,8].map(r=>String(predTable[r]&&predTable[r][col]?predTable[r][col]:'')),
+    predPts:Number(predTable[9]&&predTable[9][col]?predTable[9][col]:0)
   };
 }
 
-const MATCHUPS = [
+const MATCHUPS=[
   {num:1,left:'Francis',right:'Laurent',seed:'1v16'},
   {num:2,left:'Jonathan',right:'José',seed:'8v9'},
   {num:3,left:'J-P',right:'Éric',seed:'4v13'},
@@ -297,248 +274,129 @@ const MATCHUPS = [
 ];
 
 function indClass(v){
-  if (!v) return 'ind-off';
-  const s = v.toString();
-  if (s.includes('🟢')) return 'ind-live';
-  if (s.includes('🟡')) return 'ind-pre';
-  if (s.includes('✅')) return 'ind-final';
-  if (s.includes('⛔')) return 'ind-out';
+  if(!v)return 'ind-off';
+  const s=v.toString();
+  if(s.includes('🟢'))return 'ind-live';
+  if(s.includes('🟡'))return 'ind-pre';
+  if(s.includes('✅'))return 'ind-final';
+  if(s.includes('⛔'))return 'ind-out';
   return 'ind-off';
 }
-
 function indHtml(cls){
-  if (cls === 'ind-final') return '<span class="ind ind-final">✓</span>';
-  return '<span class="ind ' + cls + '"></span>';
+  if(cls==='ind-final')return '<span class="ind ind-final">✓</span>';
+  return '<span class="ind '+cls+'"></span>';
 }
 
 async function fetchSheet(name){
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}`;
-  const res = await fetch(url);
-  const text = await res.text();
-  const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-  return json.table.rows.map(r => r.c.map(c => c ? (c.f !== undefined && c.f !== null ? c.f : c.v) : ''));
+  const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}`;
+  const res=await fetch(url);const text=await res.text();
+  const json=JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+  return json.table.rows.map(r=>r.c.map(c=>c?(c.f!==undefined&&c.f!==null?c.f:c.v):''));
 }
-
-async function fetchSheetRange(name, range){
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}&range=${range}&headers=0`;
-  const res = await fetch(url);
-  const text = await res.text();
-  const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-  return json.table.rows.map(r => r.c.map(c => c ? (c.f !== undefined && c.f !== null ? c.f : c.v) : ''));
+async function fetchSheetRange(name,range){
+  const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}&range=${range}&headers=0`;
+  const res=await fetch(url);const text=await res.text();
+  const json=JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+  return json.table.rows.map(r=>r.c.map(c=>c?(c.f!==undefined&&c.f!==null?c.f:c.v):''));
 }
 
 async function loadData(){
   try{
-    const [allRows, predRaw, lsRaw] = await Promise.all([
+    const[allRows,predRaw,lsRaw]=await Promise.all([
       fetchSheet('App_Live'),
-      fetchSheetRange('App_Live', 'Q1:AF10'),
-      fetchSheetRange('LiveStats', 'R1:T4')
+      fetchSheetRange('App_Live','Q1:AF10'),
+      fetchSheetRange('LiveStats','R1:T4')
     ]);
-
-    liveRows = allRows.filter(r => r[3] === 'F' || r[3] === 'D' || r[3] === 'G');
-    predTable = predRaw;
-
-    let gameCount = 0;
-    try{
-      gameCount = Number(lsRaw[2] && lsRaw[2][1] ? lsRaw[2][1] : 0);
-    }catch(e){}
-
-    lastRefreshTime = new Date().toLocaleTimeString('fr-CA', {
-      hour:'2-digit',
-      minute:'2-digit'
-    });
-
+    liveRows=allRows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
+    predTable=predRaw;
+    let gameCount=0;
+    try{gameCount=Number(lsRaw[2]&&lsRaw[2][1]?lsRaw[2][1]:0);}catch(e){}
+    lastRefreshTime=new Date().toLocaleTimeString('fr-CA',{hour:'2-digit',minute:'2-digit'});
     renderHome(gameCount);
   }catch(e){
-    document.getElementById('matchups-container').innerHTML = '<div class="loading">Erreur de chargement.</div>';
+    document.getElementById('matchups-container').innerHTML='<div class="loading">Erreur de chargement.</div>';
   }
 }
 
-function getPlayers(n, u){
-  return liveRows.filter(r => Number(r[C.Matchup]) === n && r[C.User] === u);
-}
-
-function getPredRow(n){
-  const mu = MATCHUPS.find(m => m.num === n);
-  if (!mu) return {left:null,right:null};
-  return {
-    left: getUserPicks(mu.left),
-    right: getUserPicks(mu.right)
-  };
-}
-
+function getPlayers(n,u){return liveRows.filter(r=>Number(r[C.Matchup])===n&&r[C.User]===u);}
+function getPredRow(n){const mu=MATCHUPS.find(m=>m.num===n);if(!mu)return{left:null,right:null};return{left:getUserPicks(mu.left),right:getUserPicks(mu.right)};}
 function getUserTotal(players){
-  if (players.length){
-    const v = Number(players[0][C.UserTotal] || 0);
-    if (v > 0) return v;
-    return players.reduce((s, r) => s + Number(r[C.TotalPoints] || 0), 0);
-  }
+  if(players.length){const v=Number(players[0][C.UserTotal]||0);if(v>0)return v;return players.reduce((s,r)=>s+Number(r[C.TotalPoints]||0),0);}
   return 0;
 }
 
 function renderHome(gameCount){
-  const now = new Date();
+  const now=new Date();
+  document.getElementById('header-date').textContent=now.toLocaleDateString('fr-CA',{day:'numeric',month:'short'})+' · Ronde 1';
+  const gc=gameCount||0;
+  document.getElementById('header-games').innerHTML=gc>0?`<span class="games-pill">🏒 ${gc} match${gc>1?'s':''} ce soir</span>`:'';
+  document.getElementById('last-refresh-bar').textContent=lastRefreshTime?`Mis à jour à ${lastRefreshTime}`:'';
 
-  document.getElementById('header-date').textContent =
-    now.toLocaleDateString('fr-CA', {day:'numeric',month:'short'}) + ' · Ronde 1';
-
-  const gc = gameCount || 0;
-  document.getElementById('header-games').innerHTML =
-    gc > 0 ? `<span class="games-pill">🏒 ${gc} match${gc > 1 ? 's' : ''} ce soir</span>` : '';
-
-  document.getElementById('last-refresh-bar').textContent =
-    lastRefreshTime ? `Mis à jour à ${lastRefreshTime}` : '';
-
-  let html = '';
-
-  MATCHUPS.forEach(mu => {
-    const lP = getPlayers(mu.num, mu.left);
-    const rP = getPlayers(mu.num, mu.right);
-    const lt = getUserTotal(lP);
-    const rt = getUserTotal(rP);
-    const gap = Math.abs(lt - rt);
-    const tied = lt === rt;
-    const ll = lt > rt;
-    const rl = rt > lt;
-
-    const ld = tied ? '' : ll
-      ? `<span style="color:#22c55e;font-size:12px;margin-left:4px">+${gap}</span>`
-      : `<span style="color:#ef4444;font-size:12px;margin-left:4px">-${gap}</span>`;
-
-    const rd = tied ? '' : rl
-      ? `<span style="color:#22c55e;font-size:12px;margin-left:4px">+${gap}</span>`
-      : `<span style="color:#ef4444;font-size:12px;margin-left:4px">-${gap}</span>`;
-
-    let lLive = 0, lPre = 0, rLive = 0, rPre = 0;
-
-    lP.forEach(r => {
-      const ic = indClass(r[C.Indicator]);
-      if (ic === 'ind-live') lLive++;
-      else if (ic === 'ind-pre') lPre++;
-    });
-
-    rP.forEach(r => {
-      const ic = indClass(r[C.Indicator]);
-      if (ic === 'ind-live') rLive++;
-      else if (ic === 'ind-pre') rPre++;
-    });
-
-    let lPills = '', rPills = '';
-    if (lLive) lPills += `<span class="status-pill pill-live">${lLive} LIVE</span>`;
-    if (lPre) lPills += `<span class="status-pill pill-pre">${lPre} PRE</span>`;
-    if (rLive) rPills += `<span class="status-pill pill-live">${rLive} LIVE</span>`;
-    if (rPre) rPills += `<span class="status-pill pill-pre">${rPre} PRE</span>`;
-
-    const hasPills = lPills || rPills;
-    const fL = ll ? '<span class="fire-anim">🔥</span> ' : '';
-    const fR = rl ? ' <span class="fire-anim">🔥</span>' : '';
-
-    html += `<div class="matchup-card" onclick="showDetail(${mu.num})">
+  let html='';
+  MATCHUPS.forEach(mu=>{
+    const lP=getPlayers(mu.num,mu.left),rP=getPlayers(mu.num,mu.right);
+    const lt=getUserTotal(lP),rt=getUserTotal(rP);
+    const gap=Math.abs(lt-rt),tied=lt===rt,ll=lt>rt,rl=rt>lt;
+    const ld=tied?'':ll?`<span style="color:#22c55e;font-size:12px;margin-left:4px">+${gap}</span>`:`<span style="color:#ef4444;font-size:12px;margin-left:4px">-${gap}</span>`;
+    const rd=tied?'':rl?`<span style="color:#22c55e;font-size:12px;margin-left:4px">+${gap}</span>`:`<span style="color:#ef4444;font-size:12px;margin-left:4px">-${gap}</span>`;
+    let lLive=0,lPre=0,rLive=0,rPre=0;
+    lP.forEach(r=>{const ic=indClass(r[C.Indicator]);if(ic==='ind-live')lLive++;else if(ic==='ind-pre')lPre++;});
+    rP.forEach(r=>{const ic=indClass(r[C.Indicator]);if(ic==='ind-live')rLive++;else if(ic==='ind-pre')rPre++;});
+    let lPills='',rPills='';
+    if(lLive)lPills+=`<span class="status-pill pill-live">${lLive} LIVE</span>`;
+    if(lPre)lPills+=`<span class="status-pill pill-pre">${lPre} PRE</span>`;
+    if(rLive)rPills+=`<span class="status-pill pill-live">${rLive} LIVE</span>`;
+    if(rPre)rPills+=`<span class="status-pill pill-pre">${rPre} PRE</span>`;
+    const hasPills=lPills||rPills;
+    const fL=ll?'<span class="fire-anim">🔥</span> ':'';
+    const fR=rl?' <span class="fire-anim">🔥</span>':'';
+    html+=`<div class="matchup-card" onclick="showDetail(${mu.num})">
       <div class="matchup-row">
-        <div>
-          <div class="team-name">${fL}${mu.left}</div>
-          <div class="team-pts ${ll ? 'leading' : rl ? 'trailing' : ''}">${lt} pts${ld}</div>
-        </div>
-        <div class="vs-block">
-          <div class="vs-text">VS</div>
-          <div class="seed-text">${mu.seed}</div>
-        </div>
-        <div class="right-side">
-          <div class="team-name">${mu.right}${fR}</div>
-          <div class="team-pts ${rl ? 'leading' : ll ? 'trailing' : ''}">${rt} pts${rd}</div>
-        </div>
+        <div><div class="team-name">${fL}${mu.left}</div><div class="team-pts ${ll?'leading':rl?'trailing':''}">${lt} pts${ld}</div></div>
+        <div class="vs-block"><div class="vs-text">VS</div><div class="seed-text">${mu.seed}</div></div>
+        <div class="right-side"><div class="team-name">${mu.right}${fR}</div><div class="team-pts ${rl?'leading':ll?'trailing':''}">${rt} pts${rd}</div></div>
       </div>
-      ${hasPills ? `<div class="status-bar"><div class="status-left">${lPills}</div><div class="status-right">${rPills}</div></div>` : ''}
+      ${hasPills?`<div class="status-bar"><div class="status-left">${lPills}</div><div class="status-right">${rPills}</div></div>`:''}
     </div>`;
   });
-
-  document.getElementById('matchups-container').innerHTML =
-    html || '<div class="loading">Aucune donnée.</div>';
+  document.getElementById('matchups-container').innerHTML=html||'<div class="loading">Aucune donnée.</div>';
 }
 
 function showDetail(num){
-  const mu = MATCHUPS.find(m => m.num === num);
-  const lP = getPlayers(num, mu.left);
-  const rP = getPlayers(num, mu.right);
-  const lt = getUserTotal(lP);
-  const rt = getUserTotal(rP);
-  const gap = Math.abs(lt - rt);
-  const ll = lt > rt;
-  const rl = rt > lt;
+  const mu=MATCHUPS.find(m=>m.num===num);
+  const lP=getPlayers(num,mu.left),rP=getPlayers(num,mu.right);
+  const lt=getUserTotal(lP),rt=getUserTotal(rP);
+  const gap=Math.abs(lt-rt),ll=lt>rt,rl=rt>lt;
+  const lF=lP.filter(r=>r[C.Position]==='F'),lD=lP.filter(r=>r[C.Position]==='D'),lG=lP.filter(r=>r[C.Position]==='G');
+  const rF=rP.filter(r=>r[C.Position]==='F'),rD=rP.filter(r=>r[C.Position]==='D'),rG=rP.filter(r=>r[C.Position]==='G');
 
-  const lF = lP.filter(r => r[C.Position] === 'F');
-  const lD = lP.filter(r => r[C.Position] === 'D');
-  const lG = lP.filter(r => r[C.Position] === 'G');
-  const rF = rP.filter(r => r[C.Position] === 'F');
-  const rD = rP.filter(r => r[C.Position] === 'D');
-  const rG = rP.filter(r => r[C.Position] === 'G');
-
-  function pRow(lp, rp){
-    const lpts = lp ? Number(lp[C.TotalPoints] || 0) : 0;
-    const rpts = rp ? Number(rp[C.TotalPoints] || 0) : 0;
-
-    const llg = lp ? Number(lp[C.LiveG] || 0) : 0;
-    const lla = lp ? Number(lp[C.LiveA] || 0) : 0;
-    const rlg = rp ? Number(rp[C.LiveG] || 0) : 0;
-    const rla = rp ? Number(rp[C.LiveA] || 0) : 0;
-
-    const li = lp ? indClass(lp[C.Indicator]) : 'ind-off';
-    const ri = rp ? indClass(rp[C.Indicator]) : 'ind-off';
-
-    const lLS = (li === 'ind-live' && (llg || lla)) ? `<span class="live-stat">+${llg}G ${lla}A</span>` : '';
-    const rLS = (ri === 'ind-live' && (rlg || rla)) ? `<span class="live-stat">+${rlg}G ${rla}A</span>` : '';
-
-    return `<div class="player-row">
-      ${indHtml(li)}
-      <span class="pname">${lp ? lp[C.Player] : ''} ${lLS}</span>
-      <span class="ppts-l${lpts > 0 ? ' scored' : ''}">${lpts}</span>
-      <span class="divider-col"></span>
-      <span class="ppts-r${rpts > 0 ? ' scored' : ''}">${rpts}</span>
-      <span class="pname-r">${rLS} ${rp ? rp[C.Player] : ''}</span>
-      ${indHtml(ri)}
-    </div>`;
+  function pRow(lp,rp){
+    const lpts=lp?Number(lp[C.TotalPoints]||0):0,rpts=rp?Number(rp[C.TotalPoints]||0):0;
+    const llg=lp?Number(lp[C.LiveG]||0):0,lla=lp?Number(lp[C.LiveA]||0):0;
+    const rlg=rp?Number(rp[C.LiveG]||0):0,rla=rp?Number(rp[C.LiveA]||0):0;
+    const li=lp?indClass(lp[C.Indicator]):'ind-off',ri=rp?indClass(rp[C.Indicator]):'ind-off';
+    const lLS=(li==='ind-live'&&(llg||lla))?`<span class="live-stat">+${llg}G ${lla}A</span>`:'';
+    const rLS=(ri==='ind-live'&&(rlg||rla))?`<span class="live-stat">+${rlg}G ${rla}A</span>`:'';
+    return `<div class="player-row">${indHtml(li)}<span class="pname">${lp?lp[C.Player]:''} ${lLS}</span><span class="ppts-l${lpts>0?' scored':''}">${lpts}</span><span class="divider-col"></span><span class="ppts-r${rpts>0?' scored':''}">${rpts}</span><span class="pname-r">${rLS} ${rp?rp[C.Player]:''}</span>${indHtml(ri)}</div>`;
   }
 
-  const mxF = Math.max(lF.length, rF.length);
-  const mxD = Math.max(lD.length, rD.length);
-  const mxG = Math.max(lG.length, rG.length);
+  const mxF=Math.max(lF.length,rF.length),mxD=Math.max(lD.length,rD.length),mxG=Math.max(lG.length,rG.length);
+  let fH='',dH='',gH='';
+  for(let i=0;i<mxF;i++)fH+=pRow(lF[i],rF[i]);
+  for(let i=0;i<mxD;i++)dH+=pRow(lD[i],rD[i]);
+  for(let i=0;i<mxG;i++)gH+=pRow(lG[i],rG[i]);
 
-  let fH = '', dH = '', gH = '';
-  for (let i = 0; i < mxF; i++) fH += pRow(lF[i], rF[i]);
-  for (let i = 0; i < mxD; i++) dH += pRow(lD[i], rD[i]);
-  for (let i = 0; i < mxG; i++) gH += pRow(lG[i], rG[i]);
+  const{left:predL,right:predR}=getPredRow(num);
+  const pPL=predL?predL.predPts:0,pPR=predR?predR.predPts:0;
+  function predPair(arr,i){const l=predL?(predL[arr][i]||''):'',r=predR?(predR[arr][i]||''):'';return `<div class="pred-row"><span class="pred-l">${l}</span><span class="pred-r">${r}</span></div>`;}
+  const predHtml=(predL||predR)?['<div class="section-bar">EST</div>',predPair('est',0),predPair('est',1),predPair('est',2),predPair('est',3),'<div class="section-bar">OUEST</div>',predPair('ouest',0),predPair('ouest',1),predPair('ouest',2),predPair('ouest',3)].join(''):'<div class="pred-row"><span class="pred-l" style="color:#8a9bb0">Aucune prédiction</span></div>';
 
-  const {left:predL, right:predR} = getPredRow(num);
-  const pPL = predL ? predL.predPts : 0;
-  const pPR = predR ? predR.predPts : 0;
+  const ldH=ll?`<span class="diff-win">+${gap}</span>`:rl?`<span class="diff-lose">-${gap}</span>`:'';
+  const rdH=rl?`<span class="diff-win">+${gap}</span>`:ll?`<span class="diff-lose">-${gap}</span>`:'';
+  const fL=ll?'<span class="fire-anim">🔥</span> ':'';
+  const fR=rl?' <span class="fire-anim">🔥</span>':'';
 
-  function predPair(arr, i){
-    const l = predL ? (predL[arr][i] || '') : '';
-    const r = predR ? (predR[arr][i] || '') : '';
-    return `<div class="pred-row"><span class="pred-l">${l}</span><span class="pred-r">${r}</span></div>`;
-  }
-
-  const predHtml = (predL || predR)
-    ? [
-        '<div class="section-bar">EST</div>',
-        predPair('est',0),
-        predPair('est',1),
-        predPair('est',2),
-        predPair('est',3),
-        '<div class="section-bar">OUEST</div>',
-        predPair('ouest',0),
-        predPair('ouest',1),
-        predPair('ouest',2),
-        predPair('ouest',3)
-      ].join('')
-    : '<div class="pred-row"><span class="pred-l" style="color:#8a9bb0">Aucune prédiction</span></div>';
-
-  const ldH = ll ? `<span class="diff-win">+${gap}</span>` : rl ? `<span class="diff-lose">-${gap}</span>` : '';
-  const rdH = rl ? `<span class="diff-win">+${gap}</span>` : ll ? `<span class="diff-lose">-${gap}</span>` : '';
-  const fL = ll ? '<span class="fire-anim">🔥</span> ' : '';
-  const fR = rl ? ' <span class="fire-anim">🔥</span>' : '';
-
-  document.getElementById('detail-container').innerHTML = `<div class="detail-card">
+  document.getElementById('detail-container').innerHTML=`<div class="detail-card">
     <div class="matchup-title-bar">MATCHUP ${num}</div>
     <div class="owners-row">
       <div class="own-l"><div class="own-l-name">${fL}${mu.left}</div><div class="own-l-sub">${lt} pts ${ldH}</div></div>
@@ -548,7 +406,7 @@ function showDetail(num){
     <div class="section-bar">⚡ Attaquants</div>${fH}
     <div class="section-bar">🛡 Défenseurs</div>${dH}
     <div class="section-bar">🥅 Gardiens</div>${gH}
-    <div class="pred-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.pred-toggle-arrow').textContent=this.nextElementSibling.classList.contains('open') ? '▲' : '▼'">
+    <div class="pred-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.pred-toggle-arrow').textContent=this.nextElementSibling.classList.contains('open')?'▲':'▼'">
       <span class="pred-toggle-label">Prédictions</span>
       <span class="pred-toggle-arrow">▼</span>
     </div>
@@ -560,32 +418,33 @@ function showDetail(num){
       </div>
     </div>
     <div class="total-bar">
-      <div class="total-l">Total<span>${lt + pPL}</span></div>
-      <div class="total-r">Total<span>${rt + pPR}</span></div>
+      <div class="total-l">Total<span>${lt+pPL}</span></div>
+      <div class="total-r">Total<span>${rt+pPR}</span></div>
     </div>
     <div class="detail-refresh">↻ ${lastRefreshTime}</div>
   </div>`;
 
-  document.getElementById('home-view').style.display = 'none';
-  document.getElementById('detail-view').style.display = 'block';
-  window.scrollTo(0, 0);
+  document.getElementById('home-view').style.display='none';
+  document.getElementById('detail-view').style.display='block';
+  window.scrollTo(0,0);
 }
 
 function showHome(){
-  document.getElementById('detail-view').style.display = 'none';
-  document.getElementById('bracket-view').style.display = 'none';
-  document.getElementById('home-view').style.display = 'block';
-  window.scrollTo(0, 0);
+  document.getElementById('detail-view').style.display='none';
+  document.getElementById('home-view').style.display='block';
+  window.scrollTo(0,0);
 }
 
 function showBracket(){
-  document.getElementById('home-view').style.display = 'none';
-  document.getElementById('detail-view').style.display = 'none';
-  document.getElementById('bracket-view').style.display = 'block';
+  document.getElementById("home-view").style.display="none";
+  document.getElementById("detail-view").style.display="none";
+  document.getElementById("bracket-view").style.display="block";
   closeMenu();
-  window.scrollTo(0, 0);
+  window.scrollTo(0,0);
 }
 
 loadData();
-setInterval(loadData, 300000);
+setInterval(loadData,300000);
 </script>
+</body>
+</html>
