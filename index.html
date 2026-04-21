@@ -204,6 +204,17 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 </div>
 
 <script>
+
+
+  <script>
+
+function openInstallModal(){
+  closeMenu();
+  document.getElementById('install-modal').classList.add('show');
+}
+
+
+</script>
 const SHEET_ID = '1MaI1PwHvwcKqP316Y-7raHWmmAzVVvMY-dobjAp19jE';
 const C = {
   User:0,Matchup:1,Round:2,Position:3,Player:4,
@@ -439,7 +450,4 @@ setInterval(loadData,300000);
 </html>
 
 
-function openInstallModal(){
-  closeMenu();
-  document.getElementById('install-modal').classList.add('show');
-}
+
