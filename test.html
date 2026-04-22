@@ -26,7 +26,8 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .header-date{font-size:11px;color:#b0bec5;background:#0f1923;padding:4px 10px;border-radius:20px;border:.5px solid #2a3a4a;display:inline-block}
 .header-games{margin-top:5px;text-align:right}
 .games-pill{display:inline-block;font-size:11px;color:#22c55e;background:#0d2e1a;padding:3px 10px;border-radius:20px;border:.5px solid #22c55e}
-.install-pill{font-size:11px;color:#22c55e;background:#0d2e1a;padding:4px 10px;border-radius:20px;border:.5px solid #22c55e;cursor:pointer;white-space:nowrap;user-select:none;display:inline-block}
+.install-pill{font-size:11px;color:#22c55e;background:#0d2e1a;padding:4px 10px;border-radius:20px;border:.5px solid #22c55e;cursor:pointer;white-space:nowrap;display:none;user-select:none}
+.install-pill.show{display:inline-block}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:flex-end;justify-content:center;padding-bottom:20px}
 .modal-overlay.show{display:flex}
 .modal{background:#1a2535;border-radius:16px;padding:24px 20px;margin:0 12px;width:100%;max-width:420px;border:.5px solid #2a3a4a}
@@ -44,9 +45,13 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .modal-skip{text-align:center;font-size:11px;color:#4a5a6a;margin-top:10px;cursor:pointer}
 .menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100}
 .menu-overlay.open{display:block}
-.menu-panel{position:fixed;top:0;left:-260px;width:260px;height:100%;background:#1a2535;z-index:101;transition:left 0.25s ease;padding:20px 0;border-right:.5px solid #2a3a4a}
+.menu-panel{position:fixed;top:0;left:-260px;width:260px;height:100%;background:#1a2535;z-index:101;transition:left 0.25s ease;padding:0 0 20px;border-right:.5px solid #2a3a4a;overflow-y:auto}
 .menu-panel.open{left:0}
-.menu-title{font-size:13px;color:#8a9bb0;padding:8px 20px 4px;text-transform:uppercase;letter-spacing:.5px}
+.menu-brand{padding:20px 20px 14px;border-bottom:.5px solid #2a3a4a;background:#16202d;text-align:center}
+.menu-brand-logo{width:68px;height:68px;border-radius:14px;display:block;margin:0 auto 10px}
+.menu-brand-title{font-size:16px;font-weight:700;color:#e8eaed;line-height:1.15}
+.menu-brand-title span{color:#22c55e}
+.menu-title{font-size:13px;color:#8a9bb0;padding:12px 20px 6px;text-transform:uppercase;letter-spacing:.5px}
 .menu-item{font-size:15px;color:#e8eaed;padding:12px 20px;cursor:pointer;border-bottom:.5px solid #0f1923}
 .menu-item:active{background:#0f1923}
 .menu-item.active{color:#22c55e}
@@ -58,7 +63,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .team-name{font-size:18px;font-weight:500}
 .team-pts{font-size:14px;margin-top:2px}
 .team-pts.leading{color:#22c55e;font-weight:500}
-.team-pts.trailing{color:#ef4444}
+.team-pts.trailing{color:#ff5f67;font-weight:500}
 .vs-block{text-align:center}
 .vs-text{font-size:17px;font-weight:600;color:#b0bec5}
 .seed-text{font-size:10px;color:#7a8fa0;margin-top:2px}
@@ -85,26 +90,64 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .own-r-name{font-size:18px;font-weight:600;color:#e8eaed}
 .own-r-sub{font-size:13px;color:#86efac;margin-top:2px}
 .diff-win{color:#22c55e}
-.diff-lose{color:#ef4444}
+.diff-lose{color:#ff5f67}
 .vs-mid{background:#0d1f2e;padding:10px 8px;font-size:11px;color:#8a9bb0;display:flex;align-items:center;justify-content:center}
 .section-bar{background:#0d1f2e;text-align:center;font-size:9px;color:#b0bec5;padding:4px;text-transform:uppercase;letter-spacing:.5px}
-.player-row{display:grid;grid-template-columns:10px 1fr 40px 10px 40px 1fr 10px;gap:3px;align-items:center;padding:5px 8px;border-bottom:.5px solid #0f1923}
+.player-row{display:grid;grid-template-columns:10px minmax(0,1fr) 40px 10px 40px minmax(0,1fr) 10px;gap:3px;align-items:center;padding:5px 8px;border-bottom:.5px solid #0f1923}
 .ind{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .ind-live{background:#22c55e}
 .ind-pre{background:#ffd700}
 .ind-final{background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#22c55e;width:10px;height:10px}
-.ind-off{background:#cc2222}
-.ind-out{background:#cc2222}
-.pname{font-size:12px;color:#e8eaed;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pname-r{font-size:12px;color:#e8eaed;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ind-off{background:#ef4444}
+.ind-out{background:#ef4444}
+.pname{font-size:12px;color:#e8eaed;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;min-width:0}
+.pname-r{font-size:12px;color:#e8eaed;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;min-width:0}
 .ppts-l{font-size:13px;color:#8a9bb0;text-align:right}
 .ppts-r{font-size:13px;color:#8a9bb0}
 .ppts-l.scored{color:#22c55e;font-weight:500}
 .ppts-r.scored{color:#22c55e;font-weight:500}
-.live-stat{font-size:10px;color:#86efac;font-weight:500}
-.live-stat.flash{animation:statGlow 1.5s ease-in-out 2}
-@keyframes statGlow{0%{color:#86efac;text-shadow:none}40%{color:#ccffdd;text-shadow:0 0 4px #86efac}60%{color:#ccffdd;text-shadow:0 0 4px #86efac}100%{color:#86efac;text-shadow:none}}
 .divider-col{width:1px;background:#2a3a4a;height:14px;margin:0 auto}
+
+/* LOCKED LIVE PILLS */
+.live-pill{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  padding:2px 7px;
+  height:18px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:800;
+  line-height:1;
+  white-space:nowrap;
+  border:1px solid rgba(34,197,94,.38);
+  background:rgba(34,197,94,.14);
+  color:#86efac;
+  overflow:visible;
+  flex-shrink:0;
+}
+.live-pill.green{border-color:rgba(34,197,94,.38);background:rgba(34,197,94,.14);color:#86efac}
+.live-pill.red{border-color:rgba(239,68,68,.62);background:rgba(220,38,38,.18);color:#f87171}
+.live-pill.gold{border-color:rgba(234,179,8,.78);background:rgba(234,179,8,.18);color:#fde047}
+.live-pill .static,
+.live-pill .single-now,
+.live-pill .multi-now{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;height:100%}
+.live-pill .value-slot{position:relative;width:24px;height:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;z-index:3}
+.live-pill .value-slot.wide{width:auto;min-width:24px;padding:0 1px}
+.live-pill .old,
+.live-pill .new{position:absolute;left:0;top:0;width:100%;height:10px;display:flex;align-items:center;justify-content:center;line-height:10px;text-align:center}
+.live-pill .live-ring{position:absolute;inset:-4px;border-radius:999px;border:2px solid #bef264;opacity:0;pointer-events:none;z-index:1}
+.live-pill.run .live-ring{animation:liveChipHalo 1.8s ease-out forwards}
+@keyframes liveChipHalo{0%{opacity:0}20%{opacity:1;box-shadow:0 0 12px #bef264}100%{opacity:0;transform:scale(1.10)}}
+.live-pill.run .old{animation:liveOldUp 1.5s cubic-bezier(.22,.8,.24,1) forwards}
+.live-pill.run .new{animation:liveNewUp 1.5s cubic-bezier(.22,.8,.24,1) forwards}
+@keyframes liveOldUp{from{transform:translateY(0);opacity:1}to{transform:translateY(-10px);opacity:0}}
+@keyframes liveNewUp{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+.live-inline{display:inline-flex;align-items:center;vertical-align:middle;gap:0}
+.live-inline.left{margin-left:10px}
+.live-inline.right{margin-right:10px}
 .detail-refresh{font-size:12px;color:#4a5a6a;text-align:center;padding:6px}
 .total-bar{display:grid;grid-template-columns:1fr 1fr;margin-top:6px}
 .total-l{background:#14532d;padding:7px 12px;font-size:11px;color:#86efac;border-right:2px solid #0f1923}
@@ -162,12 +205,14 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 
 <div class="menu-overlay" id="menu-overlay" onclick="closeMenu()"></div>
 <div class="menu-panel" id="menu-panel">
+  <div class="menu-brand">
+    <img class="menu-brand-logo" src="icon.png" alt="Pool Séries">
+    <div class="menu-brand-title">Pool <span>Séries</span><br>2026</div>
+  </div>
   <div class="menu-close" onclick="closeMenu()">✕ Fermer</div>
   <div class="menu-title">Navigation</div>
   <div class="menu-item active" onclick="showHome()">Ronde 1</div>
   <div class="menu-item" onclick="showBracket()">Bracket</div>
-  <div class="menu-title">App</div>
-  <div class="menu-item" onclick="openInstallEntry()">📲 Installer l'app</div>
 </div>
 
 <div id="home-view">
@@ -179,7 +224,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
       </div>
       <div class="header-right">
         <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap">
-          <div class="install-pill" onclick="openInstallEntry()">📲 Installer</div>
+          <div class="install-pill" id="install-pill" onclick="openInstallEntry()">📲 Installer</div>
           <div>
             <div class="header-date" id="header-date">Ronde 1</div>
             <div class="header-games" id="header-games"></div>
@@ -213,29 +258,42 @@ const SHEET_ID = '1MaI1PwHvwcKqP316Y-7raHWmmAzVVvMY-dobjAp19jE';
 const C = {
   User:0,Matchup:1,Round:2,Position:3,Player:4,
   LiveG:5,LiveA:6,SeasonG:7,SeasonA:8,TotalPoints:9,
-  Indicator:10,UserTotal:11,OpponentTotal:12,LeadIndicator:13,Opponent:14
+  Indicator:10,UserTotal:11,OpponentTotal:12,LeadIndicator:13,Opponent:14,
+  GoalieW:15,GoalieL:16,GoalieSO:17,GoalieGoal:18,GoalieAssist:19
 };
 let predTable=[],liveRows=[],lastRefreshTime='';
 let deferredPrompt = null;
+let prevLiveSnapshot = {};
+let currentLiveSnapshot = {};
+let currentDetailMatchup = null;
 
 function setView(view){
   document.getElementById('home-view').style.display='none';
   document.getElementById('detail-view').style.display='none';
   document.getElementById('bracket-view').style.display='none';
-  document.getElementById(view).style.display='block';
+  document.getElementById(view).style.display = 'block';
   closeMenu();
   window.scrollTo(0,0);
 }
 
 function isIOS(){ return /iPhone|iPad|iPod/i.test(navigator.userAgent); }
-
+function isStandalone(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
+function updateInstallVisibility(){
+  const pill = document.getElementById('install-pill');
+  if(!pill)return;
+  const hideByChoice = localStorage.getItem('installSeen') === '1';
+  const shouldShow = !isStandalone() && !hideByChoice;
+  pill.classList.toggle('show', shouldShow);
+}
+window.addEventListener('appinstalled', () => {
+  localStorage.setItem('installSeen','1');
+  deferredPrompt = null;
+  updateInstallVisibility();
+});
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-});
-window.addEventListener('appinstalled', () => {
-  deferredPrompt = null;
-  localStorage.setItem('installSeen','1');
+  updateInstallVisibility();
 });
 
 function showIOS(){
@@ -253,6 +311,7 @@ function showAndroid(){
 function dismissModal(permanent){
   document.getElementById('install-modal').classList.remove('show');
   if(permanent)localStorage.setItem('installSeen','1');
+  updateInstallVisibility();
 }
 
 function openMenu(){document.getElementById('menu-panel').classList.add('open');document.getElementById('menu-overlay').classList.add('open');}
@@ -266,7 +325,14 @@ async function openInstallEntry(){
   closeMenu();
   if(deferredPrompt && !isIOS()){
     deferredPrompt.prompt();
-    try{ await deferredPrompt.userChoice; }catch(e){}
+    try{
+      const result = await deferredPrompt.userChoice;
+      if(result && result.outcome === 'accepted'){
+        localStorage.setItem('installSeen','1');
+      }
+    }catch(e){}
+    deferredPrompt = null;
+    updateInstallVisibility();
     return;
   }
   openInstallModal();
@@ -274,6 +340,9 @@ async function openInstallEntry(){
 
 const isAndroid=/android/i.test(navigator.userAgent);
 if(isAndroid)showAndroid();
+if(!localStorage.getItem('installSeen') && !isStandalone()){
+  setTimeout(()=>document.getElementById('install-modal').classList.add('show'),1500);
+}
 
 function triggerRefresh(){
   const icon=document.getElementById('refresh-icon');
@@ -318,6 +387,99 @@ function indHtml(cls){
   return '<span class="ind '+cls+'"></span>';
 }
 
+function makeLiveKey(row){
+  return [row[C.Matchup],row[C.User],row[C.Position],row[C.Player]].join('|');
+}
+
+function n(v){
+  const num = Number(v || 0);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function buildLiveSnapshot(rows){
+  const out = {};
+  rows.forEach(r=>{
+    const key = makeLiveKey(r);
+    out[key] = {
+      pos: r[C.Position],
+      g: n(r[C.LiveG]),
+      a: n(r[C.LiveA]),
+      w: n(r[C.GoalieW]),
+      l: n(r[C.GoalieL]),
+      so: n(r[C.GoalieSO]),
+      gg: n(r[C.GoalieGoal]),
+      ga: n(r[C.GoalieAssist]),
+      indicator: indClass(r[C.Indicator])
+    };
+  });
+  return out;
+}
+
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function buildAnimatedSlot(newText, oldText, animate){
+  if(!animate){
+    return `<span class="value-slot wide"><span class="single-now">${esc(newText)}</span></span>`;
+  }
+  return `<span class="value-slot wide"><span class="old">${esc(oldText)}</span><span class="new">${esc(newText)}</span></span>`;
+}
+
+function buildSkaterPill(row, side){
+  const key = makeLiveKey(row);
+  const cur = currentLiveSnapshot[key] || {g:0,a:0,indicator:'ind-off'};
+  const prev = prevLiveSnapshot[key] || cur;
+  if(cur.indicator !== 'ind-live') return '';
+  if(!cur.g && !cur.a) return '';
+
+  const gChanged = !!prevLiveSnapshot[key] && cur.g !== prev.g;
+  const aChanged = !!prevLiveSnapshot[key] && cur.a !== prev.a;
+  const shouldAnimate = gChanged || aChanged;
+
+  const leftSlot = gChanged ? `<span class="value-slot"><span class="old">+${prev.g}G</span><span class="new">+${cur.g}G</span></span>` : `<span class="value-slot"><span class="single-now">+${cur.g}G</span></span>`;
+  const rightSlot = aChanged ? `<span class="value-slot"><span class="old">+${prev.a}A</span><span class="new">+${cur.a}A</span></span>` : `<span class="value-slot"><span class="single-now">+${cur.a}A</span></span>`;
+
+  return `<span class="live-inline ${side==='r'?'right':'left'}"><span class="live-pill green ${shouldAnimate?'run':''}"><span class="live-ring"></span>${leftSlot}<span class="static">|</span>${rightSlot}</span></span>`;
+}
+
+function buildGoaliePill(row, side){
+  const key = makeLiveKey(row);
+  const cur = currentLiveSnapshot[key] || {w:0,l:0,so:0,ga:0,gg:0,indicator:'ind-off'};
+  const prev = prevLiveSnapshot[key] || cur;
+  if(cur.indicator !== 'ind-live' && cur.indicator !== 'ind-final') return '';
+
+  const stats = [];
+  if(cur.w > 0) stats.push({type:'W', val:cur.w, prev:prev.w});
+  if(cur.l > 0) stats.push({type:'L', val:cur.l, prev:prev.l});
+  if(cur.so > 0) stats.push({type:'SO', val:cur.so, prev:prev.so});
+  if(cur.ga > 0) stats.push({type:'A', val:cur.ga, prev:prev.ga});
+  if(cur.gg > 0) stats.push({type:'G', val:cur.gg, prev:prev.gg});
+  if(!stats.length) return '';
+
+  const priority = {W:1,L:1,SO:2,A:3,G:4};
+  stats.sort((a,b)=>priority[a.type]-priority[b.type]);
+  const selected = stats.slice(0,3);
+
+  let colorClass = 'green';
+  if(selected.some(s=>s.type==='SO')) colorClass = 'gold';
+  else if(selected.some(s=>s.type==='L')) colorClass = 'red';
+
+  const hasPrev = !!prevLiveSnapshot[key];
+  const shouldAnimate = hasPrev && selected.some(s=>s.val !== s.prev);
+  const currentText = selected.map(s=>`+${s.val}${s.type}`).join(' | ');
+  const prevText = selected.map(s=>`+${s.prev}${s.type}`).join(' | ');
+  const slot = buildAnimatedSlot(currentText, prevText, shouldAnimate);
+
+  return `<span class="live-inline ${side==='r'?'right':'left'}"><span class="live-pill ${colorClass} ${shouldAnimate?'run':''}"><span class="live-ring"></span>${slot}</span></span>`;
+}
+
+function buildLiveInline(row, side){
+  if(!row) return '';
+  if(row[C.Position] === 'G') return buildGoaliePill(row, side);
+  return buildSkaterPill(row, side);
+}
+
 async function fetchSheet(name){
   const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}`;
   const res=await fetch(url);const text=await res.text();
@@ -338,12 +500,17 @@ async function loadData(){
       fetchSheetRange('App_Live','Q1:AF10'),
       fetchSheetRange('LiveStats','R1:T4')
     ]);
+    prevLiveSnapshot = currentLiveSnapshot;
     liveRows=allRows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
+    currentLiveSnapshot = buildLiveSnapshot(liveRows);
     predTable=predRaw;
     let gameCount=0;
     try{gameCount=Number(lsRaw[2]&&lsRaw[2][1]?lsRaw[2][1]:0);}catch(e){}
     lastRefreshTime=new Date().toLocaleTimeString('fr-CA',{hour:'2-digit',minute:'2-digit'});
     renderHome(gameCount);
+    if(currentDetailMatchup !== null && document.getElementById('detail-view').style.display === 'block'){
+      renderDetail(currentDetailMatchup);
+    }
   }catch(e){
     document.getElementById('matchups-container').innerHTML='<div class="loading">Erreur de chargement.</div>';
   }
@@ -362,14 +529,15 @@ function renderHome(gameCount){
   const gc=gameCount||0;
   document.getElementById('header-games').innerHTML=gc>0?`<span class="games-pill">🏒 ${gc} match${gc>1?'s':''} ce soir</span>`:'';
   document.getElementById('last-refresh-bar').textContent=lastRefreshTime?`Mis à jour à ${lastRefreshTime}`:'';
+  updateInstallVisibility();
 
   let html='';
   MATCHUPS.forEach(mu=>{
     const lP=getPlayers(mu.num,mu.left),rP=getPlayers(mu.num,mu.right);
     const lt=getUserTotal(lP),rt=getUserTotal(rP);
     const gap=Math.abs(lt-rt),tied=lt===rt,ll=lt>rt,rl=rt>lt;
-    const ld=tied?'':ll?`<span style="color:#22c55e;font-size:12px;margin-left:4px">+${gap}</span>`:`<span style="color:#ef4444;font-size:12px;margin-left:4px">-${gap}</span>`;
-    const rd=tied?'':rl?`<span style="color:#22c55e;font-size:12px;margin-left:4px">+${gap}</span>`:`<span style="color:#ef4444;font-size:12px;margin-left:4px">-${gap}</span>`;
+    const ld=tied?'':ll?`<span style="color:#22c55e;font-size:12px;margin-left:4px">+${gap}</span>`:`<span style="color:#ff5f67;font-size:12px;margin-left:4px">-${gap}</span>`;
+    const rd=tied?'':rl?`<span style="color:#22c55e;font-size:12px;margin-left:4px">+${gap}</span>`:`<span style="color:#ff5f67;font-size:12px;margin-left:4px">-${gap}</span>`;
     let lLive=0,lPre=0,rLive=0,rPre=0;
     lP.forEach(r=>{const ic=indClass(r[C.Indicator]);if(ic==='ind-live')lLive++;else if(ic==='ind-pre')lPre++;});
     rP.forEach(r=>{const ic=indClass(r[C.Indicator]);if(ic==='ind-live')rLive++;else if(ic==='ind-pre')rPre++;});
@@ -393,7 +561,7 @@ function renderHome(gameCount){
   document.getElementById('matchups-container').innerHTML=html||'<div class="loading">Aucune donnée.</div>';
 }
 
-function showDetail(num){
+function renderDetail(num){
   const mu=MATCHUPS.find(m=>m.num===num);
   const lP=getPlayers(num,mu.left),rP=getPlayers(num,mu.right);
   const lt=getUserTotal(lP),rt=getUserTotal(rP);
@@ -403,12 +571,10 @@ function showDetail(num){
 
   function pRow(lp,rp){
     const lpts=lp?Number(lp[C.TotalPoints]||0):0,rpts=rp?Number(rp[C.TotalPoints]||0):0;
-    const llg=lp?Number(lp[C.LiveG]||0):0,lla=lp?Number(lp[C.LiveA]||0):0;
-    const rlg=rp?Number(rp[C.LiveG]||0):0,rla=rp?Number(rp[C.LiveA]||0):0;
     const li=lp?indClass(lp[C.Indicator]):'ind-off',ri=rp?indClass(rp[C.Indicator]):'ind-off';
-    const lLS=(li==='ind-live'&&(llg||lla))?`<span class="live-stat">+${llg}G ${lla}A</span>`:'';
-    const rLS=(ri==='ind-live'&&(rlg||rla))?`<span class="live-stat">+${rlg}G ${rla}A</span>`:'';
-    return `<div class="player-row">${indHtml(li)}<span class="pname">${lp?lp[C.Player]:''} ${lLS}</span><span class="ppts-l${lpts>0?' scored':''}">${lpts}</span><span class="divider-col"></span><span class="ppts-r${rpts>0?' scored':''}">${rpts}</span><span class="pname-r">${rLS} ${rp?rp[C.Player]:''}</span>${indHtml(ri)}</div>`;
+    const lLiveHtml = lp ? buildLiveInline(lp,'l') : '';
+    const rLiveHtml = rp ? buildLiveInline(rp,'r') : '';
+    return `<div class="player-row">${indHtml(li)}<span class="pname">${lp?esc(lp[C.Player]):''}${lLiveHtml}</span><span class="ppts-l${lpts>0?' scored':''}">${lpts}</span><span class="divider-col"></span><span class="ppts-r${rpts>0?' scored':''}">${rpts}</span><span class="pname-r">${rLiveHtml}${rp?esc(rp[C.Player]):''}</span>${indHtml(ri)}</div>`;
   }
 
   const mxF=Math.max(lF.length,rF.length),mxD=Math.max(lD.length,rD.length),mxG=Math.max(lG.length,rG.length);
@@ -419,7 +585,7 @@ function showDetail(num){
 
   const{left:predL,right:predR}=getPredRow(num);
   const pPL=predL?predL.predPts:0,pPR=predR?predR.predPts:0;
-  function predPair(arr,i){const l=predL?(predL[arr][i]||''):'',r=predR?(predR[arr][i]||''):'';return `<div class="pred-row"><span class="pred-l">${l}</span><span class="pred-r">${r}</span></div>`;}
+  function predPair(arr,i){const l=predL?(predL[arr][i]||''):'',r=predR?(predR[arr][i]||''):'';return `<div class="pred-row"><span class="pred-l">${esc(l)}</span><span class="pred-r">${esc(r)}</span></div>`;}
   const predHtml=(predL||predR)?['<div class="section-bar">EST</div>',predPair('est',0),predPair('est',1),predPair('est',2),predPair('est',3),'<div class="section-bar">OUEST</div>',predPair('ouest',0),predPair('ouest',1),predPair('ouest',2),predPair('ouest',3)].join(''):'<div class="pred-row"><span class="pred-l" style="color:#8a9bb0">Aucune prédiction</span></div>';
 
   const ldH=ll?`<span class="diff-win">+${gap}</span>`:rl?`<span class="diff-lose">-${gap}</span>`:'';
@@ -454,13 +620,21 @@ function showDetail(num){
     </div>
     <div class="detail-refresh">↻ ${lastRefreshTime}</div>
   </div>`;
+}
 
+function showDetail(num){
+  currentDetailMatchup = num;
+  renderDetail(num);
   setView('detail-view');
 }
 
-function showHome(){ setView('home-view'); }
+function showHome(){
+  currentDetailMatchup = null;
+  setView('home-view');
+}
 function showBracket(){ setView('bracket-view'); }
 
+updateInstallVisibility();
 loadData();
 setInterval(loadData,300000);
 </script>
