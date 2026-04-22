@@ -174,20 +174,35 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .ld{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin:0 3px;animation:b 1.2s infinite}
 .ld:nth-child(2){animation-delay:.2s}.ld:nth-child(3){animation-delay:.4s}
 @keyframes b{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
-  .vs-img{
-    width:42px;
-    height:42px;
-    objectif-fit:contain;
-    display:block;
-    margin:0 auto;
-    opacity:95;
-    filter:drop-shadow(0 0 4px rgba(34,197,94,.35));}
 
     .vs-block{
       display:flex;
       align-items:center;
       justify-content:center;
     }
+
+  .vs-pill{
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid #22c55e;
+  color:#eafff3;
+  font-weight:700;
+  font-size:12px;
+  text-align:center;
+  letter-spacing:0.5px;
+
+  box-shadow:
+    0 0 4px rgba(34,197,94,0.4),
+    0 0 8px rgba(34,197,94,0.25);
+
+  background:rgba(34,197,94,0.04);
+}
+
+.vs-block{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
     .right-side{
       display:flex;
       flex-direction:column;
@@ -574,7 +589,7 @@ function renderHome(gameCount){
       <div class="matchup-row">
         <div><div class="team-name">${fL}${mu.left}</div><div class="team-pts ${ll?'leading':rl?'trailing':''}">${lt} pts${ld}</div></div
         <div class="vs-block">
-          <img src="vs.png" class="vs-img">
+          <div class="vs-pill">VS</div>
         </div>
         <div class="right-side"><div class="team-name">${mu.right}${fR}</div><div class="team-pts ${rl?'leading':ll?'trailing':''}">${rt} pts${rd}</div></div>
       </div>
