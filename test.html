@@ -128,15 +128,8 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .ind-out{background:#cc2222}
   @media (hover: none) and (pointer: coarse)
   {
-    .ind-off,
-    .ind-out{
-      width:10px;
-      height:10px;
-      border-radius:50%
-      background:#2a0000:
-      border:2px solid #000000;
-      box-shadow;none;
-    }
+    .ind-off{background:#cc2222}
+      .ind-out{background:#cc2222}
   }
   
 
@@ -488,8 +481,10 @@ function indHtml(cls){
 
   if(cls === 'ind-off' || cls === 'ind-out'){
     return `
-      <svg class="ind-svg" viewBox="0 0 10 10" aria-hidden="true">
-        <circle cx="5" cy="5" r="4" fill="#3a0000" stroke="#280000" stroke-width="1.2"></circle>
+      <svg class="ind-svg" viewBox="0 0 10 12 12">
+        <circle cx="6" cy="6" r="5" fill="#7c1f1f" stroke="#2a0a0a"
+        stroke=#2a0a0a"
+        stroke-width="1.5">
       </svg>
     `;
   }
