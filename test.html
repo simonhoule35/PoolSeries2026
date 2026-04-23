@@ -65,7 +65,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .team-pts.leading{color:#22c55e;font-weight:500}
 .team-pts.trailing{color:#ef4444}
 
-.vs-block{display:flex;align-items:center;justify-content:center;width:60px;justify-self:center}
+.vs-block{display:flex;align-items:center;justify-content:center;width:60px}
 .vs-pill{
   display:inline-flex;
   align-items:center;
@@ -121,8 +121,8 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   border-bottom:.5px solid #0f1923;
 }
 .ind{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.ind-live{background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,.8),0 0 10px rgba(34,197,94,.35)}
-.ind-pre{background:#ffd700;box-shadow:0 0 6px rgba(255,215,0,.75),0 0 10px rgba(255,215,0,.28)}
+.ind-live{background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,.8)}
+.ind-pre{background:#ffd700;box-shadow:0 0 6px rgba(255,215,0,.7)}
 .ind-final{background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#22c55e;width:10px;height:10px}
 .ind-off{background:#cc2222}
 .ind-out{background:#cc2222}
@@ -135,16 +135,12 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   white-space:nowrap;
   overflow:hidden;
 }
+.player-cell.right{
+  justify-content:flex-end;
+}
 .player-cell .stat-pill{
   margin-left:2px;
   flex-shrink:0;
-}
-.player-cell.right .stat-pill{
-  margin-left:0;
-  margin-right:2px;
-}
-.player-cell.right{
-  justify-content:flex-end;
 }
 .pname,
 .pname-r{
@@ -178,7 +174,6 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   line-height:1;
   transition:transform .15s ease;
   gap:2px;
-  max-width:100%;
 }
 .stat-pill.normal{
   min-height:20px;
@@ -190,10 +185,10 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   min-height:18px;
   padding:2px 5px;
   font-size:9.5px;
-  letter-spacing:-.1px;
+  letter-spacing:0;
 }
 .stat-pill.tight{
-  letter-spacing:-0.2px;
+  letter-spacing:-.2px;
 }
 .stat-pill.pos{
   background:rgba(34,197,94,.10);
@@ -211,33 +206,32 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   color:#fde047;
 }
 .stat-pill.anim{
-  animation:pillSweepIn .65s cubic-bezier(.18,.82,.28,1), pillHalo .85s ease-out;
-  will-change:transform,opacity,box-shadow;
+  animation:pillEnter .65s cubic-bezier(.2,.8,.3,1), pillGlow .85s ease-out;
 }
-@keyframes pillSweepIn{
-  0%{transform:translateX(-14px) scale(.88);opacity:0}
-  55%{transform:translateX(0) scale(1.06);opacity:1}
+@keyframes pillEnter{
+  0%{transform:translateX(-12px) scale(.88);opacity:0}
+  55%{transform:translateX(2px) scale(1.04);opacity:1}
   100%{transform:translateX(0) scale(1);opacity:1}
 }
-@keyframes pillHalo{
+@keyframes pillGlow{
   0%{box-shadow:0 0 0 rgba(34,197,94,0)}
-  35%{box-shadow:0 0 10px rgba(34,197,94,.48),0 0 18px rgba(34,197,94,.22)}
+  35%{box-shadow:0 0 10px rgba(34,197,94,.48),0 0 20px rgba(34,197,94,.24)}
   100%{box-shadow:none}
 }
 .stat-pill.gold.anim{
-  animation:pillSweepIn .65s cubic-bezier(.18,.82,.28,1), pillHaloGold .85s ease-out;
+  animation:pillEnter .65s cubic-bezier(.2,.8,.3,1), pillGlowGold .85s ease-out;
 }
-@keyframes pillHaloGold{
+@keyframes pillGlowGold{
   0%{box-shadow:0 0 0 rgba(234,179,8,0)}
-  35%{box-shadow:0 0 10px rgba(234,179,8,.46),0 0 18px rgba(234,179,8,.22)}
+  35%{box-shadow:0 0 10px rgba(234,179,8,.48),0 0 20px rgba(234,179,8,.24)}
   100%{box-shadow:none}
 }
 .stat-pill.neg.anim{
-  animation:pillSweepIn .65s cubic-bezier(.18,.82,.28,1), pillHaloRed .85s ease-out;
+  animation:pillEnter .65s cubic-bezier(.2,.8,.3,1), pillGlowRed .85s ease-out;
 }
-@keyframes pillHaloRed{
+@keyframes pillGlowRed{
   0%{box-shadow:0 0 0 rgba(239,68,68,0)}
-  35%{box-shadow:0 0 10px rgba(239,68,68,.38),0 0 16px rgba(239,68,68,.18)}
+  35%{box-shadow:0 0 10px rgba(239,68,68,.38),0 0 18px rgba(239,68,68,.2)}
   100%{box-shadow:none}
 }
 
