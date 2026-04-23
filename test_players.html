@@ -580,10 +580,10 @@ async function
 
     // 🔥 REAL DATA (THIS WAS MISSING)
     const season = "20252026";
-    const type = 2; // playoffs
+    const type = 3; // playoffs
 
-    const logRes = await fetch(
-      `https://api-web.nhle.com/v1/player/${playerId}/game-log/${season}/${type}`  );
+    const logRes = await 
+      fetch(`https://api-web.nhle.com/v1/player/${playerId}/game-log/now`);
 
     if(logRes.ok){
 
