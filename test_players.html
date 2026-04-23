@@ -567,7 +567,7 @@ async function
 
       apiData.fullName =
         (data.firstName && data.lastName)
-        ? ${data.firstName.default} ${data.lastName.default}
+        ? `${data.firstName.default} ${data.lastName.default}`
         : meta.displayName;
 
       apiData.positionCode = data.position || meta.position;
