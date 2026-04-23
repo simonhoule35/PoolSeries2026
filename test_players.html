@@ -67,6 +67,12 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .player-name-full{font-size:20px;font-weight:700;color:#e8eaed;line-height:1.1}
 .player-sub{margin-top:4px;font-size:12px;color:#8a9bb0}
 
+/* player card state pill */
+.player-title-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.player-state-pill{display:inline-flex;align-items:center;justify-content:center;min-height:16px;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:700;line-height:1;border:1px solid;white-space:nowrap}
+.player-state-live{color:#86efac;background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.40)}
+.player-state-pre{color:#fde047;background:rgba(234,179,8,.11);border-color:rgba(234,179,8,.42)}
+
 /* compact stats */
 .stats-section{margin-top:10px}
 .section-title{font-size:11px;color:#aeb9c8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
@@ -129,7 +135,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   <div class="player-row">
     <span class="ind ind-live"></span>
     <span class="player-cell">
-      <span class="pname" onclick="openPlayerCard('8478402','skater', {displayName:'Connor McDavid', today:{g:2,a:1}, team:'EDM', position:'C', number:'97'})">McDavid, C</span>
+      <span class="pname" onclick="openPlayerCard('8478402','skater', {displayName:'Connor McDavid', today:{g:2,a:1}, team:'EDM', position:'C', number:'97', status:'LIVE'})">McDavid, C</span>
       <span class="stat-pill normal pos" id="row-pill-1">+2G | +1A</span>
     </span>
     <span class="ppts-l scored">2</span>
@@ -137,7 +143,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
     <span class="ppts-r">0</span>
     <span class="player-cell right">
       <span class="stat-pill normal pos" id="row-pill-2">+1G</span>
-      <span class="pname-r" onclick="openPlayerCard('8471214','skater', {displayName:'Auston Matthews', today:{g:1,a:0}, team:'TOR', position:'C', number:'34'})">Matthews, A</span>
+      <span class="pname-r" onclick="openPlayerCard('8471214','skater', {displayName:'Auston Matthews', today:{g:1,a:0}, team:'TOR', position:'C', number:'34', status:'LIVE'})">Matthews, A</span>
     </span>
     <span class="ind ind-live"></span>
   </div>
@@ -145,7 +151,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   <div class="player-row">
     <span class="ind ind-final"></span>
     <span class="player-cell">
-      <span class="pname" onclick="openPlayerCard('8477424','goalie', {displayName:'Juuse Saros', today:{w:1,l:0,so:1,a:0,g:1}, team:'NSH', position:'G', number:'74'})">Saros, J</span>
+      <span class="pname" onclick="openPlayerCard('8477424','goalie', {displayName:'Juuse Saros', today:{w:1,l:0,so:1,a:0,g:1}, team:'NSH', position:'G', number:'74', status:'PRE'})">Saros, J</span>
       <span class="stat-pill small gold tight" id="row-pill-3">+1W|+1SO|+1G</span>
     </span>
     <span class="ppts-l scored">6</span>
@@ -194,6 +200,17 @@ const TEAM_LOGOS = {
 
 function getTeamLogo(abbrev){ return TEAM_LOGOS[abbrev] || ''; }
 function getHeadshotUrl(playerId){ return `https://assets.nhle.com/mugs/nhl/20242025/${playerId}.png`; }
+function getHeadshotFallback(){ return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect width='120' height='120' rx='18' fill='%230d1f2e'/><circle cx='60' cy='44' r='22' fill='%2364788f'/><path d='M24 104c6-20 22-30 36-30s30 10 36 30' fill='%2364788f'/></svg>"; }
+function buildPlayerStatePill(status){
+  var s = String(status || "").trim().toUpperCase();
+  if (s === "LIVE") return '<span class="player-state-pill player-state-live">LIVE</span>';
+  if (s === "PRE") return '<span class="player-state-pill player-state-pre">PRE</span>';
+  return "";
+}
+function getStatusFromMeta(meta){
+  var s = String((meta && meta.status) || "").trim().toUpperCase();
+  return (s === "LIVE" || s === "PRE") ? s : "";
+}
 
 function buildTodayPill(data, playerType){
   if(playerType === 'goalie'){
@@ -271,12 +288,14 @@ function renderSkaterCard(apiData, meta){
   const playoff = apiData.playoffTotals || {g:0,a:0,p:0};
   const todayPill = buildTodayPill(meta.today || {g:0,a:0}, 'skater');
   const recentGames = apiData.recentGames || [];
+  const statusPill = buildPlayerStatePill(getStatusFromMeta(meta));
+  const fallback = getHeadshotFallback();
 
   return `
     <div class="sheet-header">
-      <img class="headshot" src="${headshot}" alt="${name}">
+      <img class="headshot" src="${headshot}" alt="${name}" onerror="this.onerror=null;this.src='${fallback}'">
       <div class="player-meta">
-        <div class="name-line">${logo ? `<img class="team-logo" src="${logo}" alt="${team}">` : ``}<div class="player-name-full">${name}</div></div>
+        <div class="name-line">${logo ? `<img class="team-logo" src="${logo}" alt="${team}">` : ``}<div class="player-title-row"><div class="player-name-full">${name}</div>${statusPill}</div></div>
         <div class="player-sub">${position}${number ? ' • #' + number : ''}${team ? ' • ' + team : ''}</div>
       </div>
     </div>
@@ -306,12 +325,14 @@ function renderGoalieCard(apiData, meta){
   const playoff = apiData.playoffTotals || {w:0,l:0,so:0,g:0,a:0};
   const todayPill = buildTodayPill(meta.today || {w:0,l:0,so:0,a:0,g:0}, 'goalie');
   const recentGames = apiData.recentGames || [];
+  const statusPill = buildPlayerStatePill(getStatusFromMeta(meta));
+  const fallback = getHeadshotFallback();
 
   return `
     <div class="sheet-header">
-      <img class="headshot" src="${headshot}" alt="${name}">
+      <img class="headshot" src="${headshot}" alt="${name}" onerror="this.onerror=null;this.src='${fallback}'">
       <div class="player-meta">
-        <div class="name-line">${logo ? `<img class="team-logo" src="${logo}" alt="${team}">` : ``}<div class="player-name-full">${name}</div></div>
+        <div class="name-line">${logo ? `<img class="team-logo" src="${logo}" alt="${team}">` : ``}<div class="player-title-row"><div class="player-name-full">${name}</div>${statusPill}</div></div>
         <div class="player-sub">${position}${number ? ' • #' + number : ''}${team ? ' • ' + team : ''}</div>
       </div>
     </div>
