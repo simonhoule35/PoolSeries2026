@@ -528,26 +528,120 @@ function extractRecentGames(data, playerType){
     };
   });
 }
+async function 
+<script>
 async function fetchPlayerCardData(playerId, playerType, meta){
-  if(!playerId) return { playerId:'', fullName: meta.displayName || '', positionCode: meta.position || '', sweaterNumber: meta.number || '', currentTeamAbbrev: meta.team || '', playoffTotals: playerType === 'goalie' ? {w:0,l:0,so:0,g:0,a:0} : {g:0,a:0,p:0}, recentGames:[] };
+
+  if(!playerId){
+    return {
+      playerId:'',
+      fullName: meta.displayName || '',
+      positionCode: meta.position || '',
+      currentTeamAbbrev: meta.team || '',
+      playoffTotals: playerType === 'goalie'
+        ? {w:0,l:0,so:0,g:0,a:0}
+        : {g:0,a:0,p:0},
+      recentGames:[]
+    };
+  }
+
   if(playerCache[playerId]) return playerCache[playerId];
-  let apiData = { playerId, fullName: meta.displayName || '', positionCode: meta.position || '', sweaterNumber: meta.number || '', currentTeamAbbrev: meta.team || '', playoffTotals: playerType === 'goalie' ? {w:0,l:0,so:0,g:0,a:0} : {g:0,a:0,p:0}, recentGames:[] };
+
+  let apiData = {
+    playerId,
+    fullName: meta.displayName || '',
+    positionCode: meta.position || '',
+    currentTeamAbbrev: meta.team || '',
+    playoffTotals: playerType === 'goalie'
+      ? {w:0,l:0,so:0,g:0,a:0}
+      : {g:0,a:0,p:0},
+    recentGames:[]
+  };
+
   try{
-    const res = await fetch(`https://api-web.nhle.com/v1/player/${playerId}/landing`);
+
+    // ✅ BASIC INFO (name, team, photo)
+    const res = await fetch(https://api-web.nhle.com/v1/player/${playerId}/landing);
     if(res.ok){
       const data = await res.json();
-      apiData.fullName = (data.firstName && data.lastName) ? `${data.firstName.default} ${data.lastName.default}` : (data.fullName && data.fullName.default) || apiData.fullName;
-      apiData.positionCode = data.position || apiData.positionCode;
-      apiData.sweaterNumber = data.sweaterNumber || apiData.sweaterNumber;
-      apiData.currentTeamAbbrev = (data.currentTeamAbbrev && data.currentTeamAbbrev.default) || data.currentTeamAbbrev || apiData.currentTeamAbbrev;
-      apiData.headshot = data.headshot || apiData.headshot;
-      apiData.playoffTotals = extractPlayoffTotals(data, playerType);
-      apiData.recentGames = extractRecentGames(data, playerType);
+
+      apiData.fullName =
+        (data.firstName && data.lastName)
+        ? ${data.firstName.default} ${data.lastName.default}
+        : meta.displayName;
+
+      apiData.positionCode = data.position || meta.position;
+      apiData.currentTeamAbbrev =
+        (data.currentTeamAbbrev && data.currentTeamAbbrev.default)
+        || meta.team;
+
+      apiData.headshot = data.headshot;
     }
-  }catch(e){}
+
+    // 🔥 REAL DATA (THIS WAS MISSING)
+    const season = "20232024";
+    const type = 2; // playoffs
+
+    const logRes = await fetch(
+      https://api-web.nhle.com/v1/player/${playerId}/game-log/${season}/${type}
+    );
+
+    if(logRes.ok){
+
+      const logData = await logRes.json();
+
+      if(Array.isArray(logData.gameLog)){
+
+        let gTotal = 0;
+        let aTotal = 0;
+
+        apiData.recentGames = logData.gameLog.slice(0,5).map(g => {
+
+          const goals = Number(g.goals || 0);
+          const assists = Number(g.assists || 0);
+
+          gTotal += goals;
+          aTotal += assists;
+
+          return {
+            date: g.gameDate || '',
+            opp: g.opponentAbbrev || '',
+            logo: g.opponentAbbrev
+              ? getTeamLogoCard(g.opponentAbbrev)
+              : '',
+            loc: g.homeRoad === 'HOME' ? 'vs' : '@',
+            g: goals,
+            a: assists,
+            p: goals + assists,
+            total: goals + assists
+          };
+        });
+
+        // ✅ FINAL TOTALS
+        apiData.playoffTotals = playerType === 'goalie'
+          ? {
+              w: 0,
+              l: 0,
+              so: 0,
+              g: gTotal,
+              a: aTotal
+            }
+          : {
+              g: gTotal,
+              a: aTotal,
+              p: gTotal + aTotal
+            };
+      }
+    }
+
+  }catch(e){
+    console.log("Player fetch error", e);
+  }
+
   playerCache[playerId] = apiData;
   return apiData;
 }
+</script>
 function showSheetLoading(){
   document.getElementById('sheet-body').innerHTML = `
     <div class="sheet-loading">
