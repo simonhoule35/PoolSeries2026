@@ -561,7 +561,7 @@ async function
   try{
 
     // ✅ BASIC INFO (name, team, photo)
-    const res = await fetch(https://api-web.nhle.com/v1/player/${playerId}/landing);
+    const res = await fetch(`https://api-web.nhle.com/v1/player/${playerId}/landing`);
     if(res.ok){
       const data = await res.json();
 
@@ -583,8 +583,7 @@ async function
     const type = 2; // playoffs
 
     const logRes = await fetch(
-      https://api-web.nhle.com/v1/player/${playerId}/game-log/${season}/${type}
-    );
+      `https://api-web.nhle.com/v1/player/${playerId}/game-log/${season}/${type}`  );
 
     if(logRes.ok){
 
