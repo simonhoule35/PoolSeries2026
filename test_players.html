@@ -528,35 +528,40 @@ function extractRecentGames(data, playerType){
     };
   });
 }
-
-async function 
+  
+async function
   fetchPlayerCardData(playerId, playerType, meta){
+  if(!playerId || playerCache[playerId]) return playerCache[playerId] || {playerId:'',fullName:meta.displayName||'',positionCode:meta.position||'',currentTeamAbbrev:meta.team||'',playoffTotals:playerType==='G'?{w:0,l:0,so:0,g:0,a:0}:{g:0,a:0,p:0},recentGames:[]};
+  
+  let apiData = {playerId, fullName: meta.displayName||'', positionCode: meta.position||'', currentTeamAbbrev: meta.team||'', playoffTotals: playerType==='G'?{w:0,l:0,so:0,g:0,a:0}:{g:0,a:0,p:0}, recentGames:[]};
+  
+  try{
+    const res = await fetch(https://api-web.nhle.com/v1/player/${playerId}/landing);
+    if(res.ok){ const d = await res.json(); apiData.fullName = ${d.firstName?.default||''} ${d.lastName?.default||''}.trim() || meta.displayName; apiData.positionCode = d.position || meta.position; apiData.currentTeamAbbrev = d.currentTeamAbbrev?.default || meta.team; apiData.headshot = d.headshot; }
 
-  if(!playerId){
-    return {
-      playerId:'',
-      fullName: meta.displayName || '',
-      positionCode: meta.position || '',
-      currentTeamAbbrev: meta.team || '',
-      playoffTotals: playerType === 'goalie'
-        ? {w:0,l:0,so:0,g:0,a:0}
-        : {g:0,a:0,p:0},
-      recentGames:[]
-    };
-  }
-
-  if(playerCache[playerId]) return playerCache[playerId];
-
-  let apiData = {
-    playerId,
-    fullName: meta.displayName || '',
-    positionCode: meta.position || '',
-    currentTeamAbbrev: meta.team || '',
-    playoffTotals: playerType === 'goalie'
-      ? {w:0,l:0,so:0,g:0,a:0}
-      : {g:0,a:0,p:0},
-    recentGames:[]
-  };
+    const season = ${new Date().getFullYear()-1}${new Date().getFullYear()}; // "20252026"
+    let logRes = await fetch(https://api-web.nhle.com/v1/player/${playerId}/game-log/${season}/2); // 2 = Playoffs
+    if(!logRes.ok || !(await logRes.json())?.gameLog?.length){
+      logRes = await fetch(https://api-web.nhle.com/v1/player/${playerId}/game-log/${season}/1); // 1 = Regular Season fallback
+    }
+    
+    if(logRes.ok){
+      const logData = await logRes.json();
+      if(Array.isArray(logData.gameLog)){
+        let gT=0,aT=0,wT=0,lT=0,soT=0;
+        logData.gameLog.forEach(g => {
+          const gl = Number(g.goals||0), as = Number(g.assists||0);
+          gT+=gl; aT+=as;
+          if(playerType==='G'){ if(g.decision==='W')wT++; if(g.decision==='L')lT++; if(g.shutout)soT++; }
+        });
+        apiData.recentGames = logData.gameLog.slice(0,5).map(g=>({date:g.gameDate||'',opp:g.opponentAbbrev||'',logo:getTeamLogoCard(g.opponentAbbrev||''),loc:g.homeRoad==='HOME'?'vs':'@',g:Number(g.goals||0),a:Number(g.assists||0),p:Number(g.goals||0)+Number(g.assists||0),total:Number(g.goals||0)+Number(g.assists||0)}));
+        apiData.playoffTotals = playerType==='G' ? {w:wT,l:lT,so:soT,g:gT,a:aT} : {g:gT,a:aT,p:gT+aT};
+      }
+    }
+  }catch(e){ console.log("Fetch error",e); }
+  playerCache[playerId] = apiData;
+  return apiData;
+}
 
   try{
 
@@ -580,7 +585,7 @@ async function
 
     // 🔥 REAL DATA (THIS WAS MISSING)
     const season = "20252026";
-    const type = 3; // playoffs
+    const type = 2; // playoffs
 
     const logRes = await 
       fetch(`https://api-web.nhle.com/v1/player/${playerId}/game-log//20252026/3`);
