@@ -463,56 +463,68 @@ function renderRecentGoalieGames(rows){
 }
 function getNested(obj, path){ return path.reduce((o,k)=> (o && o[k] !== undefined && o[k] !== null) ? o[k] : null, obj); }
 function extractPlayoffTotals(data, playerType){
-  const candidates = [
-    getNested(data,['featuredStats','currentPlayoffs','subSeason']),
-    getNested(data,['featuredStats','currentPlayoffs']),
-    getNested(data,['currentPlayoffs']),
-    getNested(data,['playerStats','currentPlayoffs'])
-  ].filter(Boolean);
-  const stat = candidates.find(c => typeof c === 'object') || {};
+
+  // NHL API ACTUAL WORKING PATHS
+  const stat =
+    data.featuredStats?.regularSeason ||
+    data.featuredStats?.playoffs ||
+    data.careerTotals?.playoffs ||
+    {};
+
   if(playerType === 'goalie'){
     return {
-      w: Number(stat.wins ?? stat.w ?? 0),
-      l: Number(stat.losses ?? stat.l ?? 0),
-      so: Number(stat.shutouts ?? stat.so ?? 0),
-      g: Number(stat.goals ?? stat.g ?? 0),
-      a: Number(stat.assists ?? stat.a ?? 0)
+      w: Number(stat.wins || 0),
+      l: Number(stat.losses || 0),
+      so: Number(stat.shutouts || 0),
+      g: Number(stat.goals || 0),
+      a: Number(stat.assists || 0)
     };
   }
+
   return {
-    g: Number(stat.goals ?? stat.g ?? 0),
-    a: Number(stat.assists ?? stat.a ?? 0),
-    p: Number(stat.points ?? stat.p ?? 0)
+    g: Number(stat.goals || 0),
+    a: Number(stat.assists || 0),
+    p: Number(stat.points || 0)
   };
 }
+
+
 function extractRecentGames(data, playerType){
-  const rows = data.last5Games || data.recentGames || data.last10Games || [];
-  if(!Array.isArray(rows)) return [];
-  return rows.slice(0,5).map(g => {
-    const opp = g.opponentAbbrev || g.opp || g.opponent || '';
-    const loc = g.homeRoad ? (String(g.homeRoad).toLowerCase().startsWith('h') ? 'vs' : '@') : (g.isHome ? 'vs' : '@');
+
+  const games = data.recentGames || data.gameLog || [];
+
+  if(!Array.isArray(games) || !games.length) return [];
+
+  return games.slice(0,5).map(g => {
+
+    const opp = g.opponentAbbrev || g.opponent || '';
+    const loc = g.homeRoad === 'HOME' ? 'vs' : '@';
+
     if(playerType === 'goalie'){
       return {
-        date: g.gameDate || g.date || '',
+        date: g.gameDate || '',
         opp,
         logo: opp ? getTeamLogoCard(opp) : '',
         loc,
-        result: g.decision || g.result || '',
-        sv: g.saves ?? g.saveShots ?? '',
-        svPct: g.savePct ?? g.savePercentage ?? '',
-        extra: (Number(g.shutouts || 0) > 0 ? 'SO' : (Number(g.assists || 0) > 0 ? `+${g.assists}A` : '—'))
+        result: g.decision || '',
+        sv: g.saves || '',
+        svPct: g.savePct || '',
+        extra: g.shutout ? 'SO' : '—'
       };
     }
-    const goals = Number(g.goals ?? 0), assists = Number(g.assists ?? 0), points = Number(g.points ?? (goals+assists));
+
+    const goals = Number(g.goals || 0);
+    const assists = Number(g.assists || 0);
+
     return {
-      date: g.gameDate || g.date || '',
+      date: g.gameDate || '',
       opp,
       logo: opp ? getTeamLogoCard(opp) : '',
       loc,
       g: goals,
       a: assists,
-      p: points,
-      total: points
+      p: goals + assists,
+      total: goals + assists
     };
   });
 }
