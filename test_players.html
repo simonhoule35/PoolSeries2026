@@ -67,11 +67,31 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .player-name-full{font-size:20px;font-weight:700;color:#e8eaed;line-height:1.1}
 .player-sub{margin-top:4px;font-size:12px;color:#8a9bb0}
 
-/* player state pill */
+/* player status pill */
 .player-title-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.player-state-pill{display:inline-flex;align-items:center;justify-content:center;min-height:16px;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:700;line-height:1;border:1px solid;white-space:nowrap}
-.player-state-live{color:#86efac;background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.40)}
-.player-state-pre{color:#fde047;background:rgba(234,179,8,.11);border-color:rgba(234,179,8,.42)}
+.player-state-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:16px;
+  padding:1px 6px;
+  border-radius:999px;
+  font-size:9px;
+  font-weight:700;
+  line-height:1;
+  border:1px solid;
+  white-space:nowrap;
+}
+.player-state-live{
+  color:#86efac;
+  background:rgba(34,197,94,.10);
+  border-color:rgba(34,197,94,.40);
+}
+.player-state-pre{
+  color:#fde047;
+  background:rgba(234,179,8,.11);
+  border-color:rgba(234,179,8,.42);
+}
 
 /* compact stats */
 .stats-section{margin-top:10px}
@@ -199,10 +219,20 @@ const TEAM_LOGOS = {
 };
 
 function getTeamLogo(abbrev){ return TEAM_LOGOS[abbrev] || ''; }
-function getHeadshotUrl(playerId){ return `https://assets.nhle.com/mugs/nhl/20242025/${playerId}.png`; }
-function getHeadshotFallback(){ return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect width='120' height='120' rx='18' fill='%230d1f2e'/><circle cx='60' cy='42' r='22' fill='%2364788f'/><path d='M22 104c8-18 23-28 38-28s30 10 38 28' fill='%2364788f'/></svg>"; }
-function getHeadshotSrc(apiData, meta){ return apiData.headshot || getHeadshotUrl(apiData.playerId || meta.playerId); }
-function handleHeadshotError(img){ if (!img.dataset.fallbackApplied) { img.dataset.fallbackApplied = "1"; img.src = getHeadshotFallback(); } }
+function getHeadshotUrl(playerId){
+  return `https://assets.nhle.com/mugs/nhl/latest/${playerId}.png`;
+}
+function getHeadshotFallback(){
+  return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect width='120' height='120' rx='18' fill='%230d1f2e'/><circle cx='60' cy='42' r='22' fill='%2364788f'/><path d='M22 104c8-18 23-28 38-28s30 10 38 28' fill='%2364788f'/></svg>";
+}
+function getHeadshotSrc(apiData, meta){
+  return apiData.headshot || getHeadshotUrl(apiData.playerId || meta.playerId);
+}
+function handleHeadshotError(img){
+  if (img.dataset.fallbackApplied) return;
+  img.dataset.fallbackApplied = "1";
+  img.src = getHeadshotFallback();
+}
 function buildPlayerStatePill(status){
   var s = String(status || "").trim().toUpperCase();
   if (s === "LIVE") return '<span class="player-state-pill player-state-live">LIVE</span>';
@@ -296,7 +326,13 @@ function renderSkaterCard(apiData, meta){
     <div class="sheet-header">
       <img class="headshot" src="${headshot}" alt="${name}" onerror="handleHeadshotError(this)">
       <div class="player-meta">
-        <div class="name-line">${logo ? `<img class="team-logo" src="${logo}" alt="${team}">` : ``}<div class="player-title-row"><div class="player-name-full">${name}</div>${statusPill}</div></div>
+        <div class="name-line">
+          ${logo ? `<img class="team-logo" src="${logo}" alt="${team}">` : ``}
+          <div class="player-title-row">
+            <div class="player-name-full">${name}</div>
+            ${statusPill}
+          </div>
+        </div>
         <div class="player-sub">${position}${number ? ' • #' + number : ''}${team ? ' • ' + team : ''}</div>
       </div>
     </div>
@@ -332,502 +368,13 @@ function renderGoalieCard(apiData, meta){
     <div class="sheet-header">
       <img class="headshot" src="${headshot}" alt="${name}" onerror="handleHeadshotError(this)">
       <div class="player-meta">
-        <div class="name-line">${logo ? `<img class="team-logo" src="${logo}" alt="${team}">` : ``}<div class="player-title-row"><div class="player-name-full">${name}</div>${statusPill}</div></div>
-        <div class="player-sub">${position}${number ? ' • #' + number : ''}${team ? ' • ' + team : ''}</div>
-      </div>
-    </div>
-    <div class="stats-section">
-      <div class="section-title">2026 Playoffs Stats</div>
-      <div class="compact-stats-grid goalie">
-        <div class="compact-stat-box"><div class="v">${playoff.w}</div><div class="l">W</div></div>
-        <div class="compact-stat-box"><div class="v">${playoff.l}</div><div class="l">L</div></div>
-        <div class="compact-stat-box"><div class="v">${playoff.so}</div><div class="l">SO</div></div>
-        <div class="compact-stat-box"><div class="v">${playoff.g}</div><div class="l">G</div></div>
-        <div class="compact-stat-box"><div class="v">${playoff.a}</div><div class="l">A</div></div>
-      </div>
-    </div>
-    <div class="today-block">
-      <div class="section-title">Today</div>
-      <div class="today-row"><div class="today-label">Today:</div>${todayPill || `<div class="no-activity">No activity</div>`}</div>
-    </div>
-    ${renderRecentGoalieGames(recentGames)}
-  `;
-}
-
-async function fetchPlayerCardData(playerId, playerType, meta){
-  if(playerCache[playerId]) return playerCache[playerId];
-  let apiData = {
-    playerId,
-    fullName: meta.displayName || '',
-    positionCode: meta.position || '',
-    sweaterNumber: meta.number || '',
-    currentTeamAbbrev: meta.team || '',
-    playoffTotals: playerType === 'goalie' ? {w:0,l:0,so:0,g:0,a:0} : {g:0,a:0,p:0},
-    recentGames:[]
-  };
-
-  try{
-    const res = await fetch(`https://api-web.nhle.com/v1/player/${playerId}/landing`);
-    if(res.ok){
-      const data = await res.json();
-      apiData.fullName = (data.firstName && data.lastName) ? `${data.firstName.default} ${data.lastName.default}` : (data.fullName && data.fullName.default) || apiData.fullName;
-      apiData.positionCode = data.position || apiData.positionCode;
-      apiData.sweaterNumber = data.sweaterNumber || apiData.sweaterNumber;
-      apiData.currentTeamAbbrev = (data.currentTeamAbbrev && data.currentTeamAbbrev.default) || data.currentTeamAbbrev || apiData.currentTeamAbbrev;
-      apiData.headshot = data.headshot || apiData.headshot;
-    }
-  }catch(e){}
-
-  if(playerType === 'goalie'){
-    const goalieMock = {
-      '8477424': {
-        playoffTotals:{w:3,l:1,so:1,g:0,a:1},
-        recentGames:[
-          {date:'May 24', loc:'vs', opp:'DAL', logo:getTeamLogo('DAL'), result:'W', sv:'31', svPct:'.939', extra:'SO'},
-          {date:'May 22', loc:'vs', opp:'DAL', logo:getTeamLogo('DAL'), result:'L', sv:'27', svPct:'.871', extra:'—'},
-          {date:'May 20', loc:'@', opp:'DAL', logo:getTeamLogo('DAL'), result:'W', sv:'34', svPct:'.944', extra:'+1A'},
-          {date:'May 18', loc:'@', opp:'DAL', logo:getTeamLogo('DAL'), result:'W', sv:'29', svPct:'.906', extra:'—'},
-          {date:'May 16', loc:'vs', opp:'DAL', logo:getTeamLogo('DAL'), result:'W', sv:'33', svPct:'.943', extra:'—'}
-        ]
-      },
-      '8478406': {
-        playoffTotals:{w:1,l:3,so:0,g:0,a:0},
-        recentGames:[
-          {date:'May 24', loc:'@', opp:'DAL', logo:getTeamLogo('DAL'), result:'L', sv:'24', svPct:'.857', extra:'—'},
-          {date:'May 22', loc:'@', opp:'DAL', logo:getTeamLogo('DAL'), result:'W', sv:'38', svPct:'.950', extra:'—'},
-          {date:'May 20', loc:'vs', opp:'DAL', logo:getTeamLogo('DAL'), result:'L', sv:'26', svPct:'.867', extra:'+1A'},
-          {date:'May 18', loc:'vs', opp:'DAL', logo:getTeamLogo('DAL'), result:'L', sv:'30', svPct:'.909', extra:'—'},
-          {date:'May 16', loc:'@', opp:'DAL', logo:getTeamLogo('DAL'), result:'L', sv:'22', svPct:'.846', extra:'—'}
-        ]
-      }
-    };
-    Object.assign(apiData, goalieMock[playerId] || {playoffTotals:{w:0,l:0,so:0,g:0,a:0}, recentGames:[]});
-  } else {
-    const skaterMock = {
-      '8478402': {
-        playoffTotals:{g:3,a:5,p:8},
-        recentGames:[
-          {date:'May 24', loc:'vs', opp:'DAL', logo:getTeamLogo('DAL'), g:'1', a:'1', p:'2', total:2},
-          {date:'May 22', loc:'vs', opp:'DAL', logo:getTeamLogo('DAL'), g:'0', a:'1', p:'1', total:1},
-          {date:'May 20', loc:'@', opp:'DAL', logo:getTeamLogo('DAL'), g:'1', a:'0', p:'1', total:1},
-          {date:'May 18', loc:'@', opp:'DAL', logo:getTeamLogo('DAL'), g:'0', a:'2', p:'2', total:2},
-          {date:'May 16', loc:'vs', opp:'DAL', logo:getTeamLogo('DAL'), g:'1', a:'1', p:'2', total:2}
-        ]
-      },
-      '8471214': {
-        playoffTotals:{g:4,a:2,p:6},
-        recentGames:[
-          {date:'May 24', loc:'vs', opp:'DAL', logo:getTeamLogo('DAL'), g:'1', a:'0', p:'1', total:1},
-          {date:'May 22', loc:'vs', opp:'DAL', logo:getTeamLogo('DAL'), g:'0', a:'1', p:'1', total:1},
-          {date:'May 20', loc:'@', opp:'DAL', logo:getTeamLogo('DAL'), g:'2', a:'0', p:'2', total:2},
-          {date:'May 18', loc:'@', opp:'DAL', logo:getTeamLogo('DAL'), g:'0', a:'0', p:'0', total:0},
-          {date:'May 16', loc:'vs', opp:'DAL', logo:getTeamLogo('DAL'), g:'1', a:'1', p:'2', total:2}
-        ]
-      }
-    };
-    Object.assign(apiData, skaterMock[playerId] || {playoffTotals:{g:0,a:0,p:0}, recentGames:[]});
-  }
-
-  playerCache[playerId] = apiData;
-  return apiData;
-}
-
-function showSheetLoading(){
-  document.getElementById('sheet-body').innerHTML = `
-    <div class="sheet-loading">
-      <div><span class="loader"></span><span class="loader"></span><span class="loader"></span></div>
-      <div style="margin-top:12px">Chargement du joueur...</div>
-    </div>
-  `;
-}
-
-async function openPlayerCard(playerId, playerType, meta){
-  currentOpenPlayerId = playerId;
-  const overlay = document.getElementById('sheet-overlay');
-  const sheet = document.getElementById('player-sheet');
-  overlay.classList.add('show');
-  sheet.classList.add('show');
-  showSheetLoading();
-
-  const fullMeta = {...meta, playerId};
-  const data = await fetchPlayerCardData(playerId, playerType, fullMeta);
-  if(currentOpenPlayerId !== playerId) return;
-
-  document.getElementById('sheet-body').innerHTML =
-    playerType === 'goalie'
-      ? renderGoalieCard(data, fullMeta)
-      : renderSkaterCard(data, fullMeta);
-}
-
-function closePlayerCard(){
-  currentOpenPlayerId = null;
-  document.getElementById('sheet-overlay').classList.remove('show');
-  document.getElementById('player-sheet').classList.remove('show');
-}
-
-(function setupDrag(){
-  const handleWrap = document.getElementById('sheet-handle-wrap');
-  const sheet = document.getElementById('player-sheet');
-  handleWrap.addEventListener('touchstart', (e)=>{ dragStartY = e.touches[0].clientY; }, {passive:true});
-  handleWrap.addEventListener('touchmove', (e)=>{
-    if(dragStartY === null) return;
-    const delta = e.touches[0].clientY - dragStartY;
-    if(delta > 0){ sheet.style.transform = `translateY(${delta}px)`; }
-  }, {passive:true});
-  handleWrap.addEventListener('touchend', (e)=>{
-    if(dragStartY === null) return;
-    const endY = e.changedTouches[0].clientY;
-    const delta = endY - dragStartY;
-    sheet.style.transform = '';
-    if(delta > 90) closePlayerCard();
-    dragStartY = null;
-  }, {passive:true});
-})();
-
-function animateMock(id, newText){
-  const el = document.getElementById(id);
-  el.textContent = newText;
-  el.classList.remove('anim');
-  void el.offsetWidth;
-  el.classList.add('anim');
-}
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>test_player</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
-.header{background:#1a2535;margin:12px 12px 0;border-radius:12px;padding:14px;border-bottom:2px solid #22c55e}
-.header-title{font-size:19px;font-weight:600;color:#e8eaed}
-.header-sub{font-size:11px;color:#8a9bb0;margin-top:4px}
-.section-label{font-size:11px;color:#b0bec5;padding:12px 16px 6px;text-transform:uppercase;letter-spacing:.5px}
-.detail-card{background:#1a2535;margin:0 12px 20px;border-radius:12px;overflow:hidden;border:.5px solid #2a3a4a}
-.matchup-title-bar{background:#2a3a4a;text-align:center;font-size:11px;color:#e8eaed;font-weight:500;padding:6px;letter-spacing:.5px}
-.section-bar{background:#0d1f2e;text-align:center;font-size:9px;color:#b0bec5;padding:4px;text-transform:uppercase;letter-spacing:.5px}
-.player-row{display:grid;grid-template-columns:12px minmax(0,1fr) 40px 10px 40px minmax(0,1fr) 12px;gap:4px;align-items:center;padding:6px 8px;border-bottom:.5px solid #0f1923}
-.ind{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.ind-live{background:#22c55e}
-.ind-pre{background:#ffd700}
-.ind-final{background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#22c55e;width:10px;height:10px}
-.ind-off{background:#cc2222}
-.player-cell{display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap}
-.player-cell.right{justify-content:flex-end}
-.pname,.pname-r{font-size:12px;color:#e8eaed;white-space:nowrap;flex:0 0 auto;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(255,255,255,.14);text-underline-offset:2px}
-.pname-r{text-align:right}
-.ppts-l{font-size:13px;color:#8a9bb0;text-align:right}
-.ppts-r{font-size:13px;color:#8a9bb0}
-.ppts-l.scored,.ppts-r.scored{color:#22c55e;font-weight:500}
-.divider-col{width:1px;background:#2a3a4a;height:14px;margin:0 auto}
-
-/* row pills + today pills */
-.stat-pill{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;white-space:nowrap;border-radius:999px;border:1px solid;font-weight:700;line-height:1}
-.stat-pill.normal{min-height:18px;padding:2px 7px;font-size:10px;letter-spacing:0}
-.stat-pill.small{min-height:16px;padding:2px 5px;font-size:9px;letter-spacing:0}
-.stat-pill.tight{letter-spacing:0}
-.stat-pill.pos{background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.52);color:#86efac}
-.stat-pill.neg{background:rgba(220,38,38,.12);border-color:rgba(239,68,68,.68);color:#f87171}
-.stat-pill.gold{background:rgba(234,179,8,.13);border-color:rgba(234,179,8,.80);color:#fde047}
-.stat-pill.anim{animation:pillPop 1.25s cubic-bezier(.22,.8,.24,1), pillHalo 1.25s ease-out}
-@keyframes pillPop{0%{transform:translateY(8px);opacity:0}100%{transform:translateY(0);opacity:1}}
-@keyframes pillHalo{0%{box-shadow:0 0 0 rgba(34,197,94,0)}25%{box-shadow:0 0 6px rgba(34,197,94,.28),0 0 12px rgba(34,197,94,.14)}100%{box-shadow:none}}
-.stat-pill.gold.anim{animation:pillPop 1.25s cubic-bezier(.22,.8,.24,1), pillHaloGold 1.25s ease-out}
-@keyframes pillHaloGold{0%{box-shadow:0 0 0 rgba(234,179,8,0)}25%{box-shadow:0 0 6px rgba(234,179,8,.28),0 0 12px rgba(234,179,8,.14)}100%{box-shadow:none}}
-.stat-pill.neg.anim{animation:pillPop 1.25s cubic-bezier(.22,.8,.24,1), pillHaloRed 1.25s ease-out}
-@keyframes pillHaloRed{0%{box-shadow:0 0 0 rgba(239,68,68,0)}25%{box-shadow:0 0 6px rgba(239,68,68,.24),0 0 10px rgba(239,68,68,.12)}100%{box-shadow:none}}
-
-/* bottom sheet */
-.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:300}
-.sheet-overlay.show{opacity:1;pointer-events:auto}
-.player-sheet{position:fixed;left:0;right:0;bottom:0;z-index:301;background:#131d2b;border-top-left-radius:18px;border-top-right-radius:18px;border-top:1px solid #2a3a4a;box-shadow:0 -10px 40px rgba(0,0,0,.35);transform:translateY(100%);transition:transform .28s ease;max-height:92vh;display:flex;flex-direction:column}
-.player-sheet.show{transform:translateY(0)}
-.sheet-handle-wrap{padding:10px 0 6px;display:flex;justify-content:center;position:relative;flex-shrink:0}
-.sheet-handle{width:42px;height:5px;border-radius:999px;background:#415163}
-.sheet-close{position:absolute;right:14px;top:6px;width:30px;height:30px;border-radius:999px;border:1px solid #334155;background:#1a2535;color:#cbd5e1;font-size:16px;cursor:pointer}
-.sheet-body{overflow:auto;padding:0 14px 18px;flex:1}
-.sheet-loading{padding:30px 12px 40px;text-align:center;color:#8a9bb0;font-size:14px}
-.loader{display:inline-block;width:9px;height:9px;border-radius:50%;background:#22c55e;margin:0 3px;animation:b 1.2s infinite}
-.loader:nth-child(2){animation-delay:.2s}.loader:nth-child(3){animation-delay:.4s}
-@keyframes b{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
-
-.sheet-header{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center;padding-bottom:12px}
-.headshot{width:72px;height:72px;border-radius:14px;background:#0d1f2e;border:1px solid #334155;object-fit:cover}
-.player-meta{min-width:0}
-.name-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.team-logo{width:22px;height:22px;border-radius:50%;object-fit:contain;background:#0d1f2e}
-.player-name-full{font-size:20px;font-weight:700;color:#e8eaed;line-height:1.1}
-.player-sub{margin-top:4px;font-size:12px;color:#8a9bb0}
-
-/* player state pill */
-.player-title-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.player-state-pill{display:inline-flex;align-items:center;justify-content:center;min-height:16px;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:700;line-height:1;border:1px solid;white-space:nowrap}
-.player-state-live{color:#86efac;background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.40)}
-.player-state-pre{color:#fde047;background:rgba(234,179,8,.11);border-color:rgba(234,179,8,.42)}
-
-/* compact stats */
-.stats-section{margin-top:10px}
-.section-title{font-size:11px;color:#aeb9c8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.compact-stats-grid{display:grid;gap:6px}
-.compact-stats-grid.skater{grid-template-columns:repeat(3,1fr)}
-.compact-stats-grid.goalie{grid-template-columns:repeat(5,1fr)}
-.compact-stat-box{background:#0d1f2e;border:.5px solid #2a3a4a;border-radius:10px;padding:7px 4px 6px;text-align:center}
-.compact-stat-box .v{font-size:16px;font-weight:700;color:#e8eaed;line-height:1}
-.compact-stat-box .l{font-size:9px;color:#8a9bb0;margin-top:4px;letter-spacing:.4px;line-height:1}
-
-.today-block,.recent-block{margin-top:12px;background:#0d1f2e;border:.5px solid #2a3a4a;border-radius:12px;padding:10px 12px}
-.today-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.today-label{font-size:14px;color:#cbd5e1}
-.no-activity{font-size:13px;color:#8a9bb0}
-
-.games-table{width:100%;border-collapse:collapse;table-layout:fixed}
-.games-table th{font-size:10px;color:#8a9bb0;font-weight:600;text-transform:uppercase;letter-spacing:.4px;padding:0 0 8px;text-align:left;border-bottom:.5px solid #2a3a4a}
-.games-table td{font-size:13px;color:#e8eaed;padding:10px 0;border-bottom:.5px solid #1f2d3d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.games-table tr:last-child td{border-bottom:none}
-.games-table .num{text-align:center;color:#cbd5e1}
-.games-table .plus{color:#4ade80;font-weight:700;text-align:right}
-.games-table .minus{color:#f87171;font-weight:700;text-align:right}
-.games-table .opp-cell{display:flex;align-items:center;gap:6px}
-.games-table .opp-logo{width:18px;height:18px;object-fit:contain;flex:0 0 auto}
-.games-hint{margin-top:8px;font-size:11px;color:#7f8da1}
-
-.skater-table .date{width:28%}
-.skater-table .opp{width:24%}
-.skater-table .g{width:12%}
-.skater-table .a{width:12%}
-.skater-table .p{width:12%}
-.skater-table .tot{width:12%}
-
-.goalie-table .date{width:26%}
-.goalie-table .opp{width:23%}
-.goalie-table .res{width:11%}
-.goalie-table .sv{width:16%}
-.goalie-table .svpct{width:14%}
-.goalie-table .misc{width:10%}
-
-.helper-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 12px 18px}
-.helper-btn{background:#1a2535;border:1px solid #334155;color:#e8eaed;border-radius:10px;padding:8px 12px;font-size:12px;cursor:pointer}
-.helper-btn.green{border-color:#22c55e;color:#86efac}
-.helper-btn.red{border-color:#ef4444;color:#fca5a5}
-.helper-btn.gold{border-color:#eab308;color:#fde047}
-</style>
-</head>
-<body>
-
-<div class="header">
-  <div class="header-title">test_player</div>
-  <div class="header-sub">Bottom sheet player cards • API from ID • cache on second click</div>
-</div>
-
-<div class="section-label">Mock matchup detail rows</div>
-
-<div class="detail-card">
-  <div class="matchup-title-bar">MATCHUP TEST</div>
-  <div class="section-bar">⚡ Attaquants</div>
-  <div class="player-row">
-    <span class="ind ind-live"></span>
-    <span class="player-cell">
-      <span class="pname" onclick="openPlayerCard('8478402','skater', {displayName:'Connor McDavid', today:{g:2,a:1}, team:'EDM', position:'C', number:'97', status:'LIVE'})">McDavid, C</span>
-      <span class="stat-pill normal pos" id="row-pill-1">+2G | +1A</span>
-    </span>
-    <span class="ppts-l scored">2</span>
-    <span class="divider-col"></span>
-    <span class="ppts-r">0</span>
-    <span class="player-cell right">
-      <span class="stat-pill normal pos" id="row-pill-2">+1G</span>
-      <span class="pname-r" onclick="openPlayerCard('8471214','skater', {displayName:'Auston Matthews', today:{g:1,a:0}, team:'TOR', position:'C', number:'34', status:'LIVE'})">Matthews, A</span>
-    </span>
-    <span class="ind ind-live"></span>
-  </div>
-  <div class="section-bar">🥅 Gardiens</div>
-  <div class="player-row">
-    <span class="ind ind-final"></span>
-    <span class="player-cell">
-      <span class="pname" onclick="openPlayerCard('8477424','goalie', {displayName:'Juuse Saros', today:{w:1,l:0,so:1,a:0,g:1}, team:'NSH', position:'G', number:'74', status:'PRE'})">Saros, J</span>
-      <span class="stat-pill small gold tight" id="row-pill-3">+1W|+1SO|+1G</span>
-    </span>
-    <span class="ppts-l scored">6</span>
-    <span class="divider-col"></span>
-    <span class="ppts-r">0</span>
-    <span class="player-cell right">
-      <span class="stat-pill normal neg" id="row-pill-4">-1L | +1A</span>
-      <span class="pname-r" onclick="openPlayerCard('8478406','goalie', {displayName:'Igor Shesterkin', today:{w:0,l:1,so:0,a:1,g:0}, team:'NYR', position:'G', number:'31', status:'LIVE'})">Shesterkin, I</span>
-    </span>
-    <span class="ind ind-off"></span>
-  </div>
-</div>
-
-<div class="helper-row">
-  <button class="helper-btn green" onclick="animateMock('row-pill-1','+3G | +1A')">Mock skater update</button>
-  <button class="helper-btn gold" onclick="animateMock('row-pill-3','+1W|+1SO|+1A')">Mock goalie 3-stat</button>
-  <button class="helper-btn red" onclick="animateMock('row-pill-4','-1L | +1G')">Mock loss update</button>
-</div>
-
-<div class="sheet-overlay" id="sheet-overlay" onclick="closePlayerCard()"></div>
-<div class="player-sheet" id="player-sheet">
-  <div class="sheet-handle-wrap" id="sheet-handle-wrap">
-    <div class="sheet-handle"></div>
-    <button class="sheet-close" onclick="closePlayerCard()">✕</button>
-  </div>
-  <div class="sheet-body" id="sheet-body">
-    <div class="sheet-loading">
-      <div><span class="loader"></span><span class="loader"></span><span class="loader"></span></div>
-      <div style="margin-top:12px">Chargement du joueur...</div>
-    </div>
-  </div>
-</div>
-
-<script>
-const playerCache = {};
-let currentOpenPlayerId = null;
-let dragStartY = null;
-
-const TEAM_LOGOS = {
-  EDM:'https://assets.nhle.com/logos/nhl/svg/EDM_light.svg',
-  TOR:'https://assets.nhle.com/logos/nhl/svg/TOR_light.svg',
-  NSH:'https://assets.nhle.com/logos/nhl/svg/NSH_light.svg',
-  NYR:'https://assets.nhle.com/logos/nhl/svg/NYR_light.svg',
-  DAL:'https://assets.nhle.com/logos/nhl/svg/DAL_light.svg'
-};
-
-function getTeamLogo(abbrev){ return TEAM_LOGOS[abbrev] || ''; }
-function getHeadshotUrl(playerId){ return `https://assets.nhle.com/mugs/nhl/20242025/${playerId}.png`; }
-function getHeadshotFallback(){ return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect width='120' height='120' rx='18' fill='%230d1f2e'/><circle cx='60' cy='42' r='22' fill='%2364788f'/><path d='M22 104c8-18 23-28 38-28s30 10 38 28' fill='%2364788f'/></svg>"; }
-function getHeadshotSrc(apiData, meta){ return apiData.headshot || getHeadshotUrl(apiData.playerId || meta.playerId); }
-function handleHeadshotError(img){ if (!img.dataset.fallbackApplied) { img.dataset.fallbackApplied = "1"; img.src = getHeadshotFallback(); } }
-function buildPlayerStatePill(status){
-  var s = String(status || "").trim().toUpperCase();
-  if (s === "LIVE") return '<span class="player-state-pill player-state-live">LIVE</span>';
-  if (s === "PRE") return '<span class="player-state-pill player-state-pre">PRE</span>';
-  return "";
-}
-function getStatusFromMeta(meta){
-  var s = String((meta && meta.status) || "").trim().toUpperCase();
-  return (s === "LIVE" || s === "PRE") ? s : "";
-}
-
-function buildTodayPill(data, playerType){
-  if(playerType === 'goalie'){
-    const parts = [];
-    if(data.w > 0) parts.push(`+${data.w}W`);
-    if(data.l > 0) parts.push(`-${data.l}L`);
-    if(data.so > 0) parts.push(`+${data.so}SO`);
-    if(data.a > 0) parts.push(`+${data.a}A`);
-    if(data.g > 0) parts.push(`+${data.g}G`);
-    if(!parts.length) return '';
-    const finalParts = parts.slice(0,3);
-    const hasSO = data.so > 0;
-    const hasL = data.l > 0;
-    const tone = hasSO ? 'gold' : (hasL ? 'neg' : 'pos');
-    const small = finalParts.length >= 3;
-    const text = small ? finalParts.join('|') : finalParts.join(' | ');
-    return `<span class="stat-pill ${small ? 'small' : 'normal'} ${tone}${small ? ' tight' : ''} anim">${text}</span>`;
-  }
-  const parts = [];
-  if(data.g > 0) parts.push(`+${data.g}G`);
-  if(data.a > 0) parts.push(`+${data.a}A`);
-  if(!parts.length) return '';
-  return `<span class="stat-pill normal pos anim">${parts.join(' | ')}</span>`;
-}
-
-function renderRecentSkaterGames(rows){
-  return `
-    <div class="recent-block">
-      <div class="section-title">Recent Games (2026 Playoffs)</div>
-      <table class="games-table skater-table">
-        <thead><tr><th class="date">Date</th><th class="opp">Opp</th><th class="g">G</th><th class="a">A</th><th class="p">P</th><th class="tot">Total</th></tr></thead>
-        <tbody>
-          ${rows.map(r => `<tr>
-            <td>${r.date}</td>
-            <td><span class="opp-cell">${r.logo ? `<img class="opp-logo" src="${r.logo}" alt="${r.opp}">` : ``}<span>${r.loc} ${r.opp}</span></span></td>
-            <td class="num">${r.g}</td>
-            <td class="num">${r.a}</td>
-            <td class="num">${r.p}</td>
-            <td class="${r.total >= 0 ? 'plus' : 'minus'}">${r.total > 0 ? '+' : ''}${r.total}</td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-      <div class="games-hint">Most recent games shown. Scroll for more.</div>
-    </div>`;
-}
-
-function renderRecentGoalieGames(rows){
-  return `
-    <div class="recent-block">
-      <div class="section-title">Recent Games (2026 Playoffs)</div>
-      <table class="games-table goalie-table">
-        <thead><tr><th class="date">Date</th><th class="opp">Opp</th><th class="res">W/L</th><th class="sv">SV</th><th class="svpct">SV%</th><th class="misc">Extra</th></tr></thead>
-        <tbody>
-          ${rows.map(r => `<tr>
-            <td>${r.date}</td>
-            <td><span class="opp-cell">${r.logo ? `<img class="opp-logo" src="${r.logo}" alt="${r.opp}">` : ``}<span>${r.loc} ${r.opp}</span></span></td>
-            <td class="num">${r.result}</td>
-            <td class="num">${r.sv}</td>
-            <td class="num">${r.svPct}</td>
-            <td class="num">${r.extra}</td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-      <div class="games-hint">Most recent games shown. Scroll for more.</div>
-    </div>`;
-}
-
-function renderSkaterCard(apiData, meta){
-  const name = apiData.fullName || meta.displayName || 'Joueur';
-  const position = apiData.positionCode || meta.position || 'F';
-  const number = apiData.sweaterNumber || meta.number || '';
-  const team = apiData.currentTeamAbbrev || meta.team || '';
-  const logo = getTeamLogo(team);
-  const headshot = getHeadshotSrc(apiData, meta);
-  const playoff = apiData.playoffTotals || {g:0,a:0,p:0};
-  const todayPill = buildTodayPill(meta.today || {g:0,a:0}, 'skater');
-  const recentGames = apiData.recentGames || [];
-  const statusPill = buildPlayerStatePill(getStatusFromMeta(meta));
-
-  return `
-    <div class="sheet-header">
-      <img class="headshot" src="${headshot}" alt="${name}" onerror="handleHeadshotError(this)">
-      <div class="player-meta">
-        <div class="name-line">${logo ? `<img class="team-logo" src="${logo}" alt="${team}">` : ``}<div class="player-title-row"><div class="player-name-full">${name}</div>${statusPill}</div></div>
-        <div class="player-sub">${position}${number ? ' • #' + number : ''}${team ? ' • ' + team : ''}</div>
-      </div>
-    </div>
-    <div class="stats-section">
-      <div class="section-title">2026 Playoffs Stats</div>
-      <div class="compact-stats-grid skater">
-        <div class="compact-stat-box"><div class="v">${playoff.g}</div><div class="l">G</div></div>
-        <div class="compact-stat-box"><div class="v">${playoff.a}</div><div class="l">A</div></div>
-        <div class="compact-stat-box"><div class="v">${playoff.p}</div><div class="l">P</div></div>
-      </div>
-    </div>
-    <div class="today-block">
-      <div class="section-title">Today</div>
-      <div class="today-row"><div class="today-label">Today:</div>${todayPill || `<div class="no-activity">No activity</div>`}</div>
-    </div>
-    ${renderRecentSkaterGames(recentGames)}
-  `;
-}
-
-function renderGoalieCard(apiData, meta){
-  const name = apiData.fullName || meta.displayName || 'Gardien';
-  const position = apiData.positionCode || meta.position || 'G';
-  const number = apiData.sweaterNumber || meta.number || '';
-  const team = apiData.currentTeamAbbrev || meta.team || '';
-  const logo = getTeamLogo(team);
-  const headshot = getHeadshotSrc(apiData, meta);
-  const playoff = apiData.playoffTotals || {w:0,l:0,so:0,g:0,a:0};
-  const todayPill = buildTodayPill(meta.today || {w:0,l:0,so:0,a:0,g:0}, 'goalie');
-  const recentGames = apiData.recentGames || [];
-  const statusPill = buildPlayerStatePill(getStatusFromMeta(meta));
-
-  return `
-    <div class="sheet-header">
-      <img class="headshot" src="${headshot}" alt="${name}" onerror="handleHeadshotError(this)">
-      <div class="player-meta">
-        <div class="name-line">${logo ? `<img class="team-logo" src="${logo}" alt="${team}">` : ``}<div class="player-title-row"><div class="player-name-full">${name}</div>${statusPill}</div></div>
+        <div class="name-line">
+          ${logo ? `<img class="team-logo" src="${logo}" alt="${team}">` : ``}
+          <div class="player-title-row">
+            <div class="player-name-full">${name}</div>
+            ${statusPill}
+          </div>
+        </div>
         <div class="player-sub">${position}${number ? ' • #' + number : ''}${team ? ' • ' + team : ''}</div>
       </div>
     </div>
