@@ -146,6 +146,12 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .ld{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin:0 3px;animation:b 1.2s infinite}
 .ld:nth-child(2){animation-delay:.2s}.ld:nth-child(3){animation-delay:.4s}
 @keyframes b{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+
+.pred-pill{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;font-size:10px;font-weight:800;padding:2px 6px}
+.pred-pill.gold{background:rgba(234,179,8,.13);border:1px solid rgba(234,179,8,.82);color:#fde047}
+.pred-pill.green{background:rgba(34,197,94,.10);border:1px solid rgba(34,197,94,.55);color:#86efac}
+.pred-pill.red{background:rgba(220,38,38,.12);border:1px solid rgba(239,68,68,.70);color:#f87171}
+
 </style>
 </head>
 <body>
@@ -330,6 +336,27 @@ function getUserPicks(u){
     predPts:Number(predTable[9]&&predTable[9][col]?predTable[9][col]:0)
   };
 }
+  function getSeriesResult(seriesIndex){
+  // row 10 (index) = results row, col 1+ = series in order
+  const row = predTable[10];
+  if(!row) return null;
+  const val = String(row[seriesIndex+1]||'').trim();
+  if(!val) return null;
+  const parts = val.split('|');
+  return { winner: parts[0]||'', games: parts[1]||'' };
+}
+
+function scorePick(pick, seriesIndex){
+  const result = getSeriesResult(seriesIndex);
+  if(!result || !result.winner) return null; // not finished
+  const parts = String(pick||'').split('|');
+  const pickTeam  = (parts[0]||'').trim();
+  const pickGames = (parts[1]||'').trim();
+  if(!pickTeam) return null;
+  if(pickTeam === result.winner && pickGames === result.games) return 4;
+  if(pickTeam === result.winner) return 2;
+  return 0;
+}
 
 const MATCHUPS=[
   {num:1,left:'Francis',right:'Laurent',seed:'1v16'},
@@ -373,7 +400,7 @@ async function loadData(){
   try{
     const[allRows, predRaw, lsRaw, goalieRaw]=await Promise.all([
       fetchSheet('App_Live'),
-      fetchSheetRange('App_Live','Q1:AG10'),
+      fetchSheetRange('App_Live','Q1:AG11'),
       fetchSheetRange('LiveStats','R1:T4'),
       fetchSheet('GoalieStats')
     ]);
@@ -547,10 +574,20 @@ const rightElim = rp && (rp[C.Eliminated] === true || rp[C.Eliminated] === 'TRUE
 
   const{left:predL,right:predR}=getPredRow(num);
   const pPL=predL?predL.predPts:0,pPR=predR?predR.predPts:0;
-  function predPair(arr,i){
-    const l=predL?(predL[arr][i]||''):'',r=predR?(predR[arr][i]||''):'';
-    return `<div class="pred-row"><span class="pred-l">${l}</span><span class="pred-r">${r}</span></div>`;
+  function predPair(arr, i){
+  const seriesIndex = arr==='est' ? i : i+4;
+  const l = predL?(predL[arr][i]||''):'';
+  const r = predR?(predR[arr][i]||''):'';
+  const ls = scorePick(l, seriesIndex);
+  const rs = scorePick(r, seriesIndex);
+  function pill(score){
+    if(score===null) return '';
+    if(score===4) return '<span class="pred-pill gold">+4</span>';
+    if(score===2) return '<span class="pred-pill green">+2</span>';
+    return '<span class="pred-pill red">0</span>';
   }
+  return `<div class="pred-row"><span class="pred-l">${l} ${pill(ls)}</span><span class="pred-r">${r} ${pill(rs)}</span></div>`;
+}
   const predHtml=(predL||predR)
     ?['<div class="section-bar">EST</div>',predPair('est',0),predPair('est',1),predPair('est',2),predPair('est',3),'<div class="section-bar">OUEST</div>',predPair('ouest',0),predPair('ouest',1),predPair('ouest',2),predPair('ouest',3)].join('')
     :'<div class="pred-row"><span class="pred-l" style="color:#8a9bb0">Aucune prédiction</span></div>';
