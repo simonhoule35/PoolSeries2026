@@ -562,7 +562,7 @@ const rightElim = rp && (rp[C.Eliminated] === true || rp[C.Eliminated] === 'TRUE
       <span class="ppts-l${lpts>0?' scored':''}">${lpts}</span>
       <span class="divider-col"></span>
       <span class="ppts-r${rpts>0?' scored':''}">${rpts}</span>
-      <span class="player-cell right">${rightPill}<span class="pname-r" style="${rightElim?'text-decoration:line-through;color:#ef4444':''}">${rightName}</span>${rightName}</span></span>
+      <span class="player-cell right">${rightPill}<span class="pname-r" style="${rightElim?'text-decoration:line-through;color:#ef4444':''}">${rightName}</span></span>
       ${indHtml(ri)}
     </div>`;
   }
@@ -575,6 +575,7 @@ const rightElim = rp && (rp[C.Eliminated] === true || rp[C.Eliminated] === 'TRUE
 
   const{left:predL,right:predR}=getPredRow(num);
   const pPL=predL?predL.predPts:0,pPR=predR?predR.predPts:0;
+  
 function predPair(arr, i){
   const seriesIndex = arr==='est' ? i : i+4;
   const l = predL?(predL[arr][i]||''):'';
@@ -591,8 +592,6 @@ function predPair(arr, i){
     <span class="pred-l">${l}<span class="pred-pill-wrap">${pill(ls)}</span></span>
     <span class="pred-r"><span class="pred-pill-wrap">${pill(rs)}</span>${r}</span>
   </div>`;
-}
-  return `<div class="pred-row"><span class="pred-l">${l} ${pill(ls)}</span><span class="pred-r">${r} ${pill(rs)}</span></div>`;
 }
   const predHtml=(predL||predR)
     ?['<div class="section-bar">EST</div>',predPair('est',0),predPair('est',1),predPair('est',2),predPair('est',3),'<div class="section-bar">OUEST</div>',predPair('ouest',0),predPair('ouest',1),predPair('ouest',2),predPair('ouest',3)].join('')
