@@ -227,7 +227,7 @@ const SHEET_ID = '1MaI1PwHvwcKqP316Y-7raHWmmAzVVvMY-dobjAp19jE';
 const C = {
   User:0, Matchup:1, Round:2, Position:3, Player:4,
   LiveG:5, LiveA:6, SeasonG:7, SeasonA:8, TotalPoints:9,
-  Indicator:10, UserTotal:11, OpponentTotal:12, LeadIndicator:13, Opponent:14
+  Indicator:10, UserTotal:11, OpponentTotal:12, LeadIndicator:13, Opponent:14, Eliminated:15
 };
 
 // GoalieStats columns (from GoalieStats sheet)
@@ -523,16 +523,18 @@ function showDetail(num, fromRefresh){
     const lpts=lp?Number(lp[C.TotalPoints]||0):0,rpts=rp?Number(rp[C.TotalPoints]||0):0;
     const li=lp?indClass(lp[C.Indicator]):'ind-off',ri=rp?indClass(rp[C.Indicator]):'ind-off';
     const leftName = lp ? lp[C.Player] : '';
-    const rightName = rp ? rp[C.Player] : '';
+const rightName = rp ? rp[C.Player] : '';
+const leftElim = lp && (lp[C.Eliminated] === true || lp[C.Eliminated] === 'TRUE');
+const rightElim = rp && (rp[C.Eliminated] === true || rp[C.Eliminated] === 'TRUE');
     const leftPill  = lp ? getPillHtml(lp,  `${num}|${sectionKey}|${rowIndex}|L|${leftName}`,  allowAnimate) : '';
     const rightPill = rp ? getPillHtml(rp,  `${num}|${sectionKey}|${rowIndex}|R|${rightName}`, allowAnimate) : '';
     return `<div class="player-row">
       ${indHtml(li)}
-      <span class="player-cell"><span class="pname">${leftName}</span>${leftPill}</span>
+      <span class="player-cell"><span class="pname" style="${leftElim?'text-decoration:line-through;color:#ef4444':''}">${leftName}</span>${leftPill}</span>
       <span class="ppts-l${lpts>0?' scored':''}">${lpts}</span>
       <span class="divider-col"></span>
       <span class="ppts-r${rpts>0?' scored':''}">${rpts}</span>
-      <span class="player-cell right">${rightPill}<span class="pname-r">${rightName}</span></span>
+      <span class="player-cell right">${rightPill}<span class="pname-r" style="${rightElim?'text-decoration:line-through;color:#ef4444':''}">${rightName}</span>${rightName}</span></span>
       ${indHtml(ri)}
     </div>`;
   }
