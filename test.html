@@ -212,9 +212,11 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 <div class="menu-panel" id="menu-panel">
 <div class="menu-close" onclick="closeMenu()">✕ Fermer</div>
 <div class="menu-title">Navigation</div>
-<div class="menu-item active" id="menu-ronde" onclick="showHome()">Ronde 1</div>
+<div class="menu-item active" id="menu-ronde" onclick="showHome()">En cours</div>
+<div class="menu-item" id="menu-r1" onclick="viewRound(1)">Ronde 1</div>
+<div class="menu-item" id="menu-r2" onclick="viewRound(2)">Ronde 2</div>
+<div class="menu-item" id="menu-r3" onclick="viewRound(3)">Ronde 3</div>
 <div class="menu-item" onclick="showBracket()">Bracket</div>
-</div>
 
 <div id="home-view">
 <div class="header">
@@ -522,7 +524,29 @@ function showDetail(num,fromRefresh){
   activeDetailNum=num;
   if(!fromRefresh)setView('detail-view');
 }
-
+function viewRound(round) {
+  const cfg = ROUND_CFG[round];
+  if (!cfg) return;
+  // Force load a specific round regardless of CurrentRound
+  fetchSheet(cfg.appSheet).then(function(appRows) {
+    liveRows = appRows.filter(r => r[3]==='F'||r[3]==='D'||r[3]==='G');
+    currentMatchups = cfg.matchups || buildMatchupsFromRows(liveRows);
+    // Check final mode for that specific round
+    finalMode = finalRaw[cfg.fmRow] && (finalRaw[cfg.fmRow][1]===true || String(finalRaw[cfg.fmRow][1]).toUpperCase()==='TRUE');
+    winnersMap = {};
+    if (finalMode && finalRaw[cfg.wRow]) {
+      const wRow = finalRaw[cfg.wRow];
+      for (let i=1; i<=cfg.wCount; i++) {
+        const name = String(wRow[i]||'').trim();
+        if (name) winnersMap[name] = 'W'+i;
+      }
+    }
+    document.getElementById('section-label').textContent = 'Matchups — ' + cfg.label;
+    document.getElementById('header-date').textContent = new Date().toLocaleDateString('fr-CA',{day:'numeric',month:'short'}) + ' · ' + cfg.label;
+    renderHome();
+    setView('home-view');
+  });
+}
 function showHome(){setView('home-view');}
 function showBracket(){setView('bracket-view');}
 
