@@ -373,7 +373,7 @@ async function loadData(){
   try{
     const[allRows, predRaw, lsRaw, goalieRaw]=await Promise.all([
       fetchSheet('App_Live'),
-      fetchSheetRange('App_Live','Q1:AF10'),
+      fetchSheetRange('App_Live','Q1:AG10'),
       fetchSheetRange('LiveStats','R1:T4'),
       fetchSheet('GoalieStats')
     ]);
