@@ -468,7 +468,7 @@ async function loadData(){
     lastRefreshTime=new Date().toLocaleTimeString('fr-CA',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('last-refresh-bar').textContent=lastRefreshTime?`Mis à jour à ${lastRefreshTime}`:'';
     updateInstallVisibility();
-    renderHome();
+    renderHome(gameCount);
     if(document.getElementById('detail-view').style.display==='block'&&activeDetailNum!==null){
       showDetail(activeDetailNum,true);
     }
@@ -689,7 +689,7 @@ function viewRound(round){
       }
     }
     document.getElementById('section-label').textContent='Matchups — '+cfg.label;
-    renderHome();
+    renderHome(gameCount);
     setView('home-view');
   }).catch(function(){});
 }
