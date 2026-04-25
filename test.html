@@ -437,10 +437,10 @@ async function loadData(){
     }
     if(finalMode&&flagRaw[cfg.wRow]){
       const wRow=flagRaw[cfg.wRow];
-      for(let i=1;i<=cfg.wCount;i++){
-        const name=String(wRow[i]||'').trim();
-        if(name)winnersMap[name]='W'+i;
-      }
+   for(let i=2;i<=cfg.wCount+1;i++){
+  const name=String(wRow[i]||'').trim();
+  if(name)winnersMap[name]='W'+(i-1);
+}
     }
 
     // ── Load active round rows ──
