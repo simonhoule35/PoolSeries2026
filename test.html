@@ -425,24 +425,17 @@ async function loadData(){
     }
 
     // ── Read flags ──
-    finalRaw=flagRaw;
-    currentRound=1;
-    if(flagRaw[8]){const rv=flagRaw[8][1];const p=Number(rv);if(p>=1&&p<=4)currentRound=p;}
-
-    const cfg=ROUND_CFG[currentRound]||ROUND_CFG[1];
-    finalMode=false;winnersMap={};
-    if(flagRaw[cfg.fmRow]){
-      const fv=flagRaw[cfg.fmRow][1];
-      finalMode=(fv===true||String(fv).toUpperCase()==='TRUE');
-    }
-if(finalMode&&flagRaw[9]){
+// Read Config sheet — Row 0=Round, Row 1=FinalMode, Row 2=Winners
+currentRound=1;finalMode=false;winnersMap={};
+if(flagRaw[0]){const p=Number(flagRaw[0][1]);if(p>=1&&p<=4)currentRound=p;}
+if(flagRaw[1]){finalMode=(flagRaw[1][1]===true||String(flagRaw[1][1]).toUpperCase()==='TRUE');}
+if(finalMode&&flagRaw[2]){
   try{
-    const winners=JSON.parse(String(flagRaw[9][0]||'[]'));
-    winners.forEach(function(name,i){
-      if(name)winnersMap[name]='W'+(i+1);
-    });
+    const winners=JSON.parse(String(flagRaw[2][1]||'[]'));
+    winners.forEach(function(name,i){if(name)winnersMap[name]='W'+(i+1);});
   }catch(e){}
 }
+const cfg=ROUND_CFG[currentRound]||ROUND_CFG[1];
 
     // ── Load active round rows ──
     if(currentRound===1){
