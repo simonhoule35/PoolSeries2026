@@ -305,7 +305,9 @@ const MATCHUPS_R1=[
   {num:8,left:'Marc-André',right:'Dom'}
 ];
 
-let currentMatchups=MATCHUPS_R1;
+// Replace the round detection code with this:
+let currentRound = 2; // FORCE ROUND 2
+console.log("FORCED current round to:", currentRound);
 
 function setView(view){
   document.getElementById('home-view').style.display='none';
