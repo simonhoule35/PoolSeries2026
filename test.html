@@ -55,7 +55,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .section-label{font-size:11px;color:#b0bec5;padding:12px 16px 6px;text-transform:uppercase;letter-spacing:.5px}
 .matchup-card{background:#1a2535;margin:0 12px 8px;border-radius:12px;border:.5px solid #2a3a4a;padding:10px 14px;cursor:pointer}
 .matchup-card:active{background:#202f40}
-.matchup-card.final-mode{border-color:rgba(234,179,8,.4);background:#1a2535}
+.matchup-card.final-mode{border-color:rgba(234,179,8,.2);
 .matchup-row{display:grid;grid-template-columns:1fr 60px 1fr;gap:10px;align-items:center}
 .matchup-row > div:first-child{display:flex;flex-direction:column;justify-content:center;min-height:48px}
 .right-side{text-align:right;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;min-height:48px}
@@ -87,8 +87,8 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .own-r{background:#1a4a2e;padding:8px 12px;text-align:right}
 .own-r-name{font-size:18px;font-weight:600;color:#e8eaed}
 .own-r-sub{font-size:13px;color:#86efac;margin-top:2px}
-.own-l.winner-bg{background:#1a2535}
-.own-r.winner-bg{background:#1a2535}
+.own-l.winner-bg{background:linear-gradient(135deg,#1c1800,#1e2800)}
+.own-r.winner-bg{background:linear-gradient(135deg,#1e2800,#1c1800)}
 .own-l.loser-bg{background:#111a22;opacity:.7}
 .own-r.loser-bg{background:#111a22;opacity:.7;text-align:right}
 .diff-win{color:#22c55e}
@@ -179,7 +179,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .elim-pill{display:inline-flex;align-items:center;margin-left:5px;padding:1px 6px;border-radius:999px;border:.5px solid rgba(239,68,68,.6);background:rgba(69,26,3,.9);color:#f87171;font-size:9px;font-weight:700;letter-spacing:.2px;vertical-align:middle;opacity:.85}
 .elim-pill.right{margin-left:0;margin-right:5px}
 .seed-badge{display:inline-flex;align-items:center;font-size:9px;font-weight:800;padding:1px 6px;border-radius:999px;background:rgba(234,179,8,.15);border:.5px solid rgba(234,179,8,.5);color:#fde047;margin-left:6px;letter-spacing:.3px}
-.final-banner{margin:10px 12px 4px;border-radius:10px;background:#1a2535;border:1px solid rgba(234,179,8,.4);padding:10px 14px;display:none;align-items:center;gap:10px;animation:bannerPulse 3s ease-in-out infinite}
+.final-banner{margin:10px 12px 4px;border-radius:10px;background:linear-gradient(135deg,#1a1200,#2a1f00);border:1px solid rgba(234,179,8,.4);padding:10px 14px;display:none;align-items:center;gap:10px;animation:bannerPulse 3s ease-in-out infinite}
 .final-banner.show{display:flex}
 @keyframes bannerPulse{0%,100%{border-color:rgba(234,179,8,.3)}50%{border-color:rgba(234,179,8,.7);box-shadow:0 0 12px rgba(234,179,8,.15)}}
 .final-banner-icon{font-size:20px;animation:trophySpin 4s ease-in-out infinite}
@@ -414,7 +414,7 @@ async function loadData(){
       fetchSheetRange('App_Live','Q1:AG11'),
       fetchSheetRange('LiveStats','R1:T4'),
       fetchSheet('GoalieStats'),
-      fetchSheet('Config')
+      fetchSheetRange('App_Live','Q12:AA21')
     ]);
 
     predTable=predRaw;
@@ -424,20 +424,25 @@ async function loadData(){
       if(name)goalieMap[name]=row;
     }
 
-    // ── Read Config sheet — single JSON cell ──
-    currentRound=1;finalMode=false;winnersMap={};
-    if(flagRaw[0]&&flagRaw[0][1]){
-      try{
-        const config=JSON.parse(String(flagRaw[0][1]));
-        if(config.round>=1&&config.round<=4)currentRound=config.round;
-        finalMode=config.finalMode===true;
-        if(finalMode&&config.winners){
-          config.winners.forEach(function(name,i){if(name)winnersMap[name]='W'+(i+1);});
-        }
-      }catch(e){console.log('Config parse error:',e);}
-    }
-    console.log('Round:',currentRound,'FinalMode:',finalMode);
+    // ── Read flags ──
+    finalRaw=flagRaw;
+    currentRound=1;
+    if(flagRaw[8]){const rv=flagRaw[8][1];const p=Number(rv);if(p>=1&&p<=4)currentRound=p;}
+
     const cfg=ROUND_CFG[currentRound]||ROUND_CFG[1];
+    finalMode=false;winnersMap={};
+    if(flagRaw[cfg.fmRow]){
+      const fv=flagRaw[cfg.fmRow][1];
+      finalMode=(fv===true||String(fv).toUpperCase()==='TRUE');
+    }
+if(finalMode&&flagRaw[9]){
+  try{
+    const winners=JSON.parse(String(flagRaw[9][0]||'[]'));
+    winners.forEach(function(name,i){
+      if(name)winnersMap[name]='W'+(i+1);
+    });
+  }catch(e){}
+}
 
     // ── Load active round rows ──
     if(currentRound===1){
@@ -576,17 +581,15 @@ function showDetail(num,fromRefresh){
     const ln=lp?lp[C.Player]:'',rn=rp?rp[C.Player]:'';
     const le=lp&&(lp[C.Eliminated]===true||lp[C.Eliminated]==='TRUE');
     const re=rp&&(rp[C.Eliminated]===true||rp[C.Eliminated]==='TRUE');
-    const la=lp&&(lp[C.Eliminated]===false||lp[C.Eliminated]==='FALSE');
-    const ra=rp&&(rp[C.Eliminated]===false||rp[C.Eliminated]==='FALSE');
     const lPill=lp?getPillHtml(lp,`${num}|${sk}|${ri}|L|${ln}`,allowAnimate):'';
     const rPill=rp?getPillHtml(rp,`${num}|${sk}|${ri}|R|${rn}`,allowAnimate):'';
     return `<div class="player-row">
       ${indHtml(li)}
-      <span class="player-cell"><span class="pname" style="${le?'text-decoration:line-through;color:#ef4444':la?'text-decoration:line-through;color:#22c55e':''}">${ln}</span>${lPill}</span>
+      <span class="player-cell"><span class="pname" style="${le?'text-decoration:line-through;color:#ef4444':''}">${ln}</span>${lPill}</span>
       <span class="ppts-l${lpts>0?' scored':''}">${lpts}</span>
       <span class="divider-col"></span>
       <span class="ppts-r${rpts>0?' scored':''}">${rpts}</span>
-      <span class="player-cell right">${rPill}<span class="pname-r" style="${re?'text-decoration:line-through;color:#ef4444':ra?'text-decoration:line-through;color:#22c55e':''}">${rn}</span></span>
+      <span class="player-cell right">${rPill}<span class="pname-r" style="${re?'text-decoration:line-through;color:#ef4444':''}">${rn}</span></span>
       ${indHtml(ri2)}
     </div>`;
   }
@@ -638,10 +641,10 @@ function showDetail(num,fromRefresh){
 
   const totalHtml=finalMode
     ?`<div class="total-bar final">
-        <div class="total-l ${lW?'winner-total':'loser-total'}">${lW?lS+' · ':''}Total final<span>${lt+pPL} pts</span></div>
-        <div class="total-r ${rW?'winner-total':'loser-total'}">${rW?rS+' · ':''}Total final<span>${rt+pPR} pts</span></div>
+        <div class="total-l ${lW?'winner-total':'loser-total'}">${lW?lS+' · ':''}Total final<span>${lt} pts</span></div>
+        <div class="total-r ${rW?'winner-total':'loser-total'}">${rW?rS+' · ':''}Total final<span>${rt} pts</span></div>
       </div>`
-    :`<div class="total-bar"><div class="total-l">Total<span>${lt+pPL}</span></div><div class="total-r">Total<span>${rt+pPR}</span></div></div>`;
+    :`<div class="total-bar"><div class="total-l">Total<span>${lt}</span></div><div class="total-r">Total<span>${rt}</span></div></div>`;
 
   document.getElementById('detail-container').innerHTML=`<div class="${cClass}">
     <div class="matchup-title-bar ${tbClass}">${finalMode?'🏆 ':''}MATCHUP ${num}${finalMode?' — TERMINÉ':''}</div>
