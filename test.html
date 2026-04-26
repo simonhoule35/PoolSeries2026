@@ -578,8 +578,6 @@ function showDetail(num,fromRefresh){
     const re=rp&&(rp[C.Eliminated]===true||rp[C.Eliminated]==='TRUE');
     const la=lp&&lp[C.Eliminated]==='DONE';
     const ra=rp&&rp[C.Eliminated]==='DONE';
-    const la=lp&&(lp[C.Eliminated]===false||lp[C.Eliminated]==='FALSE')&&finalMode;
-    const ra=rp&&(rp[C.Eliminated]===false||rp[C.Eliminated]==='FALSE')&&finalMode;
     const lPill=lp?getPillHtml(lp,`${num}|${sk}|${ri}|L|${ln}`,allowAnimate):'';
     const rPill=rp?getPillHtml(rp,`${num}|${sk}|${ri}|R|${rn}`,allowAnimate):'';
     return `<div class="player-row">
