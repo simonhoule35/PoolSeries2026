@@ -424,18 +424,17 @@ async function loadData(){
       if(name)goalieMap[name]=row;
     }
 
-    // ── Read flags ──
-// Read Config sheet — Row 0=Round, Row 1=FinalMode, Row 2=Winners
-currentRound=1;finalMode=false;winnersMap={};
-if(flagRaw[0]){const p=Number(flagRaw[0][1]);if(p>=1&&p<=4)currentRound=p;}
-if(flagRaw[1]){finalMode=(flagRaw[1][1]===true||String(flagRaw[1][1]).toUpperCase()==='TRUE');}
-if(finalMode&&flagRaw[2]){
-  try{
-    const winners=JSON.parse(String(flagRaw[2][1]||'[]'));
-    winners.forEach(function(name,i){if(name)winnersMap[name]='W'+(i+1);});
-  }catch(e){}
-}
-const cfg=ROUND_CFG[currentRound]||ROUND_CFG[1];
+    // ── Read Config sheet — Row 0=Round, Row 1=FinalMode, Row 2=Winners ──
+    currentRound=1;finalMode=false;winnersMap={};
+    if(flagRaw[0]){const p=Number(flagRaw[0][1]);if(p>=1&&p<=4)currentRound=p;}
+    if(flagRaw[1]){finalMode=(flagRaw[1][1]===true||String(flagRaw[1][1]).toUpperCase()==='TRUE');}
+    if(flagRaw[2]){
+      try{
+        const winners=JSON.parse(String(flagRaw[2][1]||'[]'));
+        winners.forEach(function(name,i){if(name)winnersMap[name]='W'+(i+1);});
+      }catch(e){}
+    }
+    const cfg=ROUND_CFG[currentRound]||ROUND_CFG[1];
 
     // ── Load active round rows ──
     if(currentRound===1){
