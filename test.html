@@ -414,7 +414,7 @@ async function loadData(){
       fetchSheetRange('App_Live','Q1:AG11'),
       fetchSheetRange('LiveStats','R1:T4'),
       fetchSheet('GoalieStats'),
-      fetchSheetRange('App_Live','Q12:AA21')
+      fetchSheet('Config')
     ]);
 
     predTable=predRaw;
@@ -424,25 +424,20 @@ async function loadData(){
       if(name)goalieMap[name]=row;
     }
 
-    // ── Read flags ──
-    finalRaw=flagRaw;
-    currentRound=1;
-    if(flagRaw[8]){const rv=flagRaw[8][1];const p=Number(rv);if(p>=1&&p<=4)currentRound=p;}
-
-    const cfg=ROUND_CFG[currentRound]||ROUND_CFG[1];
-    finalMode=false;winnersMap={};
-    if(flagRaw[cfg.fmRow]){
-      const fv=flagRaw[cfg.fmRow][1];
-      finalMode=(fv===true||String(fv).toUpperCase()==='TRUE');
+    // ── Read Config sheet — single JSON cell ──
+    currentRound=1;finalMode=false;winnersMap={};
+    if(flagRaw[0]&&flagRaw[0][1]){
+      try{
+        const config=JSON.parse(String(flagRaw[0][1]));
+        if(config.round>=1&&config.round<=4)currentRound=config.round;
+        finalMode=config.finalMode===true;
+        if(finalMode&&config.winners){
+          config.winners.forEach(function(name,i){if(name)winnersMap[name]='W'+(i+1);});
+        }
+      }catch(e){console.log('Config parse error:',e);}
     }
-if(finalMode&&flagRaw[9]){
-  try{
-    const winners=JSON.parse(String(flagRaw[9][0]||'[]'));
-    winners.forEach(function(name,i){
-      if(name)winnersMap[name]='W'+(i+1);
-    });
-  }catch(e){}
-}
+    console.log('Round:',currentRound,'FinalMode:',finalMode);
+    const cfg=ROUND_CFG[currentRound]||ROUND_CFG[1];
 
     // ── Load active round rows ──
     if(currentRound===1){
