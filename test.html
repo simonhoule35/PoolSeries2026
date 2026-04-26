@@ -427,11 +427,16 @@ async function loadData(){
     }
 
     // Read current round from Config
-    currentRound = 1;
-if(flagRaw[0] && flagRaw[0][1] !== undefined && flagRaw[0][1] !== ''){const p=Number(flagRaw[0][1]);if(p>=1&&p<=3)currentRound=p;}
-    console.log("Round detected:", currentRound);
-    
-    console.log("Current round from sheet:", currentRound); // Check console
+// Read current round from Config - FIXED for string/number issue
+currentRound = 1;
+if (flagRaw[0] && flagRaw[0][1] !== undefined && flagRaw[0][1] !== '') {
+  // Convert to number, handling both string "2" and number 2
+  const p = Number(flagRaw[0][1]);
+  if (!isNaN(p) && p >= 1 && p <= 3) {
+    currentRound = p;
+  }
+}
+console.log("Current Round from Config:", currentRound); // Add this debug line
 
     // Read final mode flag for current round
     finalMode = false;
