@@ -400,12 +400,42 @@ async function fetchSheetRange(name,range){
 function buildMatchupsFromRows(rows){
   const map={};
   rows.forEach(r=>{
-    const num=Number(r[C.Matchup]),user=String(r[C.User]||'').trim();
+    let num=Number(r[C.Matchup]);
+    const user=String(r[C.User]||'').trim();
+    if(!user)return;
+    
+    // For Round 2, if all matchups are 1, distribute them based on user pairs
+    if(currentRound === 2 && num === 1) {
+      // Manual mapping for Round 2 (8 winners from Round 1)
+      const round2Matchups = [
+        {num:1, left:'Lionel', right:'Joaquin'},
+        {num:2, left:'Francis', right:'Simon'},
+        {num:3, left:'J-P', right:'David'},
+        {num:4, left:'Marc-André', right:'José'}
+      ];
+      
+      round2Matchups.forEach(mu => {
+        if(!map[mu.num]) map[mu.num] = {num:mu.num, left:mu.left, right:mu.right};
+      });
+      return;
+    }
+    
     if(!num||!user)return;
     if(!map[num])map[num]={num,left:'',right:''};
     if(!map[num].left)map[num].left=user;
     else if(map[num].left!==user&&!map[num].right)map[num].right=user;
   });
+  
+  if(Object.keys(map).length === 0 && currentRound === 2) {
+    // Fallback manual matchups for Round 2
+    return [
+      {num:1, left:'Lionel', right:'Joaquin'},
+      {num:2, left:'Francis', right:'Simon'},
+      {num:3, left:'J-P', right:'David'},
+      {num:4, left:'Marc-André', right:'José'}
+    ];
+  }
+  
   return Object.values(map).sort((a,b)=>a.num-b.num);
 }
 
