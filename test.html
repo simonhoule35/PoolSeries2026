@@ -55,7 +55,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .section-label{font-size:11px;color:#b0bec5;padding:12px 16px 6px;text-transform:uppercase;letter-spacing:.5px}
 .matchup-card{background:#1a2535;margin:0 12px 8px;border-radius:12px;border:.5px solid #2a3a4a;padding:10px 14px;cursor:pointer}
 .matchup-card:active{background:#202f40}
-.matchup-card.final-mode{border-color:rgba(234,179,8,.4);background:#1a2535}
+.matchup-card.final-mode{border-color:rgba(234,179,8,.2);
 .matchup-row{display:grid;grid-template-columns:1fr 60px 1fr;gap:10px;align-items:center}
 .matchup-row > div:first-child{display:flex;flex-direction:column;justify-content:center;min-height:48px}
 .right-side{text-align:right;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;min-height:48px}
@@ -87,8 +87,8 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .own-r{background:#1a4a2e;padding:8px 12px;text-align:right}
 .own-r-name{font-size:18px;font-weight:600;color:#e8eaed}
 .own-r-sub{font-size:13px;color:#86efac;margin-top:2px}
-.own-l.winner-bg{background:#1a2535}
-.own-r.winner-bg{background:#1a2535}
+.own-l.winner-bg{background:linear-gradient(135deg,#1c1800,#1e2800)}
+.own-r.winner-bg{background:linear-gradient(135deg,#1e2800,#1c1800)}
 .own-l.loser-bg{background:#111a22;opacity:.7}
 .own-r.loser-bg{background:#111a22;opacity:.7;text-align:right}
 .diff-win{color:#22c55e}
@@ -133,7 +133,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .total-l span{font-size:18px;font-weight:600;color:#22c55e;display:block}
 .total-r{background:#14532d;padding:7px 12px;font-size:11px;color:#86efac;text-align:right}
 .total-r span{font-size:18px;font-weight:600;color:#22c55e;display:block}
-.total-bar.final .total-l.winner-total,.total-bar.final .total-r.winner-total{background:#1a2535;color:#a16207;font-weight:600;position:relative;overflow:hidden;animation:cellGlow 2.5s ease-in-out infinite}
+.total-bar.final .total-l.winner-total,.total-bar.final .total-r.winner-total{background:linear-gradient(135deg,#2a1f00,#1a2800);color:#a16207;font-weight:600;position:relative;overflow:hidden;animation:cellGlow 2.5s ease-in-out infinite}
 .total-bar.final .total-l.winner-total{border-right:2px solid #0f1923}
 .total-bar.final .total-l.winner-total::after,.total-bar.final .total-r.winner-total::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(234,179,8,.07),transparent);animation:shimmer 2.5s ease-in-out infinite}
 @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
@@ -179,7 +179,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .elim-pill{display:inline-flex;align-items:center;margin-left:5px;padding:1px 6px;border-radius:999px;border:.5px solid rgba(239,68,68,.6);background:rgba(69,26,3,.9);color:#f87171;font-size:9px;font-weight:700;letter-spacing:.2px;vertical-align:middle;opacity:.85}
 .elim-pill.right{margin-left:0;margin-right:5px}
 .seed-badge{display:inline-flex;align-items:center;font-size:9px;font-weight:800;padding:1px 6px;border-radius:999px;background:rgba(234,179,8,.15);border:.5px solid rgba(234,179,8,.5);color:#fde047;margin-left:6px;letter-spacing:.3px}
-.final-banner{margin:10px 12px 4px;border-radius:10px;background:#1a2535;border:1px solid rgba(234,179,8,.4);padding:10px 14px;display:none;align-items:center;gap:10px;animation:bannerPulse 3s ease-in-out infinite}
+.final-banner{margin:10px 12px 4px;border-radius:10px;background:linear-gradient(135deg,#1a1200,#2a1f00);border:1px solid rgba(234,179,8,.4);padding:10px 14px;display:none;align-items:center;gap:10px;animation:bannerPulse 3s ease-in-out infinite}
 .final-banner.show{display:flex}
 @keyframes bannerPulse{0%,100%{border-color:rgba(234,179,8,.3)}50%{border-color:rgba(234,179,8,.7);box-shadow:0 0 12px rgba(234,179,8,.15)}}
 .final-banner-icon{font-size:20px;animation:trophySpin 4s ease-in-out infinite}
@@ -305,9 +305,7 @@ const MATCHUPS_R1=[
   {num:8,left:'Marc-André',right:'Dom'}
 ];
 
-// Replace the round detection code with this:
-let currentRound = 2; // FORCE ROUND 2
-console.log("FORCED current round to:", currentRound);
+let currentMatchups=MATCHUPS_R1;
 
 function setView(view){
   document.getElementById('home-view').style.display='none';
@@ -388,54 +386,24 @@ async function fetchSheet(name){
   const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}`;
   const res=await fetch(url);const text=await res.text();
   const json=JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-  return json.table.rows.map(r=>r.c.map(c=>c&&c.v!==null&&c.v!==undefined?(c.f!==undefined&&c.f!==null?String(c.f):String(c.v)):''));
+  return json.table.rows.map(r=>r.c.map(c=>c?(c.f!==undefined&&c.f!==null?c.f:c.v):''));
 }
 async function fetchSheetRange(name,range){
   const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}&range=${range}&headers=0`;
   const res=await fetch(url);const text=await res.text();
   const json=JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-  return json.table.rows.map(r=>r.c.map(c=>c&&c.v!==null&&c.v!==undefined?(c.f!==undefined&&c.f!==null?String(c.f):String(c.v)):''));
+  return json.table.rows.map(r=>r.c.map(c=>c?(c.f!==undefined&&c.f!==null?c.f:c.v):''));
 }
 
 function buildMatchupsFromRows(rows){
   const map={};
   rows.forEach(r=>{
-    let num=Number(r[C.Matchup]);
-    const user=String(r[C.User]||'').trim();
-    if(!user)return;
-    
-    // For Round 2, if all matchups are 1, distribute them based on user pairs
-    if(currentRound === 2 && num === 1) {
-      // Manual mapping for Round 2 (8 winners from Round 1)
-      const round2Matchups = [
-        {num:1, left:'Lionel', right:'Joaquin'},
-        {num:2, left:'Francis', right:'Simon'},
-        {num:3, left:'J-P', right:'David'},
-        {num:4, left:'Marc-André', right:'José'}
-      ];
-      
-      round2Matchups.forEach(mu => {
-        if(!map[mu.num]) map[mu.num] = {num:mu.num, left:mu.left, right:mu.right};
-      });
-      return;
-    }
-    
+    const num=Number(r[C.Matchup]),user=String(r[C.User]||'').trim();
     if(!num||!user)return;
     if(!map[num])map[num]={num,left:'',right:''};
     if(!map[num].left)map[num].left=user;
     else if(map[num].left!==user&&!map[num].right)map[num].right=user;
   });
-  
-  if(Object.keys(map).length === 0 && currentRound === 2) {
-    // Fallback manual matchups for Round 2
-    return [
-      {num:1, left:'Lionel', right:'Joaquin'},
-      {num:2, left:'Francis', right:'Simon'},
-      {num:3, left:'J-P', right:'David'},
-      {num:4, left:'Marc-André', right:'José'}
-    ];
-  }
-  
   return Object.values(map).sort((a,b)=>a.num-b.num);
 }
 
@@ -446,10 +414,8 @@ async function loadData(){
       fetchSheetRange('App_Live','Q1:AG11'),
       fetchSheetRange('LiveStats','R1:T4'),
       fetchSheet('GoalieStats'),
-      fetchSheet('Config')
+      fetchSheetRange('App_Live','Q12:AA21')
     ]);
-    
-    console.log("Full flagRaw:", JSON.stringify(flagRaw));
 
     predTable=predRaw;
     goalieMap={};
@@ -458,49 +424,37 @@ async function loadData(){
       if(name)goalieMap[name]=row;
     }
 
-    // Read current round from Config
-// Read current round from Config - FIXED for string/number issue
-currentRound = 1;
-if (flagRaw[0] && flagRaw[0][1] !== undefined && flagRaw[0][1] !== '') {
-  // Convert to number, handling both string "2" and number 2
-  const p = Number(flagRaw[0][1]);
-  if (!isNaN(p) && p >= 1 && p <= 3) {
-    currentRound = p;
-  }
-}
-console.log("Current Round from Config:", currentRound); // Add this debug line
-
-    // Read final mode flag for current round
-    finalMode = false;
-    winnersMap = {};
-    
-    if(flagRaw[1] && flagRaw[1][1]) {
-      finalMode = (flagRaw[1][1] === true || String(flagRaw[1][1]).toUpperCase() === 'TRUE');
-    }
-    
-    if(flagRaw[2] && flagRaw[2][1]){
-      try{
-        const winners=JSON.parse(String(flagRaw[2][1]||'[]'));
-        winners.forEach(function(name,i){if(name)winnersMap[name]='W'+(i+1);});
-      }catch(e){}
-    }
+    // ── Read flags ──
+    finalRaw=flagRaw;
+    currentRound=1;
+    if(flagRaw[8]){const rv=flagRaw[8][1];const p=Number(rv);if(p>=1&&p<=4)currentRound=p;}
 
     const cfg=ROUND_CFG[currentRound]||ROUND_CFG[1];
+    finalMode=false;winnersMap={};
+    if(flagRaw[cfg.fmRow]){
+      const fv=flagRaw[cfg.fmRow][1];
+      finalMode=(fv===true||String(fv).toUpperCase()==='TRUE');
+    }
+if(finalMode&&flagRaw[9]){
+  try{
+    const winners=JSON.parse(String(flagRaw[9][0]||'[]'));
+    winners.forEach(function(name,i){
+      if(name)winnersMap[name]='W'+(i+1);
+    });
+  }catch(e){}
+}
 
-    // Load the correct sheet based on current round
-    if(currentRound === 1){
+    // ── Load active round rows ──
+    if(currentRound===1){
       liveRows=allRows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
       currentMatchups=MATCHUPS_R1;
     } else {
-      const roundSheetName = ROUND_CFG[currentRound].appSheet;
-      console.log("Loading sheet:", roundSheetName);
-      const roundRows = await fetchSheet(roundSheetName);
+      const roundRows=await fetchSheet(cfg.appSheet);
       liveRows=roundRows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
       currentMatchups=buildMatchupsFromRows(liveRows);
-      console.log("Matchups loaded:", currentMatchups);
     }
 
-    // Update UI
+    // ── Update banner ──
     const banner=document.getElementById('final-banner');
     if(banner)banner.classList.toggle('show',finalMode);
     document.getElementById('final-banner-text').textContent=cfg.bannerText;
@@ -515,7 +469,7 @@ console.log("Current Round from Config:", currentRound); // Add this debug line
     lastRefreshTime=new Date().toLocaleTimeString('fr-CA',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('last-refresh-bar').textContent=lastRefreshTime?`Mis à jour à ${lastRefreshTime}`:'';
     updateInstallVisibility();
-    renderHome();
+    renderHome(gameCount);
     if(document.getElementById('detail-view').style.display==='block'&&activeDetailNum!==null){
       showDetail(activeDetailNum,true);
     }
