@@ -424,29 +424,46 @@ async function loadData(){
       if(name)goalieMap[name]=row;
     }
 
-    // ── Read Config sheet — Row 0=Round, Row 1=FinalMode, Row 2=Winners ──
-    currentRound=1;finalMode=false;winnersMap={};
-    if(flagRaw[0]){const p=Number(flagRaw[0][1]);if(p>=1&&p<=4)currentRound=p;}
-    if(flagRaw[1]){finalMode=(flagRaw[1][1]===true||String(flagRaw[1][1]).toUpperCase()==='TRUE');}
-    if(flagRaw[2]){
+    // Read current round from Config
+    currentRound = 1;
+    if(flagRaw[0] && flagRaw[0][1] && flagRaw[0][1] !== '') {
+      const p = Number(flagRaw[0][1]);
+      if(p >= 1 && p <= 3) currentRound = p;
+    }
+    
+    console.log("Current round from sheet:", currentRound); // Check console
+
+    // Read final mode flag for current round
+    finalMode = false;
+    winnersMap = {};
+    
+    if(flagRaw[1] && flagRaw[1][1]) {
+      finalMode = (flagRaw[1][1] === true || String(flagRaw[1][1]).toUpperCase() === 'TRUE');
+    }
+    
+    if(flagRaw[2] && flagRaw[2][1]){
       try{
         const winners=JSON.parse(String(flagRaw[2][1]||'[]'));
         winners.forEach(function(name,i){if(name)winnersMap[name]='W'+(i+1);});
       }catch(e){}
     }
+
     const cfg=ROUND_CFG[currentRound]||ROUND_CFG[1];
 
-    // ── Load active round rows ──
-    if(currentRound===1){
+    // Load the correct sheet based on current round
+    if(currentRound === 1){
       liveRows=allRows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
       currentMatchups=MATCHUPS_R1;
     } else {
-      const roundRows=await fetchSheet(cfg.appSheet);
+      const roundSheetName = ROUND_CFG[currentRound].appSheet;
+      console.log("Loading sheet:", roundSheetName);
+      const roundRows = await fetchSheet(roundSheetName);
       liveRows=roundRows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
       currentMatchups=buildMatchupsFromRows(liveRows);
+      console.log("Matchups loaded:", currentMatchups);
     }
 
-    // ── Update banner ──
+    // Update UI
     const banner=document.getElementById('final-banner');
     if(banner)banner.classList.toggle('show',finalMode);
     document.getElementById('final-banner-text').textContent=cfg.bannerText;
@@ -461,7 +478,7 @@ async function loadData(){
     lastRefreshTime=new Date().toLocaleTimeString('fr-CA',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('last-refresh-bar').textContent=lastRefreshTime?`Mis à jour à ${lastRefreshTime}`:'';
     updateInstallVisibility();
-    renderHome(gameCount);
+    renderHome();
     if(document.getElementById('detail-view').style.display==='block'&&activeDetailNum!==null){
       showDetail(activeDetailNum,true);
     }
