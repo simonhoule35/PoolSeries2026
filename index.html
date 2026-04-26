@@ -542,8 +542,8 @@ function renderHome(gameCount){
 function showDetail(num, fromRefresh){
   const mu=MATCHUPS.find(m=>m.num===num);
   const lP=getPlayers(num,mu.left),rP=getPlayers(num,mu.right);
-  const lt=getUserTotal(lP)+(getUserPicks(mu.left).predPts||0);
-  const rt=getUserTotal(rP)+(getUserPicks(mu.right).predPts||0);
+  const lt=getUserTotal(lP);
+  const rt=getUserTotal(rP);
   const gap=Math.abs(lt-rt),ll=lt>rt,rl=rt>lt;
   const lF=lP.filter(r=>r[C.Position]==='F'),lD=lP.filter(r=>r[C.Position]==='D'),lG=lP.filter(r=>r[C.Position]==='G');
   const rF=rP.filter(r=>r[C.Position]==='F'),rD=rP.filter(r=>r[C.Position]==='D'),rG=rP.filter(r=>r[C.Position]==='G');
