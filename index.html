@@ -511,8 +511,8 @@ function renderHome(gameCount){
   let html='';
   MATCHUPS.forEach(mu=>{
     const lP=getPlayers(mu.num,mu.left),rP=getPlayers(mu.num,mu.right);
-    const lt=getUserTotal(lP)+(getUserPicks(mu.left).predPts||0);
-    const rt=getUserTotal(rP)+(getUserPicks(mu.right).predPts||0);
+    const lt=getUserTotal(lP);
+    const rt=getUserTotal(rP);
     const gap=Math.abs(lt-rt),tied=lt===rt,ll=lt>rt,rl=rt>lt;
     const ld=tied?'':ll?`<span style="color:#22c55e;font-size:12px;margin-left:4px">+${gap}</span>`:`<span style="color:#ef4444;font-size:12px;margin-left:4px">-${gap}</span>`;
     const rd=tied?'':rl?`<span style="color:#22c55e;font-size:12px;margin-left:4px">+${gap}</span>`:`<span style="color:#ef4444;font-size:12px;margin-left:4px">-${gap}</span>`;
