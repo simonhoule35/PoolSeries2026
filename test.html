@@ -416,6 +416,8 @@ async function loadData(){
       fetchSheet('GoalieStats'),
       fetchSheet('Config')
     ]);
+    
+    console.log("Full flagRaw:", JSON.stringify(flagRaw));
 
     predTable=predRaw;
     goalieMap={};
