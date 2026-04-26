@@ -435,11 +435,14 @@ async function loadData(){
       const fv=flagRaw[cfg.fmRow][1];
       finalMode=(fv===true||String(fv).toUpperCase()==='TRUE');
     }
-    if(finalMode&&flagRaw[cfg.wRow]){
-      const wRow=flagRaw[cfg.wRow];
-   for(let i=2;i<=cfg.wCount+1;i++){
-  const name=String(wRow[i]||'').trim();
-  if(name)winnersMap[name]='W'+(i-1);
+if(finalMode&&flagRaw[cfg.wRow]){
+  const wRow=flagRaw[cfg.wRow];
+  try{
+    const winners=JSON.parse(String(wRow[1]||'[]'));
+    winners.forEach(function(name,i){
+      if(name)winnersMap[name]='W'+(i+1);
+    });
+  }catch(e){}
 }
     }
 
