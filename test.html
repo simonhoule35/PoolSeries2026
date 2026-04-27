@@ -280,6 +280,16 @@ const C = {
 };
 const GS = { Name:0, W:1, L:2, SO:3, LiveG:4, LiveA:5 };
 
+// ── Prediction config per round ──
+// predRange: range to fetch from the active App sheet
+// predCount: number of series (EST + OUEST combined)
+const PRED_CFG = {
+  1: { predRange:'Q1:AG11', predCount:8  }, // 16 users, 8 series
+  2: { predRange:'Q1:Y7',   predCount:4  }, // 8 users,  4 series (2 EST + 2 OUEST)
+  3: { predRange:'Q1:U5',   predCount:2  }, // 4 users,  2 series (1 EST + 1 OUEST)
+  4: { predRange:'Q1:S4',   predCount:1  }  // 2 users,  1 series
+};
+
 let predTable=[], liveRows=[], lastRefreshTime='';
 let goalieMap={}, deferredPrompt=null, activeDetailNum=null;
 const pillState={};
@@ -287,9 +297,10 @@ const pillState={};
 let finalMode=false, winnersMap={}, currentRound=1, finalRaw=[];
 
 const ROUND_CFG={
-  1:{appSheet:'App_Live',label:'Ronde 1',bannerText:'Ronde 1 — Résultats Finaux',bannerSub:'Les 8 gagnants passent en Ronde 2',fmRow:0,wRow:1,wCount:8},
-  2:{appSheet:'App_Ronde2',label:'Ronde 2',bannerText:'Ronde 2 — Résultats Finaux',bannerSub:'Les 4 gagnants passent en Ronde 3',fmRow:2,wRow:3,wCount:4},
-  3:{appSheet:'App_Ronde3',label:'Ronde 3',bannerText:'Ronde 3 — Résultats Finaux',bannerSub:'Les 2 finalistes sont qualifiés',fmRow:4,wRow:5,wCount:2}
+  1:{appSheet:'App_Live',   label:'Ronde 1', bannerText:'Ronde 1 — Résultats Finaux', bannerSub:'Les 8 gagnants passent en Ronde 2'},
+  2:{appSheet:'App_Ronde2', label:'Ronde 2', bannerText:'Ronde 2 — Résultats Finaux', bannerSub:'Les 4 gagnants passent en Ronde 3'},
+  3:{appSheet:'App_Ronde3', label:'Ronde 3', bannerText:'Ronde 3 — Résultats Finaux', bannerSub:'Les 2 finalistes sont qualifiés'},
+  4:{appSheet:'App_RondeF', label:'Finale',  bannerText:'Finale — Résultats Finaux',  bannerSub:'Le grand gagnant est couronné'}
 };
 
 const MATCHUPS_R1=[
@@ -344,21 +355,44 @@ function triggerRefresh(){
   loadData().then(()=>{icon.style.animation='';});
 }
 
+// ── Prediction helpers ──
+// For R1: uses est[]/ouest[] arrays (8 series total)
+// For R2+: uses pred[] array (combined series, no est/ouest split)
 function getUserColIndex(u){if(!predTable.length)return -1;return predTable[0].indexOf(u);}
+
 function getUserPicks(u){
   const col=getUserColIndex(u);
-  if(col<0)return{est:[],ouest:[],predPts:0};
-  return{
-    est:[1,2,3,4].map(r=>String(predTable[r]&&predTable[r][col]?predTable[r][col]:'')),
-    ouest:[5,6,7,8].map(r=>String(predTable[r]&&predTable[r][col]?predTable[r][col]:'')),
-    predPts:Number(predTable[9]&&predTable[9][col]?predTable[9][col]:0)
-  };
+  if(col<0)return{est:[],ouest:[],pred:[],predPts:0};
+  const pc=PRED_CFG[currentRound]||PRED_CFG[1];
+  if(currentRound===1){
+    return{
+      est:[1,2,3,4].map(r=>String(predTable[r]&&predTable[r][col]?predTable[r][col]:'')),
+      ouest:[5,6,7,8].map(r=>String(predTable[r]&&predTable[r][col]?predTable[r][col]:'')),
+      pred:[],
+      predPts:Number(predTable[9]&&predTable[9][col]?predTable[9][col]:0)
+    };
+  } else {
+    // R2/R3/F: pred rows are 1..predCount, PredPts is predCount+1
+    const pred=[];
+    for(let r=1;r<=pc.predCount;r++){
+      pred.push(String(predTable[r]&&predTable[r][col]?predTable[r][col]:''));
+    }
+    const predPtsRow=pc.predCount+1;
+    return{
+      est:[],ouest:[],pred,
+      predPts:Number(predTable[predPtsRow]&&predTable[predPtsRow][col]?predTable[predPtsRow][col]:0)
+    };
+  }
 }
+
 function getSeriesResult(si){
-  const row=predTable[10];if(!row)return null;
+  // Results row is last row of predTable
+  const row=predTable[predTable.length-1];
+  if(!row)return null;
   const val=String(row[si+1]||'').trim();if(!val)return null;
   const p=val.split('|');return{winner:p[0]||'',games:p[1]||''};
 }
+
 function scorePick(pick,si){
   const result=getSeriesResult(si);if(!result||!result.winner)return null;
   const p=String(pick||'').split('|');
@@ -407,21 +441,15 @@ function buildMatchupsFromRows(rows){
 
 async function loadData(){
   try{
-    const[allRows,predRaw,lsRaw,goalieRaw,flagRaw]=await Promise.all([
+    // ── Step 1: Fetch Config + LiveStats + GoalieStats + App_Live in parallel ──
+    const[allRows,lsRaw,goalieRaw,flagRaw]=await Promise.all([
       fetchSheet('App_Live'),
-      fetchSheetRange('App_Live','Q1:AG11'),
       fetchSheetRange('LiveStats','R1:T4'),
       fetchSheet('GoalieStats'),
       fetchSheet('Config')
     ]);
 
-    predTable=predRaw;
-    goalieMap={};
-    for(let i=1;i<goalieRaw.length;i++){
-      const row=goalieRaw[i];const name=String(row[GS.Name]||'').trim();
-      if(name)goalieMap[name]=row;
-    }
-
+    // ── Step 2: Parse Config to determine current round ──
     currentRound=1;finalMode=false;winnersMap={};
     if(flagRaw[0]&&flagRaw[0][1]){
       try{
@@ -434,16 +462,33 @@ async function loadData(){
       }catch(e){console.log('Config parse error:',e);}
     }
     const cfg=ROUND_CFG[currentRound]||ROUND_CFG[1];
+    const pc=PRED_CFG[currentRound]||PRED_CFG[1];
 
+    // ── Step 3: Fetch predictions from correct sheet + range for current round ──
+    // Also fetch the active round's player data if not R1
+    let predRaw, roundRows;
     if(currentRound===1){
-      liveRows=allRows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
+      predRaw   = await fetchSheetRange('App_Live', pc.predRange);
+      liveRows  = allRows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
       currentMatchups=MATCHUPS_R1;
     } else {
-      const roundRows=await fetchSheet(cfg.appSheet);
+      [predRaw, roundRows] = await Promise.all([
+        fetchSheetRange(cfg.appSheet, pc.predRange),
+        fetchSheet(cfg.appSheet)
+      ]);
       liveRows=roundRows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
       currentMatchups=buildMatchupsFromRows(liveRows);
     }
+    predTable=predRaw;
 
+    // ── Step 4: Build goalie map ──
+    goalieMap={};
+    for(let i=1;i<goalieRaw.length;i++){
+      const row=goalieRaw[i];const name=String(row[GS.Name]||'').trim();
+      if(name)goalieMap[name]=row;
+    }
+
+    // ── Step 5: Update UI ──
     const banner=document.getElementById('final-banner');
     if(banner)banner.classList.toggle('show',finalMode);
     document.getElementById('final-banner-text').textContent=cfg.bannerText;
@@ -600,16 +645,36 @@ function showDetail(num,fromRefresh){
     if(score===2)return '<span class="pred-pill green">+2 pts</span>';
     return '<span class="pred-pill red">0 pts</span>';
   }
-  function predPair(arr,i){
-    const si=arr==='est'?i:i+4;
-    const l=predL?(predL[arr][i]||''):'',r=predR?(predR[arr][i]||''):'';
-    const ls=scorePick(l,si),rs=scorePick(r,si);
-    return `<div class="pred-row"><span class="pred-l">${l}${pill(ls)}</span><span class="pred-r">${pill(rs)}${r}</span></div>`;
-  }
 
-  const predHtml=(predL||predR)
-    ?['<div class="section-bar">EST</div>',predPair('est',0),predPair('est',1),predPair('est',2),predPair('est',3),'<div class="section-bar">OUEST</div>',predPair('ouest',0),predPair('ouest',1),predPair('ouest',2),predPair('ouest',3)].join('')
-    :'<div class="pred-row"><span class="pred-l" style="color:#8a9bb0">Aucune prédiction</span></div>';
+  // ── Build prediction HTML based on current round ──
+  let predHtml='';
+  if(currentRound===1){
+    // R1: EST (4 series) + OUEST (4 series)
+    function predPairR1(arr,i){
+      const si=arr==='est'?i:i+4;
+      const l=predL?(predL[arr][i]||''):'',r=predR?(predR[arr][i]||''):'';
+      const ls=scorePick(l,si),rs=scorePick(r,si);
+      return `<div class="pred-row"><span class="pred-l">${l}${pill(ls)}</span><span class="pred-r">${pill(rs)}${r}</span></div>`;
+    }
+    predHtml=(predL||predR)
+      ?['<div class="section-bar">EST</div>',predPairR1('est',0),predPairR1('est',1),predPairR1('est',2),predPairR1('est',3),'<div class="section-bar">OUEST</div>',predPairR1('ouest',0),predPairR1('ouest',1),predPairR1('ouest',2),predPairR1('ouest',3)].join('')
+      :'<div class="pred-row"><span class="pred-l" style="color:#8a9bb0">Aucune prédiction</span></div>';
+  } else {
+    // R2+: combined series list
+    const pc=PRED_CFG[currentRound]||PRED_CFG[2];
+    if(predL||predR){
+      const rows=[];
+      for(let i=0;i<pc.predCount;i++){
+        const l=predL?(predL.pred[i]||''):'';
+        const r=predR?(predR.pred[i]||''):'';
+        const ls=scorePick(l,i),rs=scorePick(r,i);
+        rows.push(`<div class="pred-row"><span class="pred-l">${l}${pill(ls)}</span><span class="pred-r">${pill(rs)}${r}</span></div>`);
+      }
+      predHtml=rows.join('');
+    } else {
+      predHtml='<div class="pred-row"><span class="pred-l" style="color:#8a9bb0">Aucune prédiction</span></div>';
+    }
+  }
 
   const ldH=ll?`<span class="diff-win">+${gap}</span>`:rl?`<span class="diff-lose">-${gap}</span>`:'';
   const rdH=rl?`<span class="diff-win">+${gap}</span>`:ll?`<span class="diff-lose">-${gap}</span>`:'';
@@ -630,7 +695,6 @@ function showDetail(num,fromRefresh){
     oR=`<div class="own-r"><div class="own-r-name">${mu.right}${fR}</div><div class="own-r-sub">${rt} pts ${rdH}</div></div>`;
   }
 
-  // ── TOTAL BAR — uses lt/rt only (UserTotal already includes pred pts) ──
   const totalHtml=finalMode
     ?`<div class="total-bar final">
         <div class="total-l ${lW?'winner-total':'loser-total'}">${lW?lS+' · ':''}Total final<span>${lt} pts</span></div>
@@ -665,23 +729,21 @@ function showDetail(num,fromRefresh){
 
 function viewRound(round){
   const cfg=ROUND_CFG[round];if(!cfg)return;
-  fetchSheet(cfg.appSheet).then(function(rows){
+  const pc=PRED_CFG[round]||PRED_CFG[1];
+  Promise.all([
+    fetchSheet(cfg.appSheet),
+    fetchSheetRange(cfg.appSheet, pc.predRange)
+  ]).then(function([rows, preds]){
     const roundRows=rows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
     liveRows=roundRows;
+    predTable=preds;
+    currentRound=round;
     currentMatchups=round===1?MATCHUPS_R1:buildMatchupsFromRows(roundRows);
-    const fmRow=finalRaw[ROUND_CFG[round].fmRow];
-    finalMode=fmRow&&(fmRow[1]===true||String(fmRow[1]).toUpperCase()==='TRUE');
-    winnersMap={};
-    if(finalMode&&finalRaw[ROUND_CFG[round].wRow]){
-      const wRow=finalRaw[ROUND_CFG[round].wRow];
-      for(let i=1;i<=ROUND_CFG[round].wCount;i++){
-        const name=String(wRow[i]||'').trim();if(name)winnersMap[name]='W'+i;
-      }
-    }
+    finalMode=false;winnersMap={};
     document.getElementById('section-label').textContent='Matchups — '+cfg.label;
     renderHome();
     setView('home-view');
-  }).catch(function(){});
+  }).catch(function(e){console.error(e);});
 }
 
 function showHome(){setView('home-view');}
