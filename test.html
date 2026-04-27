@@ -166,7 +166,6 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .ld{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin:0 3px;animation:b 1.2s infinite}
 .ld:nth-child(2){animation-delay:.2s}.ld:nth-child(3){animation-delay:.4s}
 @keyframes b{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
-/* Final mode pills */
 .winner-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 7px;border-radius:999px;border:1px solid rgba(253,224,71,.8);color:#fde047;background:rgba(234,179,8,.08);font-size:18px;font-weight:500;animation:goldPulse 2.8s ease-in-out infinite;white-space:nowrap}
 @keyframes goldPulse{0%,100%{box-shadow:0 0 4px rgba(234,179,8,.2)}50%{box-shadow:0 0 10px rgba(234,179,8,.55),0 0 20px rgba(234,179,8,.22)}}
 .trophy{font-size:14px;animation:trophyBounce 2.8s ease-in-out infinite}
@@ -285,7 +284,6 @@ let predTable=[], liveRows=[], lastRefreshTime='';
 let goalieMap={}, deferredPrompt=null, activeDetailNum=null;
 const pillState={};
 
-// ── Final mode state ──
 let finalMode=false, winnersMap={}, currentRound=1, finalRaw=[];
 
 const ROUND_CFG={
@@ -424,7 +422,6 @@ async function loadData(){
       if(name)goalieMap[name]=row;
     }
 
-    // ── Read Config sheet — single JSON cell ──
     currentRound=1;finalMode=false;winnersMap={};
     if(flagRaw[0]&&flagRaw[0][1]){
       try{
@@ -436,10 +433,8 @@ async function loadData(){
         }
       }catch(e){console.log('Config parse error:',e);}
     }
-    console.log('Round:',currentRound,'FinalMode:',finalMode);
     const cfg=ROUND_CFG[currentRound]||ROUND_CFG[1];
 
-    // ── Load active round rows ──
     if(currentRound===1){
       liveRows=allRows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
       currentMatchups=MATCHUPS_R1;
@@ -449,7 +444,6 @@ async function loadData(){
       currentMatchups=buildMatchupsFromRows(liveRows);
     }
 
-    // ── Update banner ──
     const banner=document.getElementById('final-banner');
     if(banner)banner.classList.toggle('show',finalMode);
     document.getElementById('final-banner-text').textContent=cfg.bannerText;
@@ -464,7 +458,7 @@ async function loadData(){
     lastRefreshTime=new Date().toLocaleTimeString('fr-CA',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('last-refresh-bar').textContent=lastRefreshTime?`Mis à jour à ${lastRefreshTime}`:'';
     updateInstallVisibility();
-    renderHome(gameCount);
+    renderHome();
     if(document.getElementById('detail-view').style.display==='block'&&activeDetailNum!==null){
       showDetail(activeDetailNum,true);
     }
@@ -636,12 +630,13 @@ function showDetail(num,fromRefresh){
     oR=`<div class="own-r"><div class="own-r-name">${mu.right}${fR}</div><div class="own-r-sub">${rt} pts ${rdH}</div></div>`;
   }
 
+  // ── TOTAL BAR — uses lt/rt only (UserTotal already includes pred pts) ──
   const totalHtml=finalMode
     ?`<div class="total-bar final">
-        <div class="total-l ${lW?'winner-total':'loser-total'}">${lW?lS+' · ':''}Total final<span>${lt+pPL} pts</span></div>
-        <div class="total-r ${rW?'winner-total':'loser-total'}">${rW?rS+' · ':''}Total final<span>${rt+pPR} pts</span></div>
+        <div class="total-l ${lW?'winner-total':'loser-total'}">${lW?lS+' · ':''}Total final<span>${lt} pts</span></div>
+        <div class="total-r ${rW?'winner-total':'loser-total'}">${rW?rS+' · ':''}Total final<span>${rt} pts</span></div>
       </div>`
-    :`<div class="total-bar"><div class="total-l">Total<span>${lt+pPL}</span></div><div class="total-r">Total<span>${rt+pPR}</span></div></div>`;
+    :`<div class="total-bar"><div class="total-l">Total<span>${lt}</span></div><div class="total-r">Total<span>${rt}</span></div></div>`;
 
   document.getElementById('detail-container').innerHTML=`<div class="${cClass}">
     <div class="matchup-title-bar ${tbClass}">${finalMode?'🏆 ':''}MATCHUP ${num}${finalMode?' — TERMINÉ':''}</div>
@@ -672,11 +667,8 @@ function viewRound(round){
   const cfg=ROUND_CFG[round];if(!cfg)return;
   fetchSheet(cfg.appSheet).then(function(rows){
     const roundRows=rows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
-    // Temporarily override
-    const savedRows=liveRows,savedMatchups=currentMatchups,savedFinal=finalMode,savedWinners=winnersMap;
     liveRows=roundRows;
     currentMatchups=round===1?MATCHUPS_R1:buildMatchupsFromRows(roundRows);
-    // Check final mode for that round
     const fmRow=finalRaw[ROUND_CFG[round].fmRow];
     finalMode=fmRow&&(fmRow[1]===true||String(fmRow[1]).toUpperCase()==='TRUE');
     winnersMap={};
@@ -687,7 +679,7 @@ function viewRound(round){
       }
     }
     document.getElementById('section-label').textContent='Matchups — '+cfg.label;
-    renderHome(gameCount);
+    renderHome();
     setView('home-view');
   }).catch(function(){});
 }
