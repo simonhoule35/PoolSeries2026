@@ -544,7 +544,7 @@ function buildPillData(row){return row[C.Position]==='G'?buildGoaliePill(row):bu
 function getPillHtml(row,key,allowAnimate){
   const pill=buildPillData(row);const prev=Object.prototype.hasOwnProperty.call(pillState,key)?pillState[key]:null;
   if(!pill){pillState[key]='';return '';}
-  const shouldAnimate=allowAnimate;
+  const shouldAnimate= true;
   pillState[key]=pill.signature;
   return `<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}${shouldAnimate?' anim':''}">${pill.text}</span>`;
 }
