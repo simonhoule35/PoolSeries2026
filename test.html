@@ -114,20 +114,80 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .ppts-r.scored{color:#22c55e;font-weight:500}
 .divider-col{width:1px;background:#2a3a4a;height:14px;margin:0 auto}
 .detail-refresh{font-size:12px;color:#4a5a6a;text-align:center;padding:6px}
-.stat-pill{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;white-space:nowrap;border-radius:999px;border:1px solid;font-weight:700;line-height:1;transition:transform .15s ease;gap:2px;max-width:100%}
+
+/* ── Stat Pills ── */
+.stat-pill{
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;white-space:nowrap;border-radius:999px;border:1px solid;
+  font-weight:700;line-height:1;gap:2px;max-width:100%;
+  position:relative;overflow:hidden;
+}
 .stat-pill.normal{min-height:20px;padding:3px 7px;font-size:11px;letter-spacing:.1px}
 .stat-pill.small{min-height:18px;padding:2px 5px;font-size:9.5px;letter-spacing:0}
 .stat-pill.tight{letter-spacing:-.2px}
 .stat-pill.pos{background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.55);color:#86efac}
 .stat-pill.neg{background:rgba(220,38,38,.12);border-color:rgba(239,68,68,.70);color:#f87171}
 .stat-pill.gold{background:rgba(234,179,8,.13);border-color:rgba(234,179,8,.82);color:#fde047}
-.stat-pill.anim{animation:pillEnter .65s cubic-bezier(.2,.8,.3,1), pillGlow .85s ease-out}
-@keyframes pillEnter{0%{transform:translateX(-12px) scale(.88);opacity:0}55%{transform:translateX(2px) scale(1.04);opacity:1}100%{transform:translateX(0) scale(1);opacity:1}}
-@keyframes pillGlow{0%{box-shadow:0 0 0 rgba(34,197,94,0)}35%{box-shadow:0 0 10px rgba(34,197,94,.48),0 0 20px rgba(34,197,94,.24)}100%{box-shadow:none}}
-.stat-pill.gold.anim{animation:pillEnter .65s cubic-bezier(.2,.8,.3,1), pillGlowGold .85s ease-out}
-@keyframes pillGlowGold{0%{box-shadow:0 0 0 rgba(234,179,8,0)}35%{box-shadow:0 0 10px rgba(234,179,8,.48),0 0 20px rgba(234,179,8,.24)}100%{box-shadow:none}}
-.stat-pill.neg.anim{animation:pillEnter .65s cubic-bezier(.2,.8,.3,1), pillGlowRed .85s ease-out}
-@keyframes pillGlowRed{0%{box-shadow:0 0 0 rgba(239,68,68,0)}35%{box-shadow:0 0 10px rgba(239,68,68,.38),0 0 18px rgba(239,68,68,.2)}100%{box-shadow:none}}
+
+/* ── Animation 1: Double pulse on first open (scale + glow) ── */
+.stat-pill.anim-open{animation:pillDoublePulse 0.9s ease-out forwards}
+
+@keyframes pillDoublePulse{
+  0%  {transform:scale(1)}
+  18% {transform:scale(1.13)}
+  34% {transform:scale(1)}
+  52% {transform:scale(1.09)}
+  68% {transform:scale(1)}
+  100%{transform:scale(1)}
+}
+.stat-pill.pos.anim-open{animation:pillDoublePulse 0.9s ease-out forwards, pillGlowPosDouble 0.9s ease-out forwards}
+.stat-pill.neg.anim-open{animation:pillDoublePulse 0.9s ease-out forwards, pillGlowNegDouble 0.9s ease-out forwards}
+.stat-pill.gold.anim-open{animation:pillDoublePulse 0.9s ease-out forwards, pillGlowGoldDouble 0.9s ease-out forwards}
+
+@keyframes pillGlowPosDouble{
+  0%  {box-shadow:none}
+  18% {box-shadow:0 0 10px rgba(34,197,94,.7),0 0 22px rgba(34,197,94,.35)}
+  34% {box-shadow:none}
+  52% {box-shadow:0 0 8px rgba(34,197,94,.55),0 0 16px rgba(34,197,94,.25)}
+  68% {box-shadow:none}
+  100%{box-shadow:none}
+}
+@keyframes pillGlowNegDouble{
+  0%  {box-shadow:none}
+  18% {box-shadow:0 0 10px rgba(239,68,68,.7),0 0 22px rgba(239,68,68,.35)}
+  34% {box-shadow:none}
+  52% {box-shadow:0 0 8px rgba(239,68,68,.55),0 0 16px rgba(239,68,68,.25)}
+  68% {box-shadow:none}
+  100%{box-shadow:none}
+}
+@keyframes pillGlowGoldDouble{
+  0%  {box-shadow:none}
+  18% {box-shadow:0 0 10px rgba(234,179,8,.7),0 0 22px rgba(234,179,8,.35)}
+  34% {box-shadow:none}
+  52% {box-shadow:0 0 8px rgba(234,179,8,.55),0 0 16px rgba(234,179,8,.25)}
+  68% {box-shadow:none}
+  100%{box-shadow:none}
+}
+
+/* ── Animation 2: Left-to-right fill sweep on new value ── */
+.stat-pill.anim-update::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:999px;
+  transform:translateX(-100%);
+  animation:pillSweep 0.6s cubic-bezier(.4,0,.2,1) forwards;
+}
+.stat-pill.pos.anim-update::after{background:linear-gradient(90deg,transparent 0%,rgba(134,239,172,.55) 40%,rgba(134,239,172,.75) 60%,transparent 100%)}
+.stat-pill.neg.anim-update::after{background:linear-gradient(90deg,transparent 0%,rgba(248,113,113,.55) 40%,rgba(248,113,113,.75) 60%,transparent 100%)}
+.stat-pill.gold.anim-update::after{background:linear-gradient(90deg,transparent 0%,rgba(253,224,71,.55) 40%,rgba(253,224,71,.75) 60%,transparent 100%)}
+
+@keyframes pillSweep{
+  0%  {transform:translateX(-100%);opacity:1}
+  70% {transform:translateX(0%);opacity:1}
+  100%{transform:translateX(100%);opacity:0}
+}
+
 .total-bar{display:grid;grid-template-columns:1fr 1fr;margin-top:6px}
 .total-l{background:#14532d;padding:7px 12px;font-size:11px;color:#86efac;border-right:2px solid #0f1923}
 .total-l span{font-size:18px;font-weight:600;color:#22c55e;display:block}
@@ -219,9 +279,9 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 <div class="menu-close" onclick="closeMenu()">✕ Fermer</div>
 <div class="menu-title">Navigation</div>
 <div class="menu-item active" onclick="showHome()">En cours</div>
-<div class="menu-item" onclick="viewRound(1)">Ronde 1</div>
-<div class="menu-item" onclick="viewRound(2)">Ronde 2</div>
-<div class="menu-item" onclick="viewRound(3)">Ronde 3</div>
+<div class="menu-item" style="display:none;"onclick="viewRound(1)">Ronde 1</div>
+<div class="menu-item" style="display:none;"onclick="viewRound(2)">Ronde 2</div>
+<div class="menu-item" style="display:none;"onclick="viewRound(3)">Ronde 3</div>
 <div class="menu-item" onclick="showBracket()">Bracket</div>
 </div>
 
@@ -280,19 +340,19 @@ const C = {
 };
 const GS = { Name:0, W:1, L:2, SO:3, LiveG:4, LiveA:5 };
 
-// ── Prediction config per round ──
-// predRange: range to fetch from the active App sheet
-// predCount: number of series (EST + OUEST combined)
 const PRED_CFG = {
-  1: { predRange:'Q1:AG11', predCount:8  }, // 16 users, 8 series
-  2: { predRange:'Q1:Y7',   predCount:4  }, // 8 users,  4 series (2 EST + 2 OUEST)
-  3: { predRange:'Q1:U5',   predCount:2  }, // 4 users,  2 series (1 EST + 1 OUEST)
-  4: { predRange:'Q1:S4',   predCount:1  }  // 2 users,  1 series
+  1: { predRange:'Q1:AG11', predCount:8  },
+  2: { predRange:'Q1:Y7',   predCount:4  },
+  3: { predRange:'Q1:U5',   predCount:2  },
+  4: { predRange:'Q1:S4',   predCount:1  }
 };
 
 let predTable=[], liveRows=[], lastRefreshTime='';
 let goalieMap={}, deferredPrompt=null, activeDetailNum=null;
-const pillState={};
+
+// pillState tracks last known signature per pill key
+// { key: { signature, value } }
+const pillState = {};
 
 let finalMode=false, winnersMap={}, currentRound=1, finalRaw=[];
 
@@ -355,9 +415,6 @@ function triggerRefresh(){
   loadData().then(()=>{icon.style.animation='';});
 }
 
-// ── Prediction helpers ──
-// For R1: uses est[]/ouest[] arrays (8 series total)
-// For R2+: uses pred[] array (combined series, no est/ouest split)
 function getUserColIndex(u){if(!predTable.length)return -1;return predTable[0].indexOf(u);}
 
 function getUserPicks(u){
@@ -372,7 +429,6 @@ function getUserPicks(u){
       predPts:Number(predTable[9]&&predTable[9][col]?predTable[9][col]:0)
     };
   } else {
-    // R2/R3/F: pred rows are 1..predCount, PredPts is predCount+1
     const pred=[];
     for(let r=1;r<=pc.predCount;r++){
       pred.push(String(predTable[r]&&predTable[r][col]?predTable[r][col]:''));
@@ -386,7 +442,6 @@ function getUserPicks(u){
 }
 
 function getSeriesResult(si){
-  // Results row is last row of predTable
   const row=predTable[predTable.length-1];
   if(!row)return null;
   const val=String(row[si+1]||'').trim();if(!val)return null;
@@ -441,7 +496,6 @@ function buildMatchupsFromRows(rows){
 
 async function loadData(){
   try{
-    // ── Step 1: Fetch Config + LiveStats + GoalieStats + App_Live in parallel ──
     const[allRows,lsRaw,goalieRaw,flagRaw]=await Promise.all([
       fetchSheet('App_Live'),
       fetchSheetRange('LiveStats','R1:T4'),
@@ -449,7 +503,6 @@ async function loadData(){
       fetchSheet('Config')
     ]);
 
-    // ── Step 2: Parse Config to determine current round ──
     currentRound=1;finalMode=false;winnersMap={};
     if(flagRaw[0]&&flagRaw[0][1]){
       try{
@@ -464,8 +517,6 @@ async function loadData(){
     const cfg=ROUND_CFG[currentRound]||ROUND_CFG[1];
     const pc=PRED_CFG[currentRound]||PRED_CFG[1];
 
-    // ── Step 3: Fetch predictions from correct sheet + range for current round ──
-    // Also fetch the active round's player data if not R1
     let predRaw, roundRows;
     if(currentRound===1){
       predRaw   = await fetchSheetRange('App_Live', pc.predRange);
@@ -481,14 +532,12 @@ async function loadData(){
     }
     predTable=predRaw;
 
-    // ── Step 4: Build goalie map ──
     goalieMap={};
     for(let i=1;i<goalieRaw.length;i++){
       const row=goalieRaw[i];const name=String(row[GS.Name]||'').trim();
       if(name)goalieMap[name]=row;
     }
 
-    // ── Step 5: Update UI ──
     const banner=document.getElementById('final-banner');
     if(banner)banner.classList.toggle('show',finalMode);
     document.getElementById('final-banner-text').textContent=cfg.bannerText;
@@ -504,8 +553,10 @@ async function loadData(){
     document.getElementById('last-refresh-bar').textContent=lastRefreshTime?`Mis à jour à ${lastRefreshTime}`:'';
     updateInstallVisibility();
     renderHome();
+
+    // If detail view is open, refresh it in place
     if(document.getElementById('detail-view').style.display==='block'&&activeDetailNum!==null){
-      showDetail(activeDetailNum,true);
+      showDetail(activeDetailNum, 'refresh');
     }
   }catch(e){
     document.getElementById('matchups-container').innerHTML='<div class="loading">Erreur de chargement.</div>';
@@ -541,12 +592,41 @@ function buildGoaliePill(row){
   return{text:small?fp.join('|'):fp.join(' | '),tone,size:small?'small':'normal',compact:small,signature:`GL|${tone}|${small?'S':'N'}|${fp.join('|')}`};
 }
 function buildPillData(row){return row[C.Position]==='G'?buildGoaliePill(row):buildSkaterPill(row);}
-function getPillHtml(row,key,allowAnimate){
-  const pill=buildPillData(row);const prev=Object.prototype.hasOwnProperty.call(pillState,key)?pillState[key]:null;
-  if(!pill){pillState[key]='';return '';}
-  const shouldAnimate=allowAnimate&&(prev===null||prev!==pill.signature);
-  pillState[key]=pill.signature;
-  return `<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}${shouldAnimate?' anim':''}">${pill.text}</span>`;
+
+// ── Core pill HTML builder ──
+// mode: 'open' = always animate with double-pulse
+//       'refresh' = animate with sweep only if value changed
+//       'none' = no animation
+function getPillHtml(row, key, mode){
+  const pill = buildPillData(row);
+  const prev = pillState[key] || null;
+
+  if(!pill){
+    pillState[key] = '';
+    return '';
+  }
+
+  let animClass = '';
+  if(mode === 'open'){
+    // Always double-pulse on open
+    animClass = 'anim-open';
+  } else if(mode === 'refresh'){
+    // Sweep only if value actually changed
+    if(prev && prev !== pill.signature){
+      animClass = 'anim-update';
+    }
+  }
+
+  pillState[key] = pill.signature;
+
+  return `<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}${animClass?' '+animClass:''}">${pill.text}</span>`;
+}
+
+// After injecting HTML, force reflow so CSS animations fire cleanly
+function triggerPillAnimations(container){
+  container.querySelectorAll('.stat-pill.anim-open, .stat-pill.anim-update').forEach(el=>{
+    void el.offsetWidth;
+  });
 }
 
 function renderHome(){
@@ -597,14 +677,16 @@ function renderHome(){
   document.getElementById('matchups-container').innerHTML=html||'<div class="loading">Aucune donnée.</div>';
 }
 
-function showDetail(num,fromRefresh){
+// mode: undefined/'open' = user tapped (always animate open)
+//       'refresh' = called from loadData while detail is visible (animate only changed)
+function showDetail(num, mode){
+  const animMode = mode || 'open';
   const mu=currentMatchups.find(m=>m.num===num);if(!mu)return;
   const lP=getPlayers(num,mu.left),rP=getPlayers(num,mu.right);
   const lt=getUserTotal(lP),rt=getUserTotal(rP);
   const gap=Math.abs(lt-rt),ll=lt>rt,rl=rt>lt;
   const lF=lP.filter(r=>r[C.Position]==='F'),lD=lP.filter(r=>r[C.Position]==='D'),lG=lP.filter(r=>r[C.Position]==='G');
   const rF=rP.filter(r=>r[C.Position]==='F'),rD=rP.filter(r=>r[C.Position]==='D'),rG=rP.filter(r=>r[C.Position]==='G');
-  const allowAnimate=!!fromRefresh;
   const lW=finalMode&&winnersMap[mu.left]!==undefined;
   const rW=finalMode&&winnersMap[mu.right]!==undefined;
   const lS=winnersMap[mu.left]||'',rS=winnersMap[mu.right]||'';
@@ -617,8 +699,10 @@ function showDetail(num,fromRefresh){
     const re=rp&&(rp[C.Eliminated]===true||rp[C.Eliminated]==='TRUE');
     const la=lp&&(lp[C.Eliminated]===false||lp[C.Eliminated]==='FALSE');
     const ra=rp&&(rp[C.Eliminated]===false||rp[C.Eliminated]==='FALSE');
-    const lPill=lp?getPillHtml(lp,`${num}|${sk}|${ri}|L|${ln}`,allowAnimate):'';
-    const rPill=rp?getPillHtml(rp,`${num}|${sk}|${ri}|R|${rn}`,allowAnimate):'';
+    const lKey=`${num}|${sk}|${ri}|L|${ln}`;
+    const rKey=`${num}|${sk}|${ri}|R|${rn}`;
+    const lPill=lp?getPillHtml(lp, lKey, animMode):'';
+    const rPill=rp?getPillHtml(rp, rKey, animMode):'';
     return `<div class="player-row">
       ${indHtml(li)}
       <span class="player-cell"><span class="pname" style="${le?'text-decoration:line-through;color:#ef4444':la?'text-decoration:line-through;color:#22c55e':''}">${ln}</span>${lPill}</span>
@@ -646,10 +730,8 @@ function showDetail(num,fromRefresh){
     return '<span class="pred-pill red">0 pts</span>';
   }
 
-  // ── Build prediction HTML based on current round ──
   let predHtml='';
   if(currentRound===1){
-    // R1: EST (4 series) + OUEST (4 series)
     function predPairR1(arr,i){
       const si=arr==='est'?i:i+4;
       const l=predL?(predL[arr][i]||''):'',r=predR?(predR[arr][i]||''):'';
@@ -660,7 +742,6 @@ function showDetail(num,fromRefresh){
       ?['<div class="section-bar">EST</div>',predPairR1('est',0),predPairR1('est',1),predPairR1('est',2),predPairR1('est',3),'<div class="section-bar">OUEST</div>',predPairR1('ouest',0),predPairR1('ouest',1),predPairR1('ouest',2),predPairR1('ouest',3)].join('')
       :'<div class="pred-row"><span class="pred-l" style="color:#8a9bb0">Aucune prédiction</span></div>';
   } else {
-    // R2+: combined series list
     const pc=PRED_CFG[currentRound]||PRED_CFG[2];
     if(predL||predR){
       const rows=[];
@@ -702,7 +783,8 @@ function showDetail(num,fromRefresh){
       </div>`
     :`<div class="total-bar"><div class="total-l">Total<span>${lt}</span></div><div class="total-r">Total<span>${rt}</span></div></div>`;
 
-  document.getElementById('detail-container').innerHTML=`<div class="${cClass}">
+  const container = document.getElementById('detail-container');
+  container.innerHTML=`<div class="${cClass}">
     <div class="matchup-title-bar ${tbClass}">${finalMode?'🏆 ':''}MATCHUP ${num}${finalMode?' — TERMINÉ':''}</div>
     <div class="owners-row">${oL}<div class="vs-mid"><span class="vs-pill">VS</span></div>${oR}</div>
     <div class="section-bar">⚡ Attaquants</div>${fH}
@@ -723,8 +805,11 @@ function showDetail(num,fromRefresh){
     <div class="detail-refresh">↻ ${lastRefreshTime}</div>
   </div>`;
 
+  // Force reflow so animations fire on freshly injected elements
+  triggerPillAnimations(container);
+
   activeDetailNum=num;
-  if(!fromRefresh)setView('detail-view');
+  if(animMode === 'open') setView('detail-view');
 }
 
 function viewRound(round){
