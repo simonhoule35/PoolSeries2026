@@ -544,9 +544,9 @@ function buildPillData(row){return row[C.Position]==='G'?buildGoaliePill(row):bu
 function getPillHtml(row,key,allowAnimate){
   const pill=buildPillData(row);const prev=Object.prototype.hasOwnProperty.call(pillState,key)?pillState[key]:null;
   if(!pill){pillState[key]='';return '';}
-  const shouldAnimate=allowAnimate&&(prev===null||prev!==pill.signature);
+  const shouldAnimate=allowAnimate;
   pillState[key]=pill.signature;
-  return `<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}${shouldAnimate?' anim':''}">${pill.text}</span>`;
+  return `<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}${shouldAnimate?' anim-double':''}">${pill.text}</span>`;
 }
 
 function renderHome(){
@@ -595,6 +595,13 @@ function renderHome(){
     }
   });
   document.getElementById('matchups-container').innerHTML=html||'<div class="loading">Aucune donnée.</div>';
+}
+
+function replayStatPills(){
+  setTimeout(() => { 
+document.querySelectorAll('.stat-pill').forEach(el => {
+    el.classList.remove('anim-double');void el.offsetwidth;el.classList.add('anim-double');});
+  }, 0);
 }
 
 function showDetail(num,fromRefresh){
@@ -743,6 +750,7 @@ function viewRound(round){
     document.getElementById('section-label').textContent='Matchups — '+cfg.label;
     renderHome();
     setView('home-view');
+    replayStatPills();
   }).catch(function(e){console.error(e);});
 }
 
