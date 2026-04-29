@@ -121,7 +121,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .stat-pill.pos{background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.55);color:#86efac}
 .stat-pill.neg{background:rgba(220,38,38,.12);border-color:rgba(239,68,68,.70);color:#f87171}
 .stat-pill.gold{background:rgba(234,179,8,.13);border-color:rgba(234,179,8,.82);color:#fde047}
-.stat-pill.anim{animation:pillEnter .65s cubic-bezier(.2,.8,.3,1), pillGlow .85s ease-out}
+.stat-pill.anim{animation: pillEnter .6s cubic-bezier(.2,.8,.3,1) pillglow 1.4s ease-out, pillGlow 1.3s ease-out 1s;}
 @keyframes pillEnter{0%{transform:translateX(-12px) scale(.88);opacity:0}55%{transform:translateX(2px) scale(1.04);opacity:1}100%{transform:translateX(0) scale(1);opacity:1}}
 @keyframes pillGlow{0%{box-shadow:0 0 0 rgba(34,197,94,0)}35%{box-shadow:0 0 10px rgba(34,197,94,.48),0 0 20px rgba(34,197,94,.24)}100%{box-shadow:none}}
 .stat-pill.gold.anim{animation:pillEnter .65s cubic-bezier(.2,.8,.3,1), pillGlowGold .85s ease-out}
@@ -546,7 +546,7 @@ function getPillHtml(row,key,allowAnimate){
   if(!pill){pillState[key]='';return '';}
   const shouldAnimate=allowAnimate;
   pillState[key]=pill.signature;
-  return `<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}${shouldAnimate?' anim-double':''}">${pill.text}</span>`;
+  return `<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}${shouldAnimate?' anim':''}">${pill.text}</span>`;
 }
 
 function renderHome(){
@@ -600,7 +600,7 @@ function renderHome(){
 function replayStatPills(){
   setTimeout(() => { 
 document.querySelectorAll('.stat-pill').forEach(el => {
-    el.classList.remove('anim-double');void el.offsetwidth;el.classList.add('anim-double');});
+    el.classList.remove('anim');void el.offsetwidth;el.classList.add('anim');});
   }, 0);
 }
 
