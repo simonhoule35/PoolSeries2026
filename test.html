@@ -110,15 +110,15 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .ind-off{background:#cc2222}
 .ind-out{background:#cc2222}
 /* left cell: name stretches, pill hugs right toward pts */
-.player-cell{display:flex;align-items:center;gap:3px;min-width:0;overflow:hidden}
+.player-cell{display:flex;align-items:center;gap:0px;min-width:0;overflow:hidden}
 /* right cell: pill hugs left toward pts, name stretches right — use row-reverse */
-.player-cell.right{flex-direction:row-reverse;gap:3px;min-width:0;overflow:hidden}
+.player-cell.right{flex-direction:row-reverse;gap:0px;min-width:0;overflow:hidden}
 .player-cell .stat-pill{flex-shrink:0}
 .player-cell.right .stat-pill{flex-shrink:0}
 .pname{font-size:12px;color:#e8eaed;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;flex:1 1 0}
 .pname-r{font-size:12px;color:#e8eaed;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;flex:1 1 0;text-align:right}
 /* mobile pill size — use min-device-width to catch all phones */
-@media(max-width:600px){.stat-pill.normal{min-height:17px;padding:2px 5px;font-size:10px}.stat-pill.small{min-height:15px;padding:1px 4px;font-size:9px}}
+@media(hover:none){.stat-pill.normal{min-height:17px;padding:2px 5px;font-size:10px}.stat-pill.small{min-height:15px;padding:1px 4px;font-size:9px}}
 .ppts-l{font-size:13px;color:#8a9bb0;text-align:right;white-space:nowrap}
 .ppts-r{font-size:13px;color:#8a9bb0;white-space:nowrap}
 .ppts-l.scored{color:#22c55e;font-weight:500}
