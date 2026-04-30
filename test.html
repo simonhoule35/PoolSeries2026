@@ -200,31 +200,13 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 @keyframes arrowBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 .pred-body{display:none}
 .pred-body.open{display:block}
-.pred-row{
-  display:grid;
-  grid-template-columns:1fr 74px 1fr;
-  border-bottom:.5px solid #0f1923;
-  min-height:28px;
-  align-items:center;
-}
-
-  .pred-pills-center{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:3px;
-}
-.pred-l{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;justify-content:space-between}
-.pred-r{
-  background:#1a2535;
-  padding:5px 12px;
-  font-size:12px;
-  color:#cbd5e1;
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  gap:6px;
-}
+/* Prediction rows: fixed pill slots so pills are aligned, not glued to text */
+.pred-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:.5px solid #0f1923;min-height:28px;align-items:center}
+.pred-l{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:grid;grid-template-columns:72px 64px;column-gap:12px;align-items:center;justify-content:start;min-width:0;white-space:nowrap}
+.pred-r{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:grid;grid-template-columns:64px 72px;column-gap:12px;align-items:center;justify-content:end;min-width:0;white-space:nowrap}
+.pred-pick-l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+.pred-pick-r{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
+.pred-pill-slot{display:flex;align-items:center;justify-content:center;min-width:64px}
 /* pred pills: all identical fixed size, always tab-stop aligned */
 .pred-pill{
   display:inline-flex;align-items:center;justify-content:center;
@@ -889,12 +871,12 @@ function showDetail(num, mode){
   const{left:predL,right:predR}=getPredRow(num);
   const pPL=predL?predL.predPts:0,pPR=predR?predR.predPts:0;
 
- function pill(score){
-  if(score===null)return '';
-  if(score===4)return '<span class="pred-pill gold">+4 pts</span>';
-  if(score===2)return '<span class="pred-pill green">+2 pts</span>';
-  return '<span class="pred-pill red">0 pts</span>';
-}
+  function pill(score){
+    if(score===null)return '';
+    if(score===4)return '<span class="pred-pill gold">+4 pts</span>';
+    if(score===2)return '<span class="pred-pill green">+2 pts</span>';
+    return '<span class="pred-pill red">0 pts</span>';
+  }
 
   let predHtml='';
   if(currentRound===1){
@@ -902,7 +884,7 @@ function showDetail(num, mode){
       const si=arr==='est'?i:i+4;
       const l=predL?(predL[arr][i]||''):'',r=predR?(predR[arr][i]||''):'';
       const ls=scorePick(l,si),rs=scorePick(r,si);
-    return `<div class="pred-row"><span class="pred-l">${l}${pill(ls)}</span><span class="pred-r">${pill(rs)}${r}</span></div>`;
+      return `<div class="pred-row"><span class="pred-l"><span class="pred-pick-l">${l}</span><span class="pred-pill-slot">${pill(ls)}</span></span><span class="pred-r"><span class="pred-pill-slot">${pill(rs)}</span><span class="pred-pick-r">${r}</span></span></div>`;
     }
     predHtml=(predL||predR)
       ?['<div class="section-bar">EST</div>',predPairR1('est',0),predPairR1('est',1),predPairR1('est',2),predPairR1('est',3),'<div class="section-bar">OUEST</div>',predPairR1('ouest',0),predPairR1('ouest',1),predPairR1('ouest',2),predPairR1('ouest',3)].join('')
@@ -915,7 +897,7 @@ function showDetail(num, mode){
         const l=predL?(predL.pred[i]||''):'';
         const r=predR?(predR.pred[i]||''):'';
         const ls=scorePick(l,i),rs=scorePick(r,i);
-        rows.push(`<div class="pred-row"><span class="pred-l">${l}</span><span class="pred-pills-center">${pill(ls)}${pill(rs)}</span><span class="pred-r">${r}</span></div>`);
+        rows.push(`<div class="pred-row"><span class="pred-l"><span class="pred-pick-l">${l}</span><span class="pred-pill-slot">${pill(ls)}</span></span><span class="pred-r"><span class="pred-pill-slot">${pill(rs)}</span><span class="pred-pick-r">${r}</span></span></div>`);
       }
       predHtml=rows.join('');
     } else {
