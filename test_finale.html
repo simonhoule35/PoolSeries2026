@@ -435,6 +435,12 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   <button class="debug-fire-btn" style="background:#059669" onclick="debugInjectFakeStats()">🧬 INJECT FAKE STATS → OPEN MATCHUP 1</button>
   <button class="debug-fire-btn" style="background:#dc2626;margin-top:8px" onclick="debugClearFakeStats()">🗑 CLEAR FAKE STATS</button>
   <!-- ██ END FAKE STATS INJECTOR ██ -->
+  <div class="debug-section">🏆 Finale Preview</div>
+  <!-- ██ DEBUG — FINALE PREVIEW — REMOVE BEFORE PRODUCTION ██ -->
+  <div style="background:#111827;border-radius:10px;padding:12px;margin-bottom:8px;font-size:11px;color:#9ca3af;line-height:1.6">Forces the finale layout using matchup 1 data from your current sheet. Sheet is not changed.</div>
+  <button class="debug-fire-btn" style="background:#b45309" onclick="debugForceFinale()">🏆 PREVIEW FINALE LAYOUT → MATCHUP 1</button>
+  <button class="debug-fire-btn" style="background:#374151;margin-top:8px" onclick="debugResetFinale()">↩ RESET TO NORMAL VIEW</button>
+  <!-- ██ END FINALE PREVIEW ██ -->
   <div class="debug-note">⚠️ REMOVE THIS ENTIRE BLOCK BEFORE PUSHING TO PRODUCTION</div>
 </div>
 <!-- ██ END DEBUG TRIGGER ██ -->
@@ -513,6 +519,28 @@ function debugClearFakeStats(){
   closeDebugPanel();if(activeDetailNum!==null)showDetail(activeDetailNum,'open');
 }
 // ██ END FAKE STATS INJECTOR ██
+// ██ DEBUG — FINALE PREVIEW — REMOVE BEFORE PRODUCTION ██
+let _savedRound=null;
+function debugForceFinale(){
+  if(!liveRows.length){alert('Load data first');return;}
+  _savedRound=currentRound;
+  currentRound=4;
+  // Point finale at matchup 1 users from current data
+  const mu=currentMatchups[0];
+  if(!mu){alert('No matchup 1 found');currentRound=_savedRound;return;}
+  document.getElementById('header-date-f').textContent='PREVIEW · Finale';
+  document.getElementById('header-games-f').innerHTML='<span class="games-pill">⚠️ DEBUG MODE</span>';
+  document.getElementById('f-refresh').textContent='↻ preview only — sheet unchanged';
+  renderFinale();
+  closeDebugPanel();
+  setView('finale-view');
+}
+function debugResetFinale(){
+  if(_savedRound!==null){currentRound=_savedRound;_savedRound=null;}
+  closeDebugPanel();
+  setView(currentRound===4?'finale-view':'home-view');
+}
+// ██ END FINALE PREVIEW ██
 // ██ END DEBUG TRIGGER ██
 
 function setView(view){
