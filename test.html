@@ -167,6 +167,45 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   100%{opacity:0}
 }
 
+
+
+/* ── Mobile-safe white stripe sweep ──
+   Desktop keeps .pill-sweep.
+   Mobile uses this hard white stripe: no blend mode, no filters, no glow bleed. */
+.pill-mobile-stripe{
+  position:absolute;
+  inset:0;
+  border-radius:999px;
+  pointer-events:none;
+  opacity:0;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255,255,255,0) 45%,
+    rgba(255,255,255,1) 49%,
+    rgba(255,255,255,1) 51%,
+    rgba(255,255,255,0) 55%,
+    transparent 60%,
+    transparent 100%
+  );
+  mix-blend-mode:normal;
+  filter:none;
+  animation:mobileStripeSweep 1.05s ease-out forwards;
+  -webkit-animation:mobileStripeSweep 1.05s ease-out forwards;
+}
+@keyframes mobileStripeSweep{
+  0%{transform:translateX(-120%);opacity:0}
+  8%{opacity:1}
+  88%{transform:translateX(120%);opacity:1}
+  100%{transform:translateX(120%);opacity:0}
+}
+@-webkit-keyframes mobileStripeSweep{
+  0%{-webkit-transform:translateX(-120%);opacity:0}
+  8%{opacity:1}
+  88%{-webkit-transform:translateX(120%);opacity:1}
+  100%{-webkit-transform:translateX(120%);opacity:0}
+}
+
 /* ── Pred pills — fixed size regardless of container ── */
 .pred-pill-wrap{display:inline-flex;width:62px;flex-shrink:0;flex-grow:0;justify-content:center}
 .pred-pill{
@@ -265,59 +304,6 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .debug-fire-btn:active{background:#6d28d9}
 .debug-note{font-size:10px;color:#4b5563;text-align:center;margin-top:8px}
 /* ██ END DEBUG TRIGGER STYLES ██ */
-
-/* ── Mobile stat-pill animation
-   Desktop keeps the shiny sweep. Mobile uses a fast IN-PILL flash only.
-   No moving sweep, no big outside glow, no row bleed. ── */
-.stat-pill.pos{--pill-glow:34,197,94;--pill-core:134,239,172}
-.stat-pill.neg{--pill-glow:239,68,68;--pill-core:248,113,113}
-.stat-pill.gold{--pill-glow:234,179,8;--pill-core:253,224,71}
-
-.stat-pill.mobile-flash{
-  animation:mobilePillFlash 1.3s ease-out forwards;
-  -webkit-animation:mobilePillFlash 1.3s ease-out forwards;
-}
-
-@keyframes mobilePillFlash{
-  0%{
-    transform:translateZ(0) scale(1);
-    border-color:rgba(var(--pill-glow),.55);
-    box-shadow:inset 0 0 0 rgba(255,255,255,0);
-    filter:none;
-  }
-  18%{
-    transform:translateZ(0) scale(1.08);
-    border-color:rgba(255,255,255,.95);
-    box-shadow:inset 0 0 8px rgba(255,255,255,.75);
-    filter:brightness(1.55) saturate(1.35);
-  }
-  34%{
-    transform:translateZ(0) scale(1.02);
-    border-color:rgba(var(--pill-core),.95);
-    box-shadow:inset 0 0 4px rgba(255,255,255,.45);
-    filter:brightness(1.22) saturate(1.15);
-  }
-  54%{
-    transform:translateZ(0) scale(1.06);
-    border-color:rgba(255,255,255,.85);
-    box-shadow:inset 0 0 7px rgba(255,255,255,.62);
-    filter:brightness(1.45) saturate(1.25);
-  }
-  100%{
-    transform:translateZ(0) scale(1);
-    border-color:rgba(var(--pill-glow),.55);
-    box-shadow:inset 0 0 0 rgba(255,255,255,0);
-    filter:none;
-  }
-}
-@-webkit-keyframes mobilePillFlash{
-  0%{-webkit-transform:translateZ(0) scale(1);border-color:rgba(var(--pill-glow),.55);box-shadow:inset 0 0 0 rgba(255,255,255,0);filter:none}
-  18%{-webkit-transform:translateZ(0) scale(1.08);border-color:rgba(255,255,255,.95);box-shadow:inset 0 0 8px rgba(255,255,255,.75);filter:brightness(1.55) saturate(1.35)}
-  34%{-webkit-transform:translateZ(0) scale(1.02);border-color:rgba(var(--pill-core),.95);box-shadow:inset 0 0 4px rgba(255,255,255,.45);filter:brightness(1.22) saturate(1.15)}
-  54%{-webkit-transform:translateZ(0) scale(1.06);border-color:rgba(255,255,255,.85);box-shadow:inset 0 0 7px rgba(255,255,255,.62);filter:brightness(1.45) saturate(1.25)}
-  100%{-webkit-transform:translateZ(0) scale(1);border-color:rgba(var(--pill-glow),.55);box-shadow:inset 0 0 0 rgba(255,255,255,0);filter:none}
-}
-
 </style>
 </head>
 <body>
@@ -473,7 +459,6 @@ const PRED_CFG = {
 
 let predTable=[], liveRows=[], lastRefreshTime='';
 let goalieMap={}, deferredPrompt=null, activeDetailNum=null;
-const IS_MOBILE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const pillState = {};
 let finalMode=false, winnersMap={}, currentRound=1;
 
@@ -496,26 +481,16 @@ const MATCHUPS_R1=[
 ];
 
 let currentMatchups=MATCHUPS_R1;
+const IS_MOBILE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 // ██ DEBUG TRIGGER — REMOVE BEFORE PRODUCTION ██
 function makePill(text, tone, size, compact){
   return `<span class="stat-pill ${size} ${tone}${compact?' tight':''}">${text}</span>`;
 }
 function fireEl(el){
-  el.querySelectorAll('.pill-sweep').forEach(s=>s.remove());
-
-  // Desktop debug button: keep the shiny sweep.
-  // Mobile debug button: never inject pill-sweep, because it renders as a dark shadow.
-  if(IS_MOBILE){
-    el.classList.remove('mobile-flash');
-    void el.offsetWidth;
-    el.classList.add('mobile-flash');
-    el.addEventListener('animationend',()=>el.classList.remove('mobile-flash'),{once:true});
-    return;
-  }
-
+  el.querySelectorAll('.pill-sweep,.pill-mobile-stripe').forEach(s=>s.remove());
   const sweep=document.createElement('span');
-  sweep.className='pill-sweep';
+  sweep.className=IS_MOBILE?'pill-mobile-stripe':'pill-sweep';
   el.insertBefore(sweep,el.firstChild);
   void sweep.offsetWidth;
   sweep.addEventListener('animationend',()=>sweep.remove(),{once:true});
@@ -822,21 +797,16 @@ function getPillHtml(row, key, mode){
   const pill = buildPillData(row);
   const prev = pillState[key] || null;
   if(!pill){ pillState[key]=''; return ''; }
-
   const shouldAnimate = mode==='open' || (mode==='refresh' && prev && prev!==pill.signature);
   pillState[key]=pill.signature;
-
-  // Desktop keeps the shiny sweep. Mobile uses a fast in-pill flash.
-  // Mobile never receives pill-sweep because it renders as a dark shadow.
-  const sweep = (shouldAnimate && !IS_MOBILE) ? '<span class="pill-sweep"></span>' : '';
-  const mobileClass = (shouldAnimate && IS_MOBILE) ? ' mobile-flash' : '';
-
-  return `<span class="stat-pill${mobileClass} ${pill.size} ${pill.tone}${pill.compact?' tight':''}">${sweep}${pill.text}</span>`;
+  // Desktop uses the smooth shiny sweep. Mobile uses a hard white stripe sweep.
+  const sweep = shouldAnimate ? (IS_MOBILE ? '<span class="pill-mobile-stripe"></span>' : '<span class="pill-sweep"></span>') : '';
+  return `<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}">${sweep}${pill.text}</span>`;
 }
 
 function triggerPillAnimations(container){
   // force reflow on sweep spans so animation restarts cleanly
-  container.querySelectorAll('.pill-sweep').forEach(el=>{
+  container.querySelectorAll('.pill-sweep,.pill-mobile-stripe').forEach(el=>{
     void el.offsetWidth;
   });
 }
