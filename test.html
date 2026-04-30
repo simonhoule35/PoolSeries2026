@@ -215,7 +215,16 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   gap:3px;
 }
 .pred-l{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;justify-content:space-between}
-.pred-r{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;justify-content:space-between}
+.pred-r{
+  background:#1a2535;
+  padding:5px 12px;
+  font-size:12px;
+  color:#cbd5e1;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:6px;
+}
 /* pred pills: all identical fixed size, always tab-stop aligned */
 .pred-pill{
   display:inline-flex;align-items:center;justify-content:center;
@@ -893,7 +902,7 @@ function showDetail(num, mode){
       const si=arr==='est'?i:i+4;
       const l=predL?(predL[arr][i]||''):'',r=predR?(predR[arr][i]||''):'';
       const ls=scorePick(l,si),rs=scorePick(r,si);
-      return `<div class="pred-row"><span class="pred-l">${l}</span><span class="pred-pills-center">${pill(ls)}${pill(rs)}</span><span class="pred-r">${r}</span></div>`;
+    return `<div class="pred-row"><span class="pred-l">${l}${pill(ls)}</span><span class="pred-r">${pill(rs)}${r}</span></div>`;
     }
     predHtml=(predL||predR)
       ?['<div class="section-bar">EST</div>',predPairR1('est',0),predPairR1('est',1),predPairR1('est',2),predPairR1('est',3),'<div class="section-bar">OUEST</div>',predPairR1('ouest',0),predPairR1('ouest',1),predPairR1('ouest',2),predPairR1('ouest',3)].join('')
