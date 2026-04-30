@@ -268,12 +268,22 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .debug-note{font-size:10px;color:#4b5563;text-align:center;margin-top:8px}
 /* ██ END DEBUG TRIGGER STYLES ██ */
 
-  @media (max-width:600px){
+@media (max-width:600px){
   .pill-sweep{
     opacity:1 !important;
-    filter:brightness(3) saturate(2);
-    mix-blend-mode:normal;
+    mix-blend-mode:normal !important;
+    filter:none !important;
+    background:linear-gradient(90deg,
+      transparent 0%,
+      rgba(255,255,255,0) 28%,
+      rgba(255,255,255,.95) 45%,
+      rgba(255,255,255,1) 50%,
+      rgba(255,255,255,.95) 55%,
+      rgba(255,255,255,0) 72%,
+      transparent 100%
+    ) !important;
   }
+}
 
   .stat-pill.pos .pill-sweep,
   .stat-pill.neg .pill-sweep,
