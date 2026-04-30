@@ -370,6 +370,16 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   </div>
 
   <button class="debug-fire-btn" onclick="fireAllDebugPills()">🔥 FIRE ALL ANIMATIONS</button>
+
+  <div class="debug-section">🎭 Real matchup inject</div>
+  <!-- ██ DEBUG — FAKE STATS INJECTOR — REMOVE BEFORE PRODUCTION ██ -->
+  <div style="background:#111827;border-radius:10px;padding:12px;margin-bottom:8px;font-size:11px;color:#9ca3af;line-height:1.6">
+    Injecte de faux stats dans tous les joueurs de liveRows puis ouvre matchup 1 avec toutes les pills visibles.
+  </div>
+  <button class="debug-fire-btn" style="background:#059669" onclick="debugInjectFakeStats()">🧬 INJECT FAKE STATS → OPEN MATCHUP 1</button>
+  <button class="debug-fire-btn" style="background:#dc2626;margin-top:8px" onclick="debugClearFakeStats()">🗑 CLEAR FAKE STATS</button>
+  <!-- ██ END FAKE STATS INJECTOR ██ -->
+
   <div class="debug-note">⚠️ REMOVE THIS ENTIRE BLOCK BEFORE PUSHING TO PRODUCTION</div>
 </div>
 <!-- ██ END DEBUG TRIGGER ██ -->
@@ -456,6 +466,56 @@ function openDebugPanel(){
 function closeDebugPanel(){
   document.getElementById('debug-panel').classList.remove('open');
 }
+// ██ DEBUG — FAKE STATS INJECTOR — REMOVE BEFORE PRODUCTION ██
+let _fakeStatsActive = false;
+let _originalLiveRows = null;
+const _fakePatterns = [
+  [1,0],[0,1],[1,1],[2,1],[3,2], // skaters
+];
+const _fakeGoaliePatterns = [
+  {w:1,l:0,so:0},{w:0,l:1,so:0},{w:1,l:0,so:1},{w:1,l:1,so:1}
+];
+function debugInjectFakeStats(){
+  if(!liveRows.length){ alert('Charge un matchup dabord (retourne au menu)'); return; }
+  if(!_fakeStatsActive){
+    _originalLiveRows = liveRows.map(r=>[...r]);
+    _fakeStatsActive = true;
+  }
+  let si=0, gi=0;
+  liveRows.forEach(r=>{
+    if(r[C.Position]==='G'){
+      const p=_fakeGoaliePatterns[gi%_fakeGoaliePatterns.length];
+      // inject into goalieMap too
+      const name=String(r[C.Player]||'').trim();
+      if(!goalieMap[name]) goalieMap[name]=new Array(6).fill(0);
+      goalieMap[name][GS.W]=p.w;
+      goalieMap[name][GS.L]=p.l;
+      goalieMap[name][GS.SO]=p.so;
+      goalieMap[name][GS.LiveG]=0;
+      goalieMap[name][GS.LiveA]=0;
+      gi++;
+    } else {
+      const p=_fakePatterns[si%_fakePatterns.length];
+      r[C.LiveG]=p[0];
+      r[C.LiveA]=p[1];
+      si++;
+    }
+    r[C.Indicator]='🟢';
+  });
+  // reset pillState so animations fire fresh
+  Object.keys(pillState).forEach(k=>delete pillState[k]);
+  closeDebugPanel();
+  showDetail(1,'open');
+}
+function debugClearFakeStats(){
+  if(_originalLiveRows){ liveRows.splice(0,liveRows.length,..._originalLiveRows); _originalLiveRows=null; }
+  _fakeStatsActive=false;
+  Object.keys(pillState).forEach(k=>delete pillState[k]);
+  closeDebugPanel();
+  if(activeDetailNum!==null) showDetail(activeDetailNum,'open');
+}
+// ██ END FAKE STATS INJECTOR ██
+
 // ██ END DEBUG TRIGGER ██
 
 function setView(view){
