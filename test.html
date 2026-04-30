@@ -200,10 +200,9 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 @keyframes arrowBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 .pred-body{display:none}
 .pred-body.open{display:block}
-.pred-row{display:flex;align-items:center;border-bottom:.5px solid #0f1923;min-height:28px;padding:0 12px;gap:8px}
-.pred-l{background:transparent;font-size:12px;color:#cbd5e1;min-width:80px;white-space:nowrap}
-.pred-r{background:transparent;font-size:12px;color:#cbd5e1;min-width:80px;white-space:nowrap;text-align:right;margin-left:auto}
-.pred-pills-center{display:flex;gap:4px;flex-shrink:0}
+.pred-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:.5px solid #0f1923;min-height:28px;align-items:center}
+.pred-l{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;justify-content:space-between}
+.pred-r{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;justify-content:space-between}
 /* pred pills: all identical fixed size, always tab-stop aligned */
 .pred-pill{
   display:inline-flex;align-items:center;justify-content:center;
@@ -872,7 +871,7 @@ function showDetail(num, mode){
     if(score===null)return '';
     if(score===4)return '<span class="pred-pill gold">+4 pts</span>';
     if(score===2)return '<span class="pred-pill green">+2 pts</span>';
-    return '<span class="pred-pill red">0 pts</span>';
+    return `<div class="pred-row"><span class="pred-l">${l}${pill(ls)}</span><span class="pred-r">${pill(rs)}${r}</span></div>`;
   }
 
   let predHtml='';
