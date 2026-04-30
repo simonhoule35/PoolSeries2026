@@ -192,7 +192,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 @keyframes ptsPop{from{opacity:0;transform:scale(0.85)}to{opacity:1;transform:scale(1)}}
 @keyframes breathe{0%,100%{opacity:0.5;transform:scaleX(0.9)}50%{opacity:1;transform:scaleX(1)}}
 /* ── PC centering ── */
-.app-frame{max-width:480px;margin:0 auto}
+.app-frame{}
 @keyframes borderGlow{
   0%,100%{box-shadow:0 0 8px rgba(255,215,0,0.15),0 0 32px rgba(255,215,0,0.06);border-color:#ffd70077}
   50%{box-shadow:0 0 28px rgba(255,215,0,0.35),0 0 60px rgba(255,215,0,0.12);border-color:#ffd700cc}
@@ -202,9 +202,9 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 @keyframes finalVsOutlineShimmer{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 
 .finale-view{display:none;padding:0 0 40px}
-.finale-wrap{max-width:480px;margin:0 auto;padding:12px}
+.finale-wrap{margin:0 12px;padding:0}
 .f-shell{border-radius:16px;padding:2px;border:1.5px solid #ffd700aa;background:linear-gradient(135deg,#ffd70018,#07060d,#ffd70010);box-shadow:0 0 24px rgba(255,215,0,0.2),0 0 60px rgba(255,215,0,0.07);animation:borderGlow 4s ease-in-out infinite}
-.f-inner{background:#07060d;border-radius:14px;padding:16px}
+.f-inner{background:#07060d;border-radius:14px;padding:20px 24px}
 .f-gold-line{height:2px;position:relative;overflow:hidden;border-radius:999px;background:linear-gradient(90deg,transparent 0%,#ffd700cc 22%,#fff5a0 50%,#ffd700cc 78%,transparent 100%);box-shadow:0 0 6px rgba(255,215,0,0.5)}
 .f-gold-line::after{content:"";position:absolute;top:0;bottom:0;left:0;width:56%;background:linear-gradient(90deg,transparent 0%,rgba(255,255,200,0) 8%,rgba(255,255,180,.9) 50%,rgba(255,255,200,0) 92%,transparent 100%);transform:translateX(-115%);will-change:transform;animation:finalHeaderGlow 5s linear infinite alternate}
 .f-gold-line-faint{height:1px;background:linear-gradient(90deg,transparent,#ffd70088,transparent);animation:breathe 6s ease-in-out 1.5s infinite}
@@ -229,7 +229,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .f-sec-row{display:flex;align-items:center;gap:7px;margin:10px 0 4px}
 .f-sec-line{flex:1;height:1px;background:#1a1a2e}
 .f-pill{font-size:8px;border-radius:4px;padding:2px 8px;letter-spacing:1px;text-transform:uppercase;border:1px solid #2a2a40;color:#b0b0c0;background:#0d0d1a;white-space:nowrap}
-.f-tb{width:100%;border-collapse:collapse;table-layout:fixed}
+.f-tb{width:100%;border-collapse:collapse;table-layout:auto}
 .f-tb td{padding:4px 3px;font-size:10px}
 .f-tb tr{border-bottom:1px solid #0e0e18}
 .f-tb tr.si{animation:slideIn 0.4s ease both}
@@ -241,9 +241,9 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .f-pos{color:#4a4a6a;font-size:8px;width:14px}
 .f-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:#cc2222;margin-right:3px;vertical-align:middle;flex-shrink:0}
 .f-dot.live{background:#22c55e;box-shadow:0 0 4px #22c55e}
-.f-ln{color:#e8e8e8;width:112px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.f-ln{color:#e8e8e8;min-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .f-lp{color:#22c55e;font-weight:700;text-align:right;width:26px}
-.f-rn{color:#e8e8e8;text-align:right;width:112px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.f-rn{color:#e8e8e8;text-align:right;min-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .f-rp{color:#22c55e;font-weight:700;width:26px;text-align:right}
 .f-md{text-align:center;color:#1a1a2e;width:8px;font-size:8px}
 .f-pred-wrap{margin-top:14px;animation:fadeUp 0.5s ease 0.6s both}
