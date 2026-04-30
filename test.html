@@ -270,32 +270,18 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 
 @media (max-width:600px){
   .pill-sweep{
-    opacity:1 !important;
-    mix-blend-mode:normal !important;
-    filter:none !important;
-    background:linear-gradient(90deg,
-      transparent 0%,
-      rgba(255,255,255,0) 28%,
-      rgba(255,255,255,.95) 45%,
-      rgba(255,255,255,1) 50%,
-      rgba(255,255,255,.95) 55%,
-      rgba(255,255,255,0) 72%,
-      transparent 100%
-    ) !important;
+    display:none !important;
   }
-}
 
-  .stat-pill.pos .pill-sweep,
-  .stat-pill.neg .pill-sweep,
-  .stat-pill.gold .pill-sweep{
-    background:linear-gradient(90deg,
-      transparent 0%,
-      rgba(255,255,255,.15) 25%,
-      rgba(255,255,255,1) 48%,
-      rgba(255,255,255,1) 52%,
-      rgba(255,255,255,.15) 75%,
-      transparent 100%
-    );
+  .stat-pill:has(.pill-sweep){
+    animation:mobilePillFlash 1.8s ease-out 1 !important;
+  }
+
+  @keyframes mobilePillFlash{
+    0%{box-shadow:0 0 0 rgba(255,255,255,0);filter:brightness(1)}
+    20%{box-shadow:0 0 8px rgba(255,255,255,.95),0 0 18px rgba(255,255,255,.75);filter:brightness(1.7)}
+    55%{box-shadow:0 0 6px rgba(255,255,255,.75),0 0 14px rgba(255,255,255,.45);filter:brightness(1.35)}
+    100%{box-shadow:0 0 0 rgba(255,255,255,0);filter:brightness(1)}
   }
 }
 </style>
