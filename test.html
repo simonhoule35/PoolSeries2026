@@ -101,26 +101,24 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .vs-mid{background:#0d1f2e;padding:10px 8px;display:flex;align-items:center;justify-content:center}
 .section-bar{background:#0d1f2e;text-align:center;font-size:9px;color:#b0bec5;padding:4px;text-transform:uppercase;letter-spacing:.5px}
 
-/* ── Player row: dot|name|pill|pts|div|pts|pill|name|dot ── */
-.player-row{display:grid;grid-template-columns:10px minmax(0,1fr) auto 28px 8px 28px auto minmax(0,1fr) 10px;gap:0 2px;align-items:center;padding:5px 8px;border-bottom:.5px solid #0f1923}
+/* ── Player row: 3-column flex. Center is FIXED. Never moves. ── */
+.player-row{display:flex;align-items:center;padding:5px 8px;border-bottom:.5px solid #0f1923;gap:0}
+.player-left{display:flex;align-items:center;flex:1;min-width:0;gap:3px}
+.player-center{display:flex;align-items:center;gap:3px;flex-shrink:0;width:80px;justify-content:center}
+.player-right{display:flex;align-items:center;flex:1;min-width:0;gap:3px;justify-content:flex-end}
 .ind{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .ind-live{background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,.8)}
 .ind-pre{background:#ffd700;box-shadow:0 0 6px rgba(255,215,0,.7)}
 .ind-final{background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#22c55e;width:10px;height:10px}
 .ind-off{background:#cc2222}
 .ind-out{background:#cc2222}
-.pname{font-size:12px;color:#e8eaed;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
-.pname-r{font-size:12px;color:#e8eaed;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:right}
-.pill-col-l{display:flex;justify-content:flex-end}
-.pill-col-r{display:flex;justify-content:flex-start}
-/* base pill size */
-.stat-pill.normal{min-height:17px;padding:2px 5px;font-size:10px;letter-spacing:0;max-width:80px}
-.stat-pill.small{min-height:15px;padding:1px 4px;font-size:9px;max-width:80px}
-.ppts-l{font-size:13px;color:#8a9bb0;text-align:right;white-space:nowrap}
-.ppts-r{font-size:13px;color:#8a9bb0;text-align:left;white-space:nowrap}
+.pname{font-size:12px;color:#e8eaed;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;flex:1 1 0}
+.pname-r{font-size:12px;color:#e8eaed;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;flex:1 1 0;text-align:right}
+.ppts-l{font-size:13px;color:#8a9bb0;text-align:right;white-space:nowrap;flex-shrink:0}
+.ppts-r{font-size:13px;color:#8a9bb0;text-align:left;white-space:nowrap;flex-shrink:0}
 .ppts-l.scored{color:#22c55e;font-weight:500}
 .ppts-r.scored{color:#22c55e;font-weight:500}
-.divider-col{width:1px;background:#2a3a4a;height:14px;margin:0 auto}
+.divider-col{width:1px;background:#2a3a4a;height:14px;flex-shrink:0}
 .detail-refresh{font-size:12px;color:#4a5a6a;text-align:center;padding:6px}
 
 /* ── Stat Pills ── */
@@ -205,6 +203,14 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .pred-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:.5px solid #0f1923;min-height:28px}
 .pred-l{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;gap:8px}
 .pred-r{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;gap:8px;justify-content:flex-end}
+/* pred pills: all identical fixed size, no exceptions */
+.pred-pill{
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:999px;font-size:10px;font-weight:800;
+  letter-spacing:.2px;
+  min-width:58px;width:58px;height:20px;
+  flex-shrink:0;flex-grow:0;box-sizing:border-box;
+}
 .pred-pts-bar{display:grid;grid-template-columns:1fr 1fr;border-top:.5px solid #2a3a4a}
 .pred-pts-l{background:#1e3a5f;padding:6px 12px;font-size:11px;color:#8a9bb0;border-right:2px solid #0f1923}
 .pred-pts-l span{font-size:15px;font-weight:500;color:#e8eaed;display:block}
@@ -832,15 +838,21 @@ function showDetail(num, mode){
     const lPill=lp?getPillHtml(lp, lKey, animMode):'';
     const rPill=rp?getPillHtml(rp, rKey, animMode):'';
     return `<div class="player-row">
-      ${indHtml(li)}
-      <span class="pname" style="${le?'text-decoration:line-through;color:#ef4444':la?'text-decoration:line-through;color:#22c55e':''}">${ln}</span>
-      <span class="pill-col-l">${lPill}</span>
-      <span class="ppts-l${lpts>0?' scored':''}">${lpts}</span>
-      <span class="divider-col"></span>
-      <span class="ppts-r${rpts>0?' scored':''}">${rpts}</span>
-      <span class="pill-col-r">${rPill}</span>
-      <span class="pname-r" style="${re?'text-decoration:line-through;color:#ef4444':ra?'text-decoration:line-through;color:#22c55e':''}">${rn}</span>
-      ${indHtml(ri2)}
+      <div class="player-left">
+        ${indHtml(li)}
+        <span class="pname" style="${le?'text-decoration:line-through;color:#ef4444':la?'text-decoration:line-through;color:#22c55e':''}">${ln}</span>
+        ${lPill}
+      </div>
+      <div class="player-center">
+        <span class="ppts-l${lpts>0?' scored':''}">${lpts}</span>
+        <span class="divider-col"></span>
+        <span class="ppts-r${rpts>0?' scored':''}">${rpts}</span>
+      </div>
+      <div class="player-right">
+        ${rPill}
+        <span class="pname-r" style="${re?'text-decoration:line-through;color:#ef4444':ra?'text-decoration:line-through;color:#22c55e':''}">${rn}</span>
+        ${indHtml(ri2)}
+      </div>
     </div>`;
   }
 
@@ -855,9 +867,9 @@ function showDetail(num, mode){
 
   function pill(score){
     if(score===null)return '';
-    if(score===4)return '<span class="pred-pill-wrap"><span class="pred-pill gold">+4 pts</span></span>';
-    if(score===2)return '<span class="pred-pill-wrap"><span class="pred-pill green">+2 pts</span></span>';
-    return '<span class="pred-pill-wrap"><span class="pred-pill red">0 pts</span></span>';
+    if(score===4)return '<span class="pred-pill gold">+4 pts</span>';
+    if(score===2)return '<span class="pred-pill green">+2 pts</span>';
+    return '<span class="pred-pill red">0 pts</span>';
   }
 
   let predHtml='';
