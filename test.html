@@ -867,12 +867,12 @@ function showDetail(num, mode){
   const{left:predL,right:predR}=getPredRow(num);
   const pPL=predL?predL.predPts:0,pPR=predR?predR.predPts:0;
 
-  function pill(score){
-    if(score===null)return '';
-    if(score===4)return '<span class="pred-pill gold">+4 pts</span>';
-    if(score===2)return '<span class="pred-pill green">+2 pts</span>';
-    return `<div class="pred-row"><span class="pred-l">${l}${pill(ls)}</span><span class="pred-r">${pill(rs)}${r}</span></div>`;
-  }
+ function pill(score){
+  if(score===null)return '';
+  if(score===4)return '<span class="pred-pill gold">+4 pts</span>';
+  if(score===2)return '<span class="pred-pill green">+2 pts</span>';
+  return '<span class="pred-pill red">0 pts</span>';
+}
 
   let predHtml='';
   if(currentRound===1){
