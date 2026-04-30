@@ -102,7 +102,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .section-bar{background:#0d1f2e;text-align:center;font-size:9px;color:#b0bec5;padding:4px;text-transform:uppercase;letter-spacing:.5px}
 
 /* ── Player row: dot|name|pill|pts|div|pts|pill|name|dot ── */
-.player-row{display:grid;grid-template-columns:10px minmax(0,1fr) 56px 28px 8px 28px 56px minmax(0,1fr) 10px;gap:0 2px;align-items:center;padding:5px 8px;border-bottom:.5px solid #0f1923}
+.player-row{display:grid;grid-template-columns:10px minmax(0,1fr) auto 28px 8px 28px auto minmax(0,1fr) 10px;gap:0 2px;align-items:center;padding:5px 8px;border-bottom:.5px solid #0f1923}
 .ind{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .ind-live{background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,.8)}
 .ind-pre{background:#ffd700;box-shadow:0 0 6px rgba(255,215,0,.7)}
@@ -111,13 +111,11 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .ind-out{background:#cc2222}
 .pname{font-size:12px;color:#e8eaed;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .pname-r{font-size:12px;color:#e8eaed;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:right}
-/* pill-col-l: pill sits at RIGHT edge of its column, touching pts */
-.pill-col-l{display:flex;justify-content:flex-end;width:56px;overflow:hidden}
-/* pill-col-r: pill sits at LEFT edge of its column, touching pts */
-.pill-col-r{display:flex;justify-content:flex-start;width:56px;overflow:hidden}
-/* base pill size smaller — no media query needed */
-.stat-pill.normal{min-height:17px;padding:2px 5px;font-size:10px;letter-spacing:0}
-.stat-pill.small{min-height:15px;padding:1px 4px;font-size:9px}
+.pill-col-l{display:flex;justify-content:flex-end}
+.pill-col-r{display:flex;justify-content:flex-start}
+/* base pill size */
+.stat-pill.normal{min-height:17px;padding:2px 5px;font-size:10px;letter-spacing:0;max-width:80px}
+.stat-pill.small{min-height:15px;padding:1px 4px;font-size:9px;max-width:80px}
 .ppts-l{font-size:13px;color:#8a9bb0;text-align:right;white-space:nowrap}
 .ppts-r{font-size:13px;color:#8a9bb0;text-align:left;white-space:nowrap}
 .ppts-l.scored{color:#22c55e;font-weight:500}
@@ -142,39 +140,43 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .stat-pill.neg{background:rgba(220,38,38,.12);border-color:rgba(239,68,68,.70);color:#f87171}
 .stat-pill.gold{background:rgba(234,179,8,.13);border-color:rgba(234,179,8,.82);color:#fde047}
 
-/* ── Sweep animation ── */
-.stat-pill.anim-open::after,
-.stat-pill.anim-update::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  border-radius:999px;
-  transform:translateX(-105%);
+/* ── Sweep animation — uses injected .pill-sweep span (works on all mobile) ── */
+.pill-sweep{
+  position:absolute;inset:0;border-radius:999px;
+  pointer-events:none;
+  opacity:0;
   animation:pillSweep 3.2s cubic-bezier(.4,0,.2,1) forwards;
-  will-change:transform;
+  -webkit-animation:pillSweep 3.2s cubic-bezier(.4,0,.2,1) forwards;
 }
-.stat-pill.pos.anim-open::after,
-.stat-pill.pos.anim-update::after{background:linear-gradient(90deg,transparent 0%,rgba(134,239,172,.75) 40%,rgba(220,255,235,.95) 55%,transparent 100%)}
-.stat-pill.neg.anim-open::after,
-.stat-pill.neg.anim-update::after{background:linear-gradient(90deg,transparent 0%,rgba(248,113,113,.75) 40%,rgba(255,200,200,.95) 55%,transparent 100%)}
-.stat-pill.gold.anim-open::after,
-.stat-pill.gold.anim-update::after{background:linear-gradient(90deg,transparent 0%,rgba(253,224,71,.75) 40%,rgba(255,245,180,.95) 55%,transparent 100%)}
+.stat-pill.pos .pill-sweep{background:linear-gradient(90deg,transparent 0%,rgba(134,239,172,1) 35%,rgba(255,255,255,1) 50%,rgba(134,239,172,1) 65%,transparent 100%)}
+.stat-pill.neg .pill-sweep{background:linear-gradient(90deg,transparent 0%,rgba(248,113,113,1) 35%,rgba(255,255,255,1) 50%,rgba(248,113,113,1) 65%,transparent 100%)}
+.stat-pill.gold .pill-sweep{background:linear-gradient(90deg,transparent 0%,rgba(253,224,71,1) 35%,rgba(255,255,255,1) 50%,rgba(253,224,71,1) 65%,transparent 100%)}
 
 @keyframes pillSweep{
   0%  {transform:translateX(-105%);opacity:1}
-  40% {transform:translateX(105%);opacity:0}
+  40% {transform:translateX(105%);opacity:1}
   41% {transform:translateX(-105%);opacity:1}
-  80% {transform:translateX(105%);opacity:0}
-  100%{transform:translateX(105%);opacity:0}
+  80% {transform:translateX(105%);opacity:1}
+  81% {opacity:0}
+  100%{opacity:0}
+}
+@-webkit-keyframes pillSweep{
+  0%  {-webkit-transform:translateX(-105%);opacity:1}
+  40% {-webkit-transform:translateX(105%);opacity:1}
+  41% {-webkit-transform:translateX(-105%);opacity:1}
+  80% {-webkit-transform:translateX(105%);opacity:1}
+  81% {opacity:0}
+  100%{opacity:0}
 }
 
-/* ── FIX: Pred pills — fixed width, centered, same size ── */
+/* ── Pred pills — fixed size regardless of container ── */
+.pred-pill-wrap{display:inline-flex;width:62px;flex-shrink:0;flex-grow:0;justify-content:center}
 .pred-pill{
   display:inline-flex;align-items:center;justify-content:center;
   border-radius:999px;font-size:10px;font-weight:800;
-  padding:0;letter-spacing:.2px;
-  width:58px;height:20px;
-  flex-shrink:0;
+  padding:2px 0;letter-spacing:.2px;
+  width:62px;height:20px;
+  flex-shrink:0;flex-grow:0;
 }
 .pred-pill.gold{background:rgba(234,179,8,.13);border:1px solid rgba(234,179,8,.82);color:#fde047}
 .pred-pill.green{background:rgba(34,197,94,.10);border:1px solid rgba(34,197,94,.55);color:#86efac}
@@ -434,10 +436,12 @@ function makePill(text, tone, size, compact){
   return `<span class="stat-pill ${size} ${tone}${compact?' tight':''}">${text}</span>`;
 }
 function fireEl(el){
-  el.classList.remove('anim-open','anim-update');
-  void el.offsetWidth;
-  el.classList.add('anim-open');
-  el.addEventListener('animationend',()=>el.classList.remove('anim-open'),{once:true});
+  el.querySelectorAll('.pill-sweep').forEach(s=>s.remove());
+  const sweep=document.createElement('span');
+  sweep.className='pill-sweep';
+  el.insertBefore(sweep,el.firstChild);
+  void sweep.offsetWidth;
+  sweep.addEventListener('animationend',()=>sweep.remove(),{once:true});
 }
 function renderDebugPills(){
   const defs=[
@@ -741,15 +745,16 @@ function getPillHtml(row, key, mode){
   const pill = buildPillData(row);
   const prev = pillState[key] || null;
   if(!pill){ pillState[key]=''; return ''; }
-  let animClass='';
-  if(mode==='open'){ animClass='anim-open'; }
-  else if(mode==='refresh' && prev && prev!==pill.signature){ animClass='anim-update'; }
+  const shouldAnimate = mode==='open' || (mode==='refresh' && prev && prev!==pill.signature);
   pillState[key]=pill.signature;
-  return `<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}${animClass?' '+animClass:''}">${pill.text}</span>`;
+  // sweep span injected inline — renders correctly on all mobile browsers
+  const sweep = shouldAnimate ? '<span class="pill-sweep"></span>' : '';
+  return `<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}">${sweep}${pill.text}</span>`;
 }
 
 function triggerPillAnimations(container){
-  container.querySelectorAll('.stat-pill.anim-open, .stat-pill.anim-update').forEach(el=>{
+  // force reflow on sweep spans so animation restarts cleanly
+  container.querySelectorAll('.pill-sweep').forEach(el=>{
     void el.offsetWidth;
   });
 }
@@ -850,9 +855,9 @@ function showDetail(num, mode){
 
   function pill(score){
     if(score===null)return '';
-    if(score===4)return '<span class="pred-pill gold">+4 pts</span>';
-    if(score===2)return '<span class="pred-pill green">+2 pts</span>';
-    return '<span class="pred-pill red">0 pts</span>';
+    if(score===4)return '<span class="pred-pill-wrap"><span class="pred-pill gold">+4 pts</span></span>';
+    if(score===2)return '<span class="pred-pill-wrap"><span class="pred-pill green">+2 pts</span></span>';
+    return '<span class="pred-pill-wrap"><span class="pred-pill red">0 pts</span></span>';
   }
 
   let predHtml='';
