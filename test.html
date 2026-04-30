@@ -200,9 +200,10 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 @keyframes arrowBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 .pred-body{display:none}
 .pred-body.open{display:block}
-.pred-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:.5px solid #0f1923;min-height:28px}
-.pred-l{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;gap:8px}
-.pred-r{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.pred-row{display:flex;align-items:center;border-bottom:.5px solid #0f1923;min-height:28px;padding:0 12px;gap:8px}
+.pred-l{background:transparent;font-size:12px;color:#cbd5e1;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pred-r{background:transparent;font-size:12px;color:#cbd5e1;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}
+.pred-pills-center{display:flex;gap:4px;flex-shrink:0}
 /* pred pills: all identical fixed size, always tab-stop aligned */
 .pred-pill{
   display:inline-flex;align-items:center;justify-content:center;
@@ -211,8 +212,8 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   min-width:58px;width:58px;height:20px;
   flex-shrink:0;flex-grow:0;box-sizing:border-box;
 }
-.pred-l .pred-pill{margin-left:auto}
-.pred-r .pred-pill{margin-right:auto}
+.pred-text{display:inline-block;min-width:70px;flex-shrink:0}
+.pred-text-r{display:inline-block;min-width:70px;flex-shrink:0;text-align:right}
 .pred-pts-bar{display:grid;grid-template-columns:1fr 1fr;border-top:.5px solid #2a3a4a}
 .pred-pts-l{background:#1e3a5f;padding:6px 12px;font-size:11px;color:#8a9bb0;border-right:2px solid #0f1923}
 .pred-pts-l span{font-size:15px;font-weight:500;color:#e8eaed;display:block}
@@ -880,7 +881,7 @@ function showDetail(num, mode){
       const si=arr==='est'?i:i+4;
       const l=predL?(predL[arr][i]||''):'',r=predR?(predR[arr][i]||''):'';
       const ls=scorePick(l,si),rs=scorePick(r,si);
-      return `<div class="pred-row"><span class="pred-l">${l}${pill(ls)}</span><span class="pred-r">${pill(rs)}${r}</span></div>`;
+      return `<div class="pred-row"><span class="pred-l">${l}</span><span class="pred-pills-center">${pill(ls)}${pill(rs)}</span><span class="pred-r">${r}</span></div>`;
     }
     predHtml=(predL||predR)
       ?['<div class="section-bar">EST</div>',predPairR1('est',0),predPairR1('est',1),predPairR1('est',2),predPairR1('est',3),'<div class="section-bar">OUEST</div>',predPairR1('ouest',0),predPairR1('ouest',1),predPairR1('ouest',2),predPairR1('ouest',3)].join('')
@@ -893,7 +894,7 @@ function showDetail(num, mode){
         const l=predL?(predL.pred[i]||''):'';
         const r=predR?(predR.pred[i]||''):'';
         const ls=scorePick(l,i),rs=scorePick(r,i);
-        rows.push(`<div class="pred-row"><span class="pred-l">${l}${pill(ls)}</span><span class="pred-r">${pill(rs)}${r}</span></div>`);
+        rows.push(`<div class="pred-row"><span class="pred-l">${l}</span><span class="pred-pills-center">${pill(ls)}${pill(rs)}</span><span class="pred-r">${r}</span></div>`);
       }
       predHtml=rows.join('');
     } else {
