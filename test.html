@@ -267,77 +267,55 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 /* ██ END DEBUG TRIGGER STYLES ██ */
 
 /* ── Mobile stat-pill animation
-   Desktop keeps the shiny sweep. Mobile uses glow/pop so it does not render as a dark shadow. ── */
+   Desktop keeps the shiny sweep. Mobile uses a fast IN-PILL flash only.
+   No moving sweep, no big outside glow, no row bleed. ── */
 .stat-pill.pos{--pill-glow:34,197,94;--pill-core:134,239,172}
 .stat-pill.neg{--pill-glow:239,68,68;--pill-core:248,113,113}
 .stat-pill.gold{--pill-glow:234,179,8;--pill-core:253,224,71}
 
-.stat-pill.mobile-pop{
-  animation:mobilePillPop 2.15s cubic-bezier(.16,1,.3,1) forwards;
-  -webkit-animation:mobilePillPop 2.15s cubic-bezier(.16,1,.3,1) forwards;
+.stat-pill.mobile-flash{
+  animation:mobilePillFlash .72s ease-out forwards;
+  -webkit-animation:mobilePillFlash .72s ease-out forwards;
 }
 
-@keyframes mobilePillPop{
+@keyframes mobilePillFlash{
   0%{
     transform:translateZ(0) scale(1);
-    box-shadow:
-      0 0 0 rgba(255,255,255,0),
-      0 0 0 rgba(var(--pill-glow),0),
-      inset 0 0 0 rgba(255,255,255,0);
+    border-color:rgba(var(--pill-glow),.55);
+    box-shadow:inset 0 0 0 rgba(255,255,255,0);
+    filter:none;
   }
-  12%{
-    transform:translateZ(0) scale(1.14);
-    box-shadow:
-      0 0 8px rgba(255,255,255,.95),
-      0 0 18px rgba(var(--pill-core),.85),
-      0 0 30px rgba(var(--pill-glow),.55),
-      inset 0 0 7px rgba(255,255,255,.55);
+  18%{
+    transform:translateZ(0) scale(1.08);
+    border-color:rgba(255,255,255,.95);
+    box-shadow:inset 0 0 8px rgba(255,255,255,.75);
+    filter:brightness(1.55) saturate(1.35);
   }
-  28%{
-    transform:translateZ(0) scale(1.04);
-    box-shadow:
-      0 0 6px rgba(255,255,255,.75),
-      0 0 14px rgba(var(--pill-core),.65),
-      0 0 24px rgba(var(--pill-glow),.38),
-      inset 0 0 5px rgba(255,255,255,.38);
+  34%{
+    transform:translateZ(0) scale(1.02);
+    border-color:rgba(var(--pill-core),.95);
+    box-shadow:inset 0 0 4px rgba(255,255,255,.45);
+    filter:brightness(1.22) saturate(1.15);
   }
-  55%{
-    transform:translateZ(0) scale(1);
-    box-shadow:
-      0 0 4px rgba(255,255,255,.35),
-      0 0 10px rgba(var(--pill-core),.35),
-      0 0 18px rgba(var(--pill-glow),.22),
-      inset 0 0 3px rgba(255,255,255,.20);
+  54%{
+    transform:translateZ(0) scale(1.06);
+    border-color:rgba(255,255,255,.85);
+    box-shadow:inset 0 0 7px rgba(255,255,255,.62);
+    filter:brightness(1.45) saturate(1.25);
   }
   100%{
     transform:translateZ(0) scale(1);
-    box-shadow:
-      0 0 0 rgba(255,255,255,0),
-      0 0 0 rgba(var(--pill-glow),0),
-      inset 0 0 0 rgba(255,255,255,0);
+    border-color:rgba(var(--pill-glow),.55);
+    box-shadow:inset 0 0 0 rgba(255,255,255,0);
+    filter:none;
   }
 }
-@-webkit-keyframes mobilePillPop{
-  0%{
-    -webkit-transform:translateZ(0) scale(1);
-    box-shadow:0 0 0 rgba(255,255,255,0),0 0 0 rgba(var(--pill-glow),0),inset 0 0 0 rgba(255,255,255,0);
-  }
-  12%{
-    -webkit-transform:translateZ(0) scale(1.14);
-    box-shadow:0 0 8px rgba(255,255,255,.95),0 0 18px rgba(var(--pill-core),.85),0 0 30px rgba(var(--pill-glow),.55),inset 0 0 7px rgba(255,255,255,.55);
-  }
-  28%{
-    -webkit-transform:translateZ(0) scale(1.04);
-    box-shadow:0 0 6px rgba(255,255,255,.75),0 0 14px rgba(var(--pill-core),.65),0 0 24px rgba(var(--pill-glow),.38),inset 0 0 5px rgba(255,255,255,.38);
-  }
-  55%{
-    -webkit-transform:translateZ(0) scale(1);
-    box-shadow:0 0 4px rgba(255,255,255,.35),0 0 10px rgba(var(--pill-core),.35),0 0 18px rgba(var(--pill-glow),.22),inset 0 0 3px rgba(255,255,255,.20);
-  }
-  100%{
-    -webkit-transform:translateZ(0) scale(1);
-    box-shadow:0 0 0 rgba(255,255,255,0),0 0 0 rgba(var(--pill-glow),0),inset 0 0 0 rgba(255,255,255,0);
-  }
+@-webkit-keyframes mobilePillFlash{
+  0%{-webkit-transform:translateZ(0) scale(1);border-color:rgba(var(--pill-glow),.55);box-shadow:inset 0 0 0 rgba(255,255,255,0);filter:none}
+  18%{-webkit-transform:translateZ(0) scale(1.08);border-color:rgba(255,255,255,.95);box-shadow:inset 0 0 8px rgba(255,255,255,.75);filter:brightness(1.55) saturate(1.35)}
+  34%{-webkit-transform:translateZ(0) scale(1.02);border-color:rgba(var(--pill-core),.95);box-shadow:inset 0 0 4px rgba(255,255,255,.45);filter:brightness(1.22) saturate(1.15)}
+  54%{-webkit-transform:translateZ(0) scale(1.06);border-color:rgba(255,255,255,.85);box-shadow:inset 0 0 7px rgba(255,255,255,.62);filter:brightness(1.45) saturate(1.25)}
+  100%{-webkit-transform:translateZ(0) scale(1);border-color:rgba(var(--pill-glow),.55);box-shadow:inset 0 0 0 rgba(255,255,255,0);filter:none}
 }
 
 </style>
@@ -525,6 +503,17 @@ function makePill(text, tone, size, compact){
 }
 function fireEl(el){
   el.querySelectorAll('.pill-sweep').forEach(s=>s.remove());
+
+  // Desktop debug button: keep the shiny sweep.
+  // Mobile debug button: never inject pill-sweep, because it renders as a dark shadow.
+  if(IS_MOBILE){
+    el.classList.remove('mobile-flash');
+    void el.offsetWidth;
+    el.classList.add('mobile-flash');
+    el.addEventListener('animationend',()=>el.classList.remove('mobile-flash'),{once:true});
+    return;
+  }
+
   const sweep=document.createElement('span');
   sweep.className='pill-sweep';
   el.insertBefore(sweep,el.firstChild);
@@ -837,10 +826,10 @@ function getPillHtml(row, key, mode){
   const shouldAnimate = mode==='open' || (mode==='refresh' && prev && prev!==pill.signature);
   pillState[key]=pill.signature;
 
-  // Desktop keeps the shiny sweep. Mobile uses a separate pop/glow animation
-  // because mobile browsers render the sweep like a dark shadow.
+  // Desktop keeps the shiny sweep. Mobile uses a fast in-pill flash.
+  // Mobile never receives pill-sweep because it renders as a dark shadow.
   const sweep = (shouldAnimate && !IS_MOBILE) ? '<span class="pill-sweep"></span>' : '';
-  const mobileClass = (shouldAnimate && IS_MOBILE) ? ' mobile-pop' : '';
+  const mobileClass = (shouldAnimate && IS_MOBILE) ? ' mobile-flash' : '';
 
   return `<span class="stat-pill${mobileClass} ${pill.size} ${pill.tone}${pill.compact?' tight':''}">${sweep}${pill.text}</span>`;
 }
