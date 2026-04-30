@@ -142,9 +142,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .pill-sweep{
   position:absolute;inset:0;border-radius:999px;
   pointer-events:none;
-  opacity:.9;
-  mix-blend-mode:screen;
-  filter:brightness(1.6) saturate(1.4);
+  opacity:0;
   animation:pillSweep 3.2s cubic-bezier(.4,0,.2,1) forwards;
   -webkit-animation:pillSweep 3.2s cubic-bezier(.4,0,.2,1) forwards;
 }
@@ -268,22 +266,80 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .debug-note{font-size:10px;color:#4b5563;text-align:center;margin-top:8px}
 /* ██ END DEBUG TRIGGER STYLES ██ */
 
-@media (max-width:600px){
-  .pill-sweep{
-    display:none !important;
-  }
+/* ── Mobile stat-pill animation
+   Desktop keeps the shiny sweep. Mobile uses glow/pop so it does not render as a dark shadow. ── */
+.stat-pill.pos{--pill-glow:34,197,94;--pill-core:134,239,172}
+.stat-pill.neg{--pill-glow:239,68,68;--pill-core:248,113,113}
+.stat-pill.gold{--pill-glow:234,179,8;--pill-core:253,224,71}
 
-  .stat-pill:has(.pill-sweep){
-    animation:mobilePillFlash 1.8s ease-out 1 !important;
-  }
+.stat-pill.mobile-pop{
+  animation:mobilePillPop 2.15s cubic-bezier(.16,1,.3,1) forwards;
+  -webkit-animation:mobilePillPop 2.15s cubic-bezier(.16,1,.3,1) forwards;
+}
 
-  @keyframes mobilePillFlash{
-    0%{box-shadow:0 0 0 rgba(255,255,255,0);filter:brightness(1)}
-    20%{box-shadow:0 0 8px rgba(255,255,255,.95),0 0 18px rgba(255,255,255,.75);filter:brightness(1.7)}
-    55%{box-shadow:0 0 6px rgba(255,255,255,.75),0 0 14px rgba(255,255,255,.45);filter:brightness(1.35)}
-    100%{box-shadow:0 0 0 rgba(255,255,255,0);filter:brightness(1)}
+@keyframes mobilePillPop{
+  0%{
+    transform:translateZ(0) scale(1);
+    box-shadow:
+      0 0 0 rgba(255,255,255,0),
+      0 0 0 rgba(var(--pill-glow),0),
+      inset 0 0 0 rgba(255,255,255,0);
+  }
+  12%{
+    transform:translateZ(0) scale(1.14);
+    box-shadow:
+      0 0 8px rgba(255,255,255,.95),
+      0 0 18px rgba(var(--pill-core),.85),
+      0 0 30px rgba(var(--pill-glow),.55),
+      inset 0 0 7px rgba(255,255,255,.55);
+  }
+  28%{
+    transform:translateZ(0) scale(1.04);
+    box-shadow:
+      0 0 6px rgba(255,255,255,.75),
+      0 0 14px rgba(var(--pill-core),.65),
+      0 0 24px rgba(var(--pill-glow),.38),
+      inset 0 0 5px rgba(255,255,255,.38);
+  }
+  55%{
+    transform:translateZ(0) scale(1);
+    box-shadow:
+      0 0 4px rgba(255,255,255,.35),
+      0 0 10px rgba(var(--pill-core),.35),
+      0 0 18px rgba(var(--pill-glow),.22),
+      inset 0 0 3px rgba(255,255,255,.20);
+  }
+  100%{
+    transform:translateZ(0) scale(1);
+    box-shadow:
+      0 0 0 rgba(255,255,255,0),
+      0 0 0 rgba(var(--pill-glow),0),
+      inset 0 0 0 rgba(255,255,255,0);
   }
 }
+@-webkit-keyframes mobilePillPop{
+  0%{
+    -webkit-transform:translateZ(0) scale(1);
+    box-shadow:0 0 0 rgba(255,255,255,0),0 0 0 rgba(var(--pill-glow),0),inset 0 0 0 rgba(255,255,255,0);
+  }
+  12%{
+    -webkit-transform:translateZ(0) scale(1.14);
+    box-shadow:0 0 8px rgba(255,255,255,.95),0 0 18px rgba(var(--pill-core),.85),0 0 30px rgba(var(--pill-glow),.55),inset 0 0 7px rgba(255,255,255,.55);
+  }
+  28%{
+    -webkit-transform:translateZ(0) scale(1.04);
+    box-shadow:0 0 6px rgba(255,255,255,.75),0 0 14px rgba(var(--pill-core),.65),0 0 24px rgba(var(--pill-glow),.38),inset 0 0 5px rgba(255,255,255,.38);
+  }
+  55%{
+    -webkit-transform:translateZ(0) scale(1);
+    box-shadow:0 0 4px rgba(255,255,255,.35),0 0 10px rgba(var(--pill-core),.35),0 0 18px rgba(var(--pill-glow),.22),inset 0 0 3px rgba(255,255,255,.20);
+  }
+  100%{
+    -webkit-transform:translateZ(0) scale(1);
+    box-shadow:0 0 0 rgba(255,255,255,0),0 0 0 rgba(var(--pill-glow),0),inset 0 0 0 rgba(255,255,255,0);
+  }
+}
+
 </style>
 </head>
 <body>
@@ -439,6 +495,7 @@ const PRED_CFG = {
 
 let predTable=[], liveRows=[], lastRefreshTime='';
 let goalieMap={}, deferredPrompt=null, activeDetailNum=null;
+const IS_MOBILE = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const pillState = {};
 let finalMode=false, winnersMap={}, currentRound=1;
 
@@ -776,11 +833,16 @@ function getPillHtml(row, key, mode){
   const pill = buildPillData(row);
   const prev = pillState[key] || null;
   if(!pill){ pillState[key]=''; return ''; }
+
   const shouldAnimate = mode==='open' || (mode==='refresh' && prev && prev!==pill.signature);
   pillState[key]=pill.signature;
-  // sweep span injected inline — renders correctly on all mobile browsers
-  const sweep = shouldAnimate ? '<span class="pill-sweep"></span>' : '';
-  return `<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}">${sweep}${pill.text}</span>`;
+
+  // Desktop keeps the shiny sweep. Mobile uses a separate pop/glow animation
+  // because mobile browsers render the sweep like a dark shadow.
+  const sweep = (shouldAnimate && !IS_MOBILE) ? '<span class="pill-sweep"></span>' : '';
+  const mobileClass = (shouldAnimate && IS_MOBILE) ? ' mobile-pop' : '';
+
+  return `<span class="stat-pill${mobileClass} ${pill.size} ${pill.tone}${pill.compact?' tight':''}">${sweep}${pill.text}</span>`;
 }
 
 function triggerPillAnimations(container){
