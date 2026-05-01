@@ -28,7 +28,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
   .f-d-text{font-size:14px!important}
   .f-diamond-wrap{width:72px!important}
   .f-pos{width:24px!important;font-size:13px!important}
-  .f-tb td{padding:8px 6px!important;font-size:16px!important}
+  .f-row{padding:8px 0!important}.f-name{font-size:16px!important}.f-pt{font-size:18px!important;min-width:32px!important}.f-center{width:140px!important;gap:12px!important}.f-dot-sep{font-size:14px!important}.f-pos-badge{font-size:11px!important}
   .f-ln{font-size:16px!important;width:calc(50% - 70px)!important}
   .f-rn{font-size:16px!important;width:calc(50% - 70px)!important}
   .f-lp{font-size:16px!important;width:60px!important;text-align:right!important;padding-right:6px!important}
@@ -263,6 +263,15 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .f-sec-line{flex:1;height:1px;background:#1a1a2e}
 .f-pill{font-size:8px;border-radius:4px;padding:2px 8px;letter-spacing:1px;text-transform:uppercase;border:1px solid #2a2a40;color:#b0b0c0;background:#0d0d1a;white-space:nowrap}
 .f-tb{width:100%;border-collapse:collapse;table-layout:fixed;border-spacing:0}
+.f-row{display:flex;align-items:center;padding:5px 0;border-bottom:1px solid #0e0e18}
+.f-row.si{animation:slideIn 0.4s ease both}
+.f-left{display:flex;align-items:center;flex:1;min-width:0;gap:4px}
+.f-center{display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;width:100px}
+.f-right{display:flex;align-items:center;justify-content:flex-end;flex:1;min-width:0;gap:4px}
+.f-name{font-size:12px;color:#e8e8e8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.f-pos-badge{font-size:8px;color:#4a4a6a;flex-shrink:0}
+.f-pt{font-size:13px;font-weight:700;color:#22c55e;min-width:24px;text-align:center}
+.f-dot-sep{color:#4a4a6a;font-size:10px}
 .f-tb td{padding:4px 3px;font-size:10px}
 .f-tb tr{border-bottom:1px solid #0e0e18}
 .f-tb tr.si{animation:slideIn 0.4s ease both}
@@ -809,14 +818,11 @@ function renderFinale(){
     const lic=lp?indClass(lp[C.Indicator]):'ind-off',ric=rp?indClass(rp[C.Indicator]):'ind-off';
     const le=lp&&String(lp[C.Eliminated]).toUpperCase()==='TRUE';
     const re=rp&&String(rp[C.Eliminated]).toUpperCase()==='TRUE';
-    return`<tr class="si">
-      <td class="f-pos">${pos}</td>
-      <td class="f-ln">${fDotHtml(lic)}<span style="${le?'text-decoration:line-through;color:#ef4444':''}">${ln}</span></td>
-      <td class="f-lp">${lpts>0?lpts:''}</td>
-      <td class="f-md">·</td>
-      <td class="f-rp">${rpts>0?rpts:''}</td>
-      <td class="f-rn">${fDotHtml(ric)}<span style="${re?'text-decoration:line-through;color:#ef4444':''}">${rn}</span></td>
-    </tr>`;
+    return`<div class="f-row si">
+      <div class="f-left">${fDotHtml(lic)}<span class="f-pos-badge">${pos}</span><span class="f-name" style="${le?'text-decoration:line-through;color:#ef4444':''}">${ln}</span></div>
+      <div class="f-center"><span class="f-pt">${lpts>0?lpts:''}</span><span class="f-dot-sep">·</span><span class="f-pt">${rpts>0?rpts:''}</span></div>
+      <div class="f-right"><span class="f-name" style="${re?'text-decoration:line-through;color:#ef4444':''}">${rn}</span><span class="f-pos-badge">${pos}</span>${fDotHtml(ric)}</div>
+    </div>`;
   }
 
   const mxF=Math.max(lF.length,rF.length),mxD=Math.max(lD.length,rD.length),mxG=Math.max(lG.length,rG.length);
@@ -827,11 +833,11 @@ function renderFinale(){
 
   document.getElementById('f-players').innerHTML=`
     <div class="f-sec-row si"><div class="f-pill">⚡ Attaquants</div><div class="f-sec-line"></div></div>
-    <table class="f-tb">${fRows}</table>
+    ${fRows}
     <div class="f-sec-row si"><div class="f-pill">🛡 Défenseurs</div><div class="f-sec-line"></div></div>
-    <table class="f-tb">${dRows}</table>
+    ${dRows}
     <div class="f-sec-row si"><div class="f-pill">🥅 Gardiens</div><div class="f-sec-line"></div></div>
-    <table class="f-tb">${gRows}</table>`;
+    ${gRows}`;
 
   // Predictions
   const lPicks=getUserPicks(mu.left),rPicks=getUserPicks(mu.right);
