@@ -148,14 +148,14 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .ppts-r.scored{color:#22c55e;font-weight:500}
 .divider-col{width:1px;background:#2a3a4a;height:14px;flex-shrink:0}
 .detail-refresh{font-size:12px;color:#4a5a6a;text-align:center;padding:6px}
-.stat-pill{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;white-space:nowrap;border-radius:999px;border:1px solid;font-weight:700;line-height:1;gap:2px;position:relative;overflow:hidden;will-change:transform;-webkit-transform:translateZ(0);transform:translateZ(0)}
+.stat-pill{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;white-space:nowrap;border-radius:999px;border:1px solid;font-weight:700;line-height:1;gap:2px;position:relative;overflow:hidden;-webkit-transform:translateZ(0);transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden}
 .stat-pill.normal{min-height:17px;padding:2px 5px;font-size:10px;letter-spacing:0}
 .stat-pill.small{min-height:15px;padding:1px 4px;font-size:9px;letter-spacing:0}
 .stat-pill.tight{letter-spacing:-.2px}
 .stat-pill.pos{background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.55);color:#86efac}
 .stat-pill.neg{background:rgba(220,38,38,.12);border-color:rgba(239,68,68,.70);color:#f87171}
 .stat-pill.gold{background:rgba(234,179,8,.13);border-color:rgba(234,179,8,.82);color:#fde047}
-.pill-sweep{position:absolute;inset:0;border-radius:999px;pointer-events:none;opacity:0;animation:pillSweep 3.2s cubic-bezier(.4,0,.2,1) forwards;-webkit-animation:pillSweep 3.2s cubic-bezier(.4,0,.2,1) forwards}
+.pill-sweep{position:absolute;inset:0;border-radius:999px;pointer-events:none;opacity:0;will-change:transform,opacity;-webkit-transform:translateX(-105%);transform:translateX(-105%);animation:pillSweep 3.2s cubic-bezier(.4,0,.2,1) forwards;-webkit-animation:pillSweep 3.2s cubic-bezier(.4,0,.2,1) forwards}
 .stat-pill.pos .pill-sweep{background:linear-gradient(90deg,transparent 0%,rgba(134,239,172,1) 35%,rgba(255,255,255,1) 50%,rgba(134,239,172,1) 65%,transparent 100%)}
 .stat-pill.neg .pill-sweep{background:linear-gradient(90deg,transparent 0%,rgba(248,113,113,1) 35%,rgba(255,255,255,1) 50%,rgba(248,113,113,1) 65%,transparent 100%)}
 .stat-pill.gold .pill-sweep{background:linear-gradient(90deg,transparent 0%,rgba(253,224,71,1) 35%,rgba(255,255,255,1) 50%,rgba(253,224,71,1) 65%,transparent 100%)}
@@ -227,8 +227,8 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 /* ── PC centering ── */
 .app-frame{}
 @keyframes borderGlow{
-  0%,100%{box-shadow:0 0 8px rgba(255,215,0,0.15),0 0 32px rgba(255,215,0,0.06);border-color:#ffd70077}
-  50%{box-shadow:0 0 28px rgba(255,215,0,0.35),0 0 60px rgba(255,215,0,0.12);border-color:#ffd700cc}
+  0%,100%{filter:drop-shadow(0 0 8px rgba(255,215,0,0.5)) drop-shadow(0 0 20px rgba(255,215,0,0.2));border-color:#ffd700aa}
+  50%{filter:drop-shadow(0 0 16px rgba(255,215,0,0.9)) drop-shadow(0 0 40px rgba(255,215,0,0.4));border-color:#ffd700}
 }
 @keyframes finalHeaderGlow{0%{transform:translateX(-115%)}100%{transform:translateX(255%)}}
 @keyframes finalFireBreath{0%,100%{transform:scale(1);opacity:.9;filter:drop-shadow(0 0 3px rgba(255,120,0,.28))}50%{transform:scale(1.14);opacity:1;filter:drop-shadow(0 0 8px rgba(255,150,0,.70))}}
@@ -236,12 +236,12 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 
 .finale-view{display:none;padding:0 0 40px}
 .finale-wrap{margin:0 12px;box-sizing:border-box}
-.f-shell{border-radius:16px;padding:2px;border:2px solid #ffd700;background:#07060d;box-shadow:0 0 32px rgba(255,215,0,0.4),0 0 80px rgba(255,215,0,0.15);animation:borderGlow 4s ease-in-out infinite}
+.f-shell{border-radius:16px;padding:2px;border:2px solid #ffd700;background:#07060d;filter:drop-shadow(0 0 12px rgba(255,215,0,0.6)) drop-shadow(0 0 28px rgba(255,215,0,0.25));animation:borderGlow 4s ease-in-out infinite}
 .f-inner{background:#07060d;border-radius:14px;padding:16px}
-.f-gold-line{height:2px;position:relative;overflow:hidden;border-radius:999px;background:linear-gradient(90deg,transparent 0%,#ffd700ff 22%,#ffffff 50%,#ffd700ff 78%,transparent 100%);box-shadow:0 0 10px rgba(255,215,0,0.8)}
+.f-gold-line{height:2px;position:relative;overflow:hidden;border-radius:999px;background:linear-gradient(90deg,transparent 0%,#ffd700 22%,#fff8b0 50%,#ffd700 78%,transparent 100%);-webkit-transform:translateZ(0);transform:translateZ(0)}
 .f-gold-line::after{content:"";position:absolute;top:0;bottom:0;left:0;width:56%;background:linear-gradient(90deg,transparent 0%,rgba(255,255,200,0) 8%,rgba(255,255,180,.9) 50%,rgba(255,255,200,0) 92%,transparent 100%);transform:translateX(-115%);will-change:transform;animation:finalHeaderGlow 5s linear infinite alternate}
 .f-gold-line-faint{height:1px;background:linear-gradient(90deg,transparent,#ffd70088,transparent);animation:breathe 6s ease-in-out 1.5s infinite}
-.f-label{font-size:9px;letter-spacing:4px;color:#ffd700;text-transform:uppercase;text-align:center;padding:7px 0;text-shadow:0 0 8px rgba(255,215,0,0.5)}
+.f-label{font-size:9px;letter-spacing:4px;color:#ffd700;text-transform:uppercase;text-align:center;padding:7px 0;-webkit-text-fill-color:#ffd700;text-shadow:0 0 10px rgba(255,215,0,0.7)}
 .f-hdr{margin-bottom:16px;animation:fadeUp 0.5s ease both}
 .f-scores{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;animation:fadeUp 0.5s ease 0.1s both}
 .f-u{flex:1}
