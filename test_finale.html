@@ -159,8 +159,8 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 
 
 
-@keyframes pillFlash{0%{background-position:100% 0}40%{background-position:0% 0}60%{background-position:0% 0}100%{background-position:100% 0}}
-@-webkit-keyframes pillFlash{0%{background-position:100% 0}40%{background-position:0% 0}60%{background-position:0% 0}100%{background-position:100% 0}}
+@keyframes pillFlash{0%{background-position:100% 0;filter:brightness(1)}45%{background-position:0% 0;filter:brightness(2.2)}55%{background-position:0% 0;filter:brightness(2.2)}100%{background-position:100% 0;filter:brightness(1)}}
+@-webkit-keyframes pillFlash{0%{background-position:100% 0;-webkit-filter:brightness(1)}45%{background-position:0% 0;-webkit-filter:brightness(2.2)}55%{background-position:0% 0;-webkit-filter:brightness(2.2)}100%{background-position:100% 0;-webkit-filter:brightness(1)}}
 .pred-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:.5px solid #0f1923;min-height:28px;align-items:center}
 .pred-l{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;gap:8px}
 .pred-r{background:#1a2535;padding:5px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;gap:8px;justify-content:flex-end}
@@ -238,10 +238,10 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .finale-wrap{margin:0 12px;box-sizing:border-box}
 .f-shell{border-radius:16px;padding:2px;border:2px solid #ffd700;background:#07060d;animation:borderGlow 4s ease-in-out infinite}
 .f-inner{background:#07060d;border-radius:14px;padding:16px}
-.f-gold-line{height:2px;position:relative;overflow:hidden;border-radius:999px;background:linear-gradient(90deg,transparent 0%,#ffd700 22%,#ffd700 78%,transparent 100%);filter:drop-shadow(0 0 3px #ffd700);-webkit-transform:translateZ(0);transform:translateZ(0)}
+.f-gold-line{height:2px;position:relative;overflow:hidden;border-radius:999px;background:linear-gradient(90deg,transparent 0%,#ffe566 15%,#ffd700 30%,#fff5a0 50%,#ffd700 70%,#ffe566 85%,transparent 100%);-webkit-transform:translateZ(0);transform:translateZ(0)}
 .f-gold-line::after{content:"";position:absolute;top:0;bottom:0;left:0;width:56%;background:linear-gradient(90deg,transparent 0%,rgba(255,255,200,0) 8%,rgba(255,255,180,.9) 50%,rgba(255,255,200,0) 92%,transparent 100%);transform:translateX(-115%);will-change:transform;animation:finalHeaderGlow 5s linear infinite alternate}
-.f-gold-line-faint{height:1px;background:linear-gradient(90deg,transparent,#ffd700,transparent);opacity:0.6;animation:breathe 6s ease-in-out 1.5s infinite}
-.f-label{font-size:9px;letter-spacing:4px;color:#ffd700;text-transform:uppercase;text-align:center;padding:7px 0;filter:drop-shadow(0 0 3px #ffd700)}
+.f-gold-line-faint{height:1px;background:linear-gradient(90deg,transparent,#ffd700,transparent);opacity:0.8;animation:breathe 6s ease-in-out 1.5s infinite}
+.f-label{font-size:9px;letter-spacing:4px;color:#ffe566;text-transform:uppercase;text-align:center;padding:7px 0;font-weight:600}
 .f-hdr{margin-bottom:16px;animation:fadeUp 0.5s ease both}
 .f-scores{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;animation:fadeUp 0.5s ease 0.1s both}
 .f-u{flex:1}
@@ -257,8 +257,8 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .f-diamond-wrap{display:flex;align-items:center;justify-content:center;width:52px;flex-shrink:0}
 .f-d-outer{width:44px;height:44px;transform:rotate(45deg);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:linear-gradient(135deg,#ffd70033,#ffd70011);isolation:isolate;box-shadow:0 0 12px rgba(255,215,0,0.3)}
 .f-d-outer::before{content:"";position:absolute;inset:-14px;z-index:0;opacity:1;background:conic-gradient(from 0deg,transparent 0deg,transparent 220deg,rgba(255,215,0,.2) 268deg,rgba(255,232,110,1) 310deg,rgba(255,215,0,.2) 350deg,transparent 360deg);animation:finalVsOutlineShimmer 4s linear infinite}
-.f-d-inner{width:34px;height:34px;background:#0a0800;border:1.5px solid #ffd700;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;filter:drop-shadow(0 0 4px #ffd700)}
-.f-d-text{transform:rotate(-45deg);font-size:9px;color:#ffd700;font-weight:900;letter-spacing:1px;filter:drop-shadow(0 0 3px #ffd700)}
+.f-d-inner{width:34px;height:34px;background:#0a0800;border:2px solid #ffd700;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}
+.f-d-text{transform:rotate(-45deg);font-size:9px;color:#ffe566;font-weight:900;letter-spacing:1px}
 .f-sec-row{display:flex;align-items:center;gap:7px;margin:10px 0 4px}
 .f-sec-line{flex:1;height:1px;background:#1a1a2e}
 .f-pill{font-size:8px;border-radius:4px;padding:2px 8px;letter-spacing:1px;text-transform:uppercase;border:1px solid #2a2a40;color:#b0b0c0;background:#0d0d1a;white-space:nowrap}
@@ -290,8 +290,8 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .f-md{text-align:center;color:#4a4a6a;width:10px;font-size:10px}
 .f-pred-wrap{margin-top:14px;animation:fadeUp 0.5s ease 0.6s both}
 .f-pred-divider{margin-bottom:12px}
-.f-pred-lbl{font-size:9px;color:#ffd700;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:8px;filter:drop-shadow(0 0 3px #ffd700)}
-.f-pred-card{background:#08070e;border:1px solid #ffd700;border-radius:10px;overflow:hidden}
+.f-pred-lbl{font-size:9px;color:#ffe566;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:8px;font-weight:600}
+.f-pred-card{background:#08070e;border:1.5px solid #ffe566;border-radius:10px;overflow:hidden}
 .f-pred-series{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #ffd70015}
 .f-pred-team{font-size:15px;font-weight:800;color:#e5e7eb;letter-spacing:.4px}
 .f-pred-label{font-size:9px;color:#ffd700cc;letter-spacing:2px;text-transform:uppercase;text-align:center}
@@ -782,7 +782,7 @@ function getPillHtml(row,key,mode){
   if(!pill){pillState[key]='';return '';}
   const shouldAnimate=mode==='open'||(mode==='refresh'&&prev&&prev!==pill.signature);
   pillState[key]=pill.signature;
-  const anim=shouldAnimate?' style="animation:pillFlash 1.2s ease forwards;-webkit-animation:pillFlash 1.2s ease forwards"':'';
+  const anim=shouldAnimate?' style="animation:pillFlash 0.9s ease forwards;-webkit-animation:pillFlash 0.9s ease forwards"':'';
   return`<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}"${anim}>${pill.text}</span>`;
 }
 function triggerPillAnimations(container){}
