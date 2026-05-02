@@ -233,7 +233,6 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 @keyframes finalHeaderGlow{0%{transform:translateX(-115%)}100%{transform:translateX(255%)}}
 @keyframes finalFireBreath{0%,100%{transform:scale(1);opacity:.9;filter:drop-shadow(0 0 3px rgba(255,120,0,.28))}50%{transform:scale(1.14);opacity:1;filter:drop-shadow(0 0 8px rgba(255,150,0,.70))}}
 @keyframes finalVsOutlineShimmer{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-@keyframes diamondShimmer{0%,100%{box-shadow:0 0 0 2px #ffd700, 0 0 8px #ffd700, 0 0 20px rgba(255,215,0,0.4)}50%{box-shadow:0 0 0 2px #fff5a0, 0 0 14px #ffd700, 0 0 35px rgba(255,215,0,0.7)}}
 
 .finale-view{display:none;padding:0 0 40px}
 .finale-wrap{margin:0 12px;box-sizing:border-box}
@@ -256,9 +255,9 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .f-fire-emoji{display:inline-block;transform-origin:center;animation:finalFireBreath 2.15s ease-in-out infinite}
 .f-fire-num{font-size:12px;font-weight:900;color:#22c55e;line-height:1;text-shadow:0 0 6px rgba(34,197,94,.5)}
 .f-diamond-wrap{display:flex;align-items:center;justify-content:center;width:52px;flex-shrink:0}
-.f-d-outer{width:44px;height:44px;transform:rotate(45deg);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:#ffd700;isolation:isolate;animation:diamondShimmer 2s ease-in-out infinite}
-.f-d-outer::before{content:"";position:absolute;inset:3px;z-index:0;background:#07060d}
-.f-d-inner{width:34px;height:34px;background:#0a0800;border:2px solid #ffd700;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;box-shadow:0 0 0 1px #ffe566,inset 0 0 0 1px #ffe56644}
+.f-d-outer{width:44px;height:44px;transform:rotate(45deg);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:transparent;isolation:isolate}
+.f-d-outer::before{content:"";position:absolute;inset:-14px;z-index:0;background:conic-gradient(from 0deg,#07060d 0deg,#07060d 200deg,#ffd700 270deg,#ffffff 305deg,#ffd700 340deg,#07060d 360deg);animation:finalVsOutlineShimmer 3s linear infinite}
+.f-d-inner{width:34px;height:34px;background:#0a0800;border:2px solid #ffd700;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}
 .f-d-text{transform:rotate(-45deg);font-size:9px;color:#ffe566;font-weight:900;letter-spacing:1px}
 .f-sec-row{display:flex;align-items:center;gap:7px;margin:10px 0 4px}
 .f-sec-line{flex:1;height:1px;background:#1a1a2e}
