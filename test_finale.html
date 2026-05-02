@@ -232,7 +232,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 }
 @keyframes finalHeaderGlow{0%{transform:translateX(-115%)}100%{transform:translateX(255%)}}
 @keyframes finalFireBreath{0%,100%{transform:scale(1);opacity:.9;filter:drop-shadow(0 0 3px rgba(255,120,0,.28))}50%{transform:scale(1.14);opacity:1;filter:drop-shadow(0 0 8px rgba(255,150,0,.70))}}
-@keyframes diamondPulse{0%,100%{box-shadow:0 0 6px #ffd700,0 0 12px rgba(255,215,0,0.4);border-color:#ffd700}50%{box-shadow:0 0 14px #ffd700,0 0 28px rgba(255,215,0,0.7),0 0 40px rgba(255,215,0,0.3);border-color:#fff5a0}}
+@keyframes diamondPulse{0%,100%{box-shadow:0 0 4px #ffd700,0 0 8px rgba(255,215,0,0.3);border-color:#ffd700}50%{box-shadow:0 0 8px #ffd700,0 0 16px rgba(255,215,0,0.5);border-color:#fff5a0}}
 
 .finale-view{display:none;padding:0 0 40px}
 .finale-wrap{margin:0 12px;box-sizing:border-box}
@@ -311,23 +311,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .f-pred-row-perfect{background:rgba(255,215,0,.07)}
 .f-refresh{font-size:11px;color:#4a4a6a;text-align:center;padding:10px 0 4px}
 
-/* ██ DEBUG TRIGGER — REMOVE BEFORE PRODUCTION ██ */
-.debug-fab{position:fixed;bottom:24px;right:16px;z-index:999;background:#7c3aed;color:#fff;border:none;border-radius:999px;padding:12px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(124,58,237,.6);letter-spacing:.3px}
-.debug-fab:active{background:#6d28d9}
-.debug-panel{display:none;position:fixed;inset:0;z-index:998;background:#0a0f1a;overflow-y:auto;padding:16px 12px 100px}
-.debug-panel.open{display:block}
-.debug-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #7c3aed}
-.debug-title{font-size:14px;font-weight:700;color:#a78bfa;letter-spacing:.5px;text-transform:uppercase}
-.debug-close{font-size:13px;color:#a78bfa;background:#1a1030;border:.5px solid #7c3aed;border-radius:8px;padding:6px 14px;cursor:pointer}
-.debug-section{font-size:10px;color:#7c3aed;text-transform:uppercase;letter-spacing:.8px;margin:16px 0 8px;font-weight:700}
-.debug-row{display:flex;align-items:center;justify-content:space-between;background:#111827;border-radius:10px;padding:10px 12px;margin-bottom:8px;gap:12px;min-height:44px}
-.debug-label{font-size:11px;color:#9ca3af;flex:1;min-width:0}
-.debug-pill-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.debug-pred-row{display:flex;align-items:center;gap:8px;background:#111827;border-radius:10px;padding:10px 12px;margin-bottom:8px;flex-wrap:wrap}
-.debug-fire-btn{background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;margin-top:12px;width:100%;min-height:44px}
-.debug-fire-btn:active{background:#6d28d9}
-.debug-note{font-size:10px;color:#4b5563;text-align:center;margin-top:8px}
-/* ██ END DEBUG TRIGGER STYLES ██ */
+
 </style>
 </head>
 <body>
@@ -447,50 +431,7 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 <div id="detail-container"></div>
 </div>
 
-<!-- ██ DEBUG TRIGGER — REMOVE BEFORE PRODUCTION ██ -->
-<button class="debug-fab" onclick="openDebugPanel()">🧪 TEST PILLS</button>
-<div class="debug-panel" id="debug-panel">
-  <div class="debug-header">
-    <div class="debug-title">⚠️ DEBUG — PILL ANIMATOR — REMOVE BEFORE PROD</div>
-    <div class="debug-close" onclick="closeDebugPanel()">✕ Fermer</div>
-  </div>
-  <div class="debug-section">⚡ Skaters</div>
-  <div class="debug-row"><span class="debug-label">+1G only</span><div class="debug-pill-wrap" id="dp-sk1"></div></div>
-  <div class="debug-row"><span class="debug-label">+1A only</span><div class="debug-pill-wrap" id="dp-sk2"></div></div>
-  <div class="debug-row"><span class="debug-label">+1G|+1A</span><div class="debug-pill-wrap" id="dp-sk3"></div></div>
-  <div class="debug-row"><span class="debug-label">+2G|+1A</span><div class="debug-pill-wrap" id="dp-sk4"></div></div>
-  <div class="debug-row"><span class="debug-label">+3G|+2A max</span><div class="debug-pill-wrap" id="dp-sk5"></div></div>
-  <div class="debug-row"><span class="debug-label">Long name: Aleksander Barkov Jr. +2G|+2A</span><div class="debug-pill-wrap" id="dp-sk6"></div></div>
-  <div class="debug-section">🥅 Goalies</div>
-  <div class="debug-row"><span class="debug-label">+1W pos</span><div class="debug-pill-wrap" id="dp-gl1"></div></div>
-  <div class="debug-row"><span class="debug-label">-1L neg</span><div class="debug-pill-wrap" id="dp-gl2"></div></div>
-  <div class="debug-row"><span class="debug-label">+1W|+1SO gold</span><div class="debug-pill-wrap" id="dp-gl3"></div></div>
-  <div class="debug-row"><span class="debug-label">+1W|-1L|+1SO triple gold small</span><div class="debug-pill-wrap" id="dp-gl4"></div></div>
-  <div class="debug-row"><span class="debug-label">+1A|+1G pos</span><div class="debug-pill-wrap" id="dp-gl5"></div></div>
-  <div class="debug-row"><span class="debug-label">-1L|+1SO gold</span><div class="debug-pill-wrap" id="dp-gl6"></div></div>
-  <div class="debug-section">🏅 Pred Pills</div>
-  <div class="debug-pred-row">
-    <span style="font-size:11px;color:#9ca3af;margin-right:4px">Side by side:</span>
-    <span class="pred-pill gold">+4 pts</span>
-    <span class="pred-pill green">+2 pts</span>
-    <span class="pred-pill red">0 pts</span>
-  </div>
-  <button class="debug-fire-btn" onclick="fireAllDebugPills()">🔥 FIRE ALL ANIMATIONS</button>
-  <div class="debug-section">🎭 Real matchup inject</div>
-  <!-- ██ DEBUG — FAKE STATS INJECTOR — REMOVE BEFORE PRODUCTION ██ -->
-  <div style="background:#111827;border-radius:10px;padding:12px;margin-bottom:8px;font-size:11px;color:#9ca3af;line-height:1.6">Injecte de faux stats dans tous les joueurs puis ouvre matchup 1 avec toutes les pills.</div>
-  <button class="debug-fire-btn" style="background:#059669" onclick="debugInjectFakeStats()">🧬 INJECT FAKE STATS → OPEN MATCHUP 1</button>
-  <button class="debug-fire-btn" style="background:#dc2626;margin-top:8px" onclick="debugClearFakeStats()">🗑 CLEAR FAKE STATS</button>
-  <!-- ██ END FAKE STATS INJECTOR ██ -->
-  <div class="debug-section">🏆 Finale Preview</div>
-  <!-- ██ DEBUG — FINALE PREVIEW — REMOVE BEFORE PRODUCTION ██ -->
-  <div style="background:#111827;border-radius:10px;padding:12px;margin-bottom:8px;font-size:11px;color:#9ca3af;line-height:1.6">Forces the finale layout using matchup 1 data from your current sheet. Sheet is not changed.</div>
-  <button class="debug-fire-btn" style="background:#b45309" onclick="debugForceFinale()">🏆 PREVIEW FINALE LAYOUT → MATCHUP 1</button>
-  <button class="debug-fire-btn" style="background:#374151;margin-top:8px" onclick="debugResetFinale()">↩ RESET TO NORMAL VIEW</button>
-  <!-- ██ END FINALE PREVIEW ██ -->
-  <div class="debug-note">⚠️ REMOVE THIS ENTIRE BLOCK BEFORE PUSHING TO PRODUCTION</div>
-</div>
-<!-- ██ END DEBUG TRIGGER ██ -->
+
 
 <script>
 const SHEET_ID='1MaI1PwHvwcKqP316Y-7raHWmmAzVVvMY-dobjAp19jE';
@@ -515,80 +456,7 @@ const MATCHUPS_R1=[
 ];
 let currentMatchups=MATCHUPS_R1;
 
-// ██ DEBUG TRIGGER — REMOVE BEFORE PRODUCTION ██
-function makePill(t,tone,size,compact){return`<span class="stat-pill ${size} ${tone}${compact?' tight':''}">${t}</span>`;}
-function fireEl(el){
-  el.style.animation='none';
-  void el.offsetWidth;
-  el.style.animation='pillFlash 1.2s ease forwards';
-  el.style.webkitAnimation='pillFlash 1.2s ease forwards';
-}
-function renderDebugPills(){
-  const defs=[
-    {id:'dp-sk1',html:makePill('+1G','pos','normal',false)},{id:'dp-sk2',html:makePill('+1A','pos','normal',false)},
-    {id:'dp-sk3',html:makePill('+1G|+1A','pos','normal',false)},{id:'dp-sk4',html:makePill('+2G|+1A','pos','normal',false)},
-    {id:'dp-sk5',html:makePill('+3G|+2A','pos','normal',false)},{id:'dp-sk6',html:makePill('+2G|+2A','pos','normal',false)},
-    {id:'dp-gl1',html:makePill('+1W','pos','normal',false)},{id:'dp-gl2',html:makePill('-1L','neg','normal',false)},
-    {id:'dp-gl3',html:makePill('+1W|+1SO','gold','normal',false)},{id:'dp-gl4',html:makePill('+1W|-1L|+1SO','gold','small',true)},
-    {id:'dp-gl5',html:makePill('+1A|+1G','pos','normal',false)},{id:'dp-gl6',html:makePill('-1L|+1SO','gold','small',true)},
-  ];
-  defs.forEach(d=>{const w=document.getElementById(d.id);if(w)w.innerHTML=d.html;});
-}
-function fireAllDebugPills(){document.querySelectorAll('.debug-pill-wrap .stat-pill').forEach(el=>fireEl(el));}
-function openDebugPanel(){renderDebugPills();document.getElementById('debug-panel').classList.add('open');}
-function closeDebugPanel(){document.getElementById('debug-panel').classList.remove('open');}
-// ██ DEBUG — FAKE STATS INJECTOR — REMOVE BEFORE PRODUCTION ██
-let _fakeStatsActive=false,_originalLiveRows=null;
-const _fakePatterns=[[1,0],[0,1],[1,1],[2,1],[3,2]];
-const _fakeGoaliePatterns=[{w:1,l:0,so:0},{w:0,l:1,so:0},{w:1,l:0,so:1},{w:1,l:1,so:1}];
-function debugInjectFakeStats(){
-  if(!liveRows.length){alert('Charge un matchup dabord');return;}
-  if(!_fakeStatsActive){_originalLiveRows=liveRows.map(r=>[...r]);_fakeStatsActive=true;}
-  let si=0,gi=0;
-  liveRows.forEach(r=>{
-    if(r[C.Position]==='G'){
-      const p=_fakeGoaliePatterns[gi%_fakeGoaliePatterns.length];
-      const name=String(r[C.Player]||'').trim();
-      if(!goalieMap[name])goalieMap[name]=new Array(6).fill(0);
-      goalieMap[name][GS.W]=p.w;goalieMap[name][GS.L]=p.l;goalieMap[name][GS.SO]=p.so;
-      goalieMap[name][GS.LiveG]=0;goalieMap[name][GS.LiveA]=0;gi++;
-    } else {
-      const p=_fakePatterns[si%_fakePatterns.length];r[C.LiveG]=p[0];r[C.LiveA]=p[1];si++;
-    }
-    r[C.Indicator]='🟢';
-  });
-  Object.keys(pillState).forEach(k=>delete pillState[k]);
-  closeDebugPanel();showDetail(1,'open');
-}
-function debugClearFakeStats(){
-  if(_originalLiveRows){liveRows.splice(0,liveRows.length,..._originalLiveRows);_originalLiveRows=null;}
-  _fakeStatsActive=false;Object.keys(pillState).forEach(k=>delete pillState[k]);
-  closeDebugPanel();if(activeDetailNum!==null)showDetail(activeDetailNum,'open');
-}
-// ██ END FAKE STATS INJECTOR ██
-// ██ DEBUG — FINALE PREVIEW — REMOVE BEFORE PRODUCTION ██
-let _savedRound=null;
-function debugForceFinale(){
-  if(!liveRows.length){alert('Load data first');return;}
-  _savedRound=currentRound;
-  currentRound=4;
-  // Point finale at matchup 1 users from current data
-  const mu=currentMatchups[0];
-  if(!mu){alert('No matchup 1 found');currentRound=_savedRound;return;}
-  document.getElementById('header-date-f').textContent='PREVIEW · Finale';
-  document.getElementById('header-games-f').innerHTML='<span class="games-pill">⚠️ DEBUG MODE</span>';
-  document.getElementById('f-refresh').textContent='↻ preview only — sheet unchanged';
-  renderFinale();
-  closeDebugPanel();
-  setView('finale-view');
-}
-function debugResetFinale(){
-  if(_savedRound!==null){currentRound=_savedRound;_savedRound=null;}
-  closeDebugPanel();
-  setView(currentRound===4?'finale-view':'home-view');
-}
-// ██ END FINALE PREVIEW ██
-// ██ END DEBUG TRIGGER ██
+
 
 function setView(view){
   ['home-view','detail-view','bracket-view','finale-view'].forEach(id=>{
