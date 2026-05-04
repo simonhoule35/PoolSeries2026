@@ -199,18 +199,18 @@ body{background:#0f1923;color:#e8eaed;font-family:-apple-system,BlinkMacSystemFo
 .ld{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin:0 3px;animation:b 1.2s infinite}
 .ld:nth-child(2){animation-delay:.2s}.ld:nth-child(3){animation-delay:.4s}
 @keyframes b{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
-.winner-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 7px;border-radius:999px;border:1.5px solid #ffd700;color:#ffe566;background:rgba(255,215,0,.08);font-size:18px;font-weight:500;animation:goldPulse 2.8s ease-in-out infinite;white-space:nowrap}
-@keyframes goldPulse{0%,100%{filter:drop-shadow(0 0 3px #ffd700)}50%{filter:drop-shadow(0 0 7px #ffd700)}}
+.winner-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 7px;border-radius:999px;border:1px solid rgba(253,224,71,.8);color:#fde047;background:rgba(234,179,8,.08);font-size:18px;font-weight:500;animation:goldPulse 2.8s ease-in-out infinite;white-space:nowrap}
+@keyframes goldPulse{0%,100%{box-shadow:0 0 4px rgba(234,179,8,.2)}50%{box-shadow:0 0 10px rgba(234,179,8,.55),0 0 20px rgba(234,179,8,.22)}}
 .trophy{font-size:14px;animation:trophyBounce 2.8s ease-in-out infinite}
 @keyframes trophyBounce{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-2px) rotate(3deg)}}
-.winner-pts{color:#ffe566!important;font-weight:600}
-.winner-gap{color:#ffe566;font-size:12px;margin-left:4px}
+.winner-pts{color:#fde047!important;font-weight:600}
+.winner-gap{color:#fde047;font-size:12px;margin-left:4px}
 .loser-name{opacity:.6;font-weight:400}
 .loser-pts{color:#ef4444!important;opacity:.7}
 .loser-gap{color:#ef4444;font-size:12px;margin-left:4px;opacity:.7}
 .elim-pill{display:inline-flex;align-items:center;margin-left:5px;padding:1px 6px;border-radius:999px;border:.5px solid rgba(239,68,68,.6);background:rgba(69,26,3,.9);color:#f87171;font-size:9px;font-weight:700;letter-spacing:.2px;vertical-align:middle;opacity:.85}
 .elim-pill.right{margin-left:0;margin-right:5px}
-.seed-badge{display:inline-flex;align-items:center;font-size:9px;font-weight:800;padding:1px 6px;border-radius:999px;background:rgba(255,215,0,.12);border:1px solid #ffd700;color:#ffe566;margin-left:6px;letter-spacing:.3px}
+.seed-badge{display:inline-flex;align-items:center;font-size:9px;font-weight:800;padding:1px 6px;border-radius:999px;background:rgba(234,179,8,.15);border:.5px solid rgba(234,179,8,.5);color:#fde047;margin-left:6px;letter-spacing:.3px}
 .final-banner{margin:10px 12px 4px;border-radius:10px;background:#1a2535;border:1px solid rgba(234,179,8,.4);padding:10px 14px;display:none;align-items:center;gap:10px;animation:bannerPulse 3s ease-in-out infinite}
 .final-banner.show{display:flex}
 @keyframes bannerPulse{0%,100%{border-color:rgba(234,179,8,.3)}50%{border-color:rgba(234,179,8,.7);box-shadow:0 0 12px rgba(234,179,8,.15)}}
