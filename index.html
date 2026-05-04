@@ -947,7 +947,10 @@ function viewRound(round){
   }).catch(function(e){console.error(e);});
 }
 
-function showHome(){setView(currentRound===4?'finale-view':'home-view');}
+function showHome(){
+  loadData();
+  setView(currentRound===4?'finale-view':'home-view');
+}
 function showBracket(){setView('bracket-view');}
 
 updateInstallVisibility();
