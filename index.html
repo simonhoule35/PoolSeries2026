@@ -938,7 +938,10 @@ function viewRound(round){
     const roundRows=rows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
     liveRows=roundRows;predTable=preds;currentRound=round;
     currentMatchups=round===1?MATCHUPS_R1:buildMatchupsFromRows(roundRows);
-    if(round===1){finalMode=true;}else{finalMode=false;winnersMap={};}
+    if(round===1){
+  finalMode=true;
+  winnersMap={'Francis':'W1','José':'W2','J-P':'W3','Lionel':'W4','Joaquin':'W5','Simon':'W6','David':'W7','Marc-André':'W8'};
+}else{finalMode=false;winnersMap={};}
     document.getElementById('section-label').textContent='Matchups — '+(ROUND_CFG[round]||{}).label;
     renderHome();setView('home-view');
   }).catch(function(e){console.error(e);});
