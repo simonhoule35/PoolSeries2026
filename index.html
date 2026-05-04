@@ -938,7 +938,7 @@ function viewRound(round){
     const roundRows=rows.filter(r=>r[3]==='F'||r[3]==='D'||r[3]==='G');
     liveRows=roundRows;predTable=preds;currentRound=round;
     currentMatchups=round===1?MATCHUPS_R1:buildMatchupsFromRows(roundRows);
-    finalMode=false;winnersMap={};
+    if(round===1){finalMode=true;}else{finalMode=false;winnersMap={};}
     document.getElementById('section-label').textContent='Matchups — '+(ROUND_CFG[round]||{}).label;
     renderHome();setView('home-view');
   }).catch(function(e){console.error(e);});
