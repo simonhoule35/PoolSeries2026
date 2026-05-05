@@ -650,7 +650,7 @@ function getPillHtml(row,key,mode){
   if(!pill){pillState[key]='';return '';}
   const shouldAnimate=mode==='open'||(mode==='refresh'&&prev&&prev!==pill.signature);
   pillState[key]=pill.signature;
-  const anim=shouldAnimate?' style="animation:pillFlash 1.6s ease forwards;-webkit-animation:pillFlash 1.6s ease forwards"':'';
+ const anim = shouldAnimate ? ' style="animation:pillFlash 1.6s ease none;-webkit-animation:pillFlash 1.6s ease none"' : '';
   return`<span class="stat-pill ${pill.size} ${pill.tone}${pill.compact?' tight':''}"${anim}>${pill.text}</span>`;
 }
 function triggerPillAnimations(container){}
