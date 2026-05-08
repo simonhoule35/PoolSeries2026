@@ -578,7 +578,7 @@ async function loadData(){
     }
     predTable=predRaw;
     goalieMap={};
-    for(let i=1;i<goalieRaw.length;i++){const row=goalieRaw[i];const name=String(row[GS.Name]||'').trim();if(name)goalieMap[name]=row;}
+    for(let i=0;i<goalieRaw.length;i++){const row=goalieRaw[i];const name=String(row[GS.Name]||'').trim();if(name)goalieMap[name]=row;}
     lastRefreshTime=new Date().toLocaleTimeString('fr-CA',{hour:'2-digit',minute:'2-digit'});
     updateInstallVisibility();
     let gameCount=0;try{gameCount=Number(lsRaw[2]&&lsRaw[2][1]?lsRaw[2][1]:0);}catch(e){}
