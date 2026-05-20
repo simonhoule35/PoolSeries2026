@@ -959,12 +959,7 @@ function viewRound(round){
 if(round===1){
   finalMode=true;
   winnersMap={'Francis':'W1','José':'W2','J-P':'W3','Lionel':'W4','Joaquin':'W5','Simon':'W6','David':'W7','Marc-André':'W8'};
-} else if(round===2){
-  finalMode=true;
-  winnersMap={'Joaquin':'W1','Lionel':'W2','J-P':'W3','Francis':'W4'};
-} else {
-  finalMode=false;winnersMap={};
-}
+}else{finalMode=false;winnersMap={};}
 
 function showHome(){
   loadData();
