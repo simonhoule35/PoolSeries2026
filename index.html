@@ -522,7 +522,11 @@ function indClass(v){
   if(s.includes('✅'))return 'ind-final';if(s.includes('⛔'))return 'ind-out';
   return 'ind-off';
 }
-function indHtml(cls){if(cls==='ind-final')return '<span class="ind ind-final">✓</span>';return '<span class="ind '+cls+'"></span>';}
+function indHtml(cls){
+  if(cls==='ind-final')return '<span class="ind ind-final">✓</span>';
+  if(cls==='ind-out')return '<span class="ind ind-final">⛔</span>';
+  return '<span class="ind '+cls+'"></span>';
+}
 function fDotHtml(ic){return`<span class="f-dot${ic==='ind-live'?' live':''}"></span>`;}
 
 async function fetchSheet(name){
